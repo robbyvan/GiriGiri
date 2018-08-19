@@ -2,17 +2,29 @@
   <nav class="navbar">
     <!-- 主slider导航 -->
     <div class="slider-nav-main">
-      <slider-nav class="slider-nav-content" :tabs="mainTabs" :type="1" @select="changeMainTab" />
+      <slider-nav
+        class="slider-nav-content"
+        :tabs="mainTabs"
+        :currentTabRid="mainTabRid"
+        :type="1"
+        @select="changeMainTab"
+      />
       <button class="expand-btn" @click="expandFullNav">
         <i class="icon-chevron-down" />
       </button>
     </div>
     <!-- 二级slider导航 -->
     <div class="slider-nav-sub" v-show="subTabs.length">
-      <slider-nav class="slider-nav-content" :tabs="subTabs" :type="2" @select="changeSubTab" />
+      <slider-nav
+        class="slider-nav-content"
+        :tabs="subTabs"
+        :currentTabRid="subTabRid"
+        :type="2"
+        @select="changeSubTab"
+      />
     </div>
     <!--隐藏的fullnav -->
-    <full-nav class="full-nav" ref="fullNav" :tabs="mainTabs" />
+    <full-nav class="full-nav" ref="fullNav" :tabs="mainTabs" @select="selectFullNavTab" />
   </nav>
 </template>
 
@@ -43,7 +55,7 @@ export default {
         subTabs.splice(0, 0, { ...TABS[this.mainTabRid], name: '推荐' });
         return subTabs;
       }
-    }
+    },
   },
   methods: {
     ...mapMutations({
@@ -52,6 +64,10 @@ export default {
     }),
     expandFullNav() {
       this.$refs.fullNav.expand();
+    },
+    selectFullNavTab(item) {
+      this.changeMainTab(item);
+      this.$refs.fullNav.collapse();
     },
     changeMainTab(item) {
       this.setMainTabRid(item.rid);

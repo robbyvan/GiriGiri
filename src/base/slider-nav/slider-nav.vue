@@ -20,23 +20,18 @@ export default {
   props: {
     tabs: { type: Array, default: () => [] },
     type: { type: Number, default: 1 }, // 1: main; 2: sub
+    currentTabRid: { type: Number, default: 0 }
   },
-  data() {
-    return {
-      currentTabRid: 0
-    };
-  },
-  watch: {
-    tabs(newTabs) {
-      if (!newTabs.length) {
-        return;
-      }
-      this.currentTabRid = this.tabs[0].rid;
-    }
-  },
+  // watch: {
+  //   tabs(newTabs) {
+  //     if (!newTabs.length) {
+  //       return;
+  //     }
+  //     this.currentTabRid = this.tabs[0].rid;
+  //   }
+  // },
   methods: {
     selectTab(item) {
-      this.currentTabRid = item.rid;
       this.$emit('select', item);
     }
   }
