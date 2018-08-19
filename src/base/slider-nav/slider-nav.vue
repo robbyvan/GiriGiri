@@ -53,6 +53,7 @@ export default {
   overflow-x: scroll;
   padding-left: 2%;
   padding-bottom: 0.22rem;
+  background-color: $color-background;
   .tab-item {
     display: inline-block;
     font-size: $font-size-small;

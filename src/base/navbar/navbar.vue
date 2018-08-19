@@ -3,7 +3,7 @@
     <!-- 主slider导航 -->
     <div class="slider-nav-main">
       <slider-nav
-        class="slider-nav-content"
+        class="slider-main"
         :tabs="mainTabs"
         :currentTabRid="mainTabRid"
         :type="1"
@@ -14,15 +14,17 @@
       </button>
     </div>
     <!-- 二级slider导航 -->
-    <div class="slider-nav-sub" v-show="subTabs.length">
-      <slider-nav
-        class="slider-nav-content"
-        :tabs="subTabs"
-        :currentTabRid="subTabRid"
-        :type="2"
-        @select="changeSubTab"
-      />
-    </div>
+    <transition name="subnav-slide">
+      <div class="slider-nav-sub" v-show="subTabs.length">
+        <slider-nav
+          class="slider-sub"
+          :tabs="subTabs"
+          :currentTabRid="subTabRid"
+          :type="2"
+          @select="changeSubTab"
+        />
+      </div>
+    </transition>
     <!--隐藏的fullnav -->
     <full-nav class="full-nav" ref="fullNav" :tabs="mainTabs" @select="selectFullNavTab" />
   </nav>
@@ -94,13 +96,25 @@ export default {
   position: relative;
   .slider-nav-main {
     display: flex;
-    .slider-nav-content {
+    z-index: 99;
+    .slider-main {
       flex: 85;
     }
     .expand-btn {
       flex: 15;
       background-color: transparent;
     }
+  }
+  .slider-nav-sub {
+    &.subnav-slide-enter-active {
+      transition: all 0.3s ease;
+    }
+    &.subnav-slide-enter, &.subnav-slide-leave-to {
+      transform: translate3d(0, -100%, 0)
+    }
+  }
+  .slider-sub {
+    background-color: $color-background-l;
   }
   .full-nav {
     position: absolute;
