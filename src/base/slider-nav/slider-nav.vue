@@ -2,10 +2,10 @@
   <ul class="slider-nav">
     <li
       v-for="item in tabs"
-      :key="item.tabName"
+      :key="item.rid"
       class="tab-item"
     >
-      <router-link :to="`/home/${item.path}`" tag="a">{{ item.tabName }}</router-link>
+      <router-link :to="`/home/${item.rid}`" tag="a">{{ item.name }}</router-link>
     </li>
   </ul>
 </template>
