@@ -4,8 +4,13 @@
       v-for="item in tabs"
       :key="item.rid"
       class="tab-item"
+      :class="{
+        'active-tab-main': type === 1 && currentTabRid === item.rid,
+        'active-tab-sub': type === 2 && currentTabRid === item.rid
+      }"
+      @click="selectTab(item)"
     >
-      <router-link :to="`/home/${item.rid}`" tag="a">{{ item.name }}</router-link>
+      {{ item.name }}
     </li>
   </ul>
 </template>
@@ -13,7 +18,27 @@
 <script>
 export default {
   props: {
-    tabs: { type: Array, default: () => [] }
+    tabs: { type: Array, default: () => [] },
+    type: { type: Number, default: 1 }, // 1: main; 2: sub
+  },
+  data() {
+    return {
+      currentTabRid: 0
+    };
+  },
+  watch: {
+    tabs(newTabs) {
+      if (!newTabs.length) {
+        return;
+      }
+      this.currentTabRid = this.tabs[0].rid;
+    }
+  },
+  methods: {
+    selectTab(item) {
+      this.currentTabRid = item.rid;
+      this.$emit('select', item);
+    }
   }
 };
 </script>
@@ -31,16 +56,22 @@ export default {
   width: 100%;
   white-space: nowrap;
   overflow-x: scroll;
-  padding-left: 4%;
+  padding-left: 2%;
   padding-bottom: 0.22rem;
-  background-color: gold;
   .tab-item {
     display: inline-block;
     font-size: $font-size-small;
     color: $color-text-gray-d;
     text-align: center;
-    width: 20%;
-    // background-color: pink;
+    margin: 0 0.65rem;
+    padding-bottom: 0.4rem;
+    &.active-tab-main {
+      color: $color-theme;
+      border-bottom: 0.1rem solid $color-theme;
+    }
+    &.active-tab-sub {
+      color: $color-theme;
+    }
   }
 }
 </style>
