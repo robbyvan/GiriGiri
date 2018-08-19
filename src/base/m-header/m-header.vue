@@ -43,7 +43,7 @@ export default {
   align-items: center;
   padding: 0.35rem 0.4rem;
   background-color: $color-background;
-  background-color: gold;
+  // background-color: gold;
   .logo {
     flex: 0 0 4.2rem;
     display: block;
