@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <!-- 顶部header -->
-    <!-- <m-header></m-header> -->
+    <m-header />
     <!-- 中部navigator -->
     <!-- <m-nav></m-nav> -->
     <!-- 正文 -->
@@ -10,7 +10,13 @@
 </template>
 
 <script>
-export default {};
+import MHeader from 'base/m-header/m-header';
+
+export default {
+  components: {
+    MHeader
+  },
+};
 </script>
 
 <style lang="scss" scoped>
