@@ -1,6 +1,6 @@
 # girigiri
 
-> A Vue.js project
+> 仿bilibili.
 
 ## Build Setup
 
