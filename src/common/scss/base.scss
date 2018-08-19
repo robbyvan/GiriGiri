@@ -1,0 +1,11 @@
+@import "./const.scss";
+
+body, html {
+  line-height: 1;
+  font-family: 'Helvetica-Light', 'STHeitiSC-Light', arial, sans-serif;
+  user-select: none;
+  font-size: 24.7px;
+  -webkit-tap-highlight-color: transparent;
+  background: $color-background;
+  color: $color-text;
+}
