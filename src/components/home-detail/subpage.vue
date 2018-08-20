@@ -112,7 +112,7 @@
         </section>
 
         <!-- 加载更多按钮 -->
-        <button class="load-more-button">点击加载更多</button>
+        <button class="load-more-button" @click="loadMore">点击加载更多</button>
       </div>
     </div>
     <!-- 首屏加载 -->
@@ -123,7 +123,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import LoadingHome from 'base/loading/loading-home';
-import { getInitSubAll, getInitSubCategory } from 'api/subpage';
+import { getInitSubAll, getInitSubCategory, getSubTabLatestByPage } from 'api/subpage';
 import { MAIN_TABS } from 'api/config';
 
 export default {
@@ -201,6 +201,26 @@ export default {
         })
         .catch(e => {
           this.isLoadingPage = false;
+        });
+    },
+    loadMore() {
+      if (this.isLoadingMore) {
+        return;
+      }
+      const hasMore = (this.detailLatestPageNum * this.detailLatestPageInfo.size) < this.detailLatestPageInfo.count;
+      if (!hasMore) {
+         return;
+      }
+      this.isLoadingMore = true;
+      getSubTabLatestByPage(this.subTabRid, this.detailLatestPageNum + 1)
+        .then(res => {
+          const detailLatest = res.data;
+          this.detailLatestArchive = [...this.detailLatestArchive, ...detailLatest.archives];
+          this.detailLatestPageNum = detailLatest.page.num;
+          this.isLoadingMore = false;
+        }).
+        catch(e => {
+          this.isLoadingMore = false;
         });
     }
   }
