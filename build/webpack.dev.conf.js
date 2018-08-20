@@ -10,6 +10,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 
+const axios = require('axios');
+const bodyParser = require('body-parser');
+
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
@@ -22,6 +25,24 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
+    before(apiRoutes) {
+      apiRoutes.use(bodyParser.urlencoded({ extended: true }));
+      const queryString = require('querystring');
+      // 获取首页数据
+      apiRoutes.get('/api/homepageList', (req, res) => {
+        const url = 'https://api.bilibili.com/x/web-interface/ranking';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+    },
+
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [

@@ -3,7 +3,7 @@
     <!-- 顶部header -->
     <m-header class="m-header" />
     <!-- 中部navigator -->
-    <navbar />
+    <navbar class="nav-bar" />
     <!-- 正文 -->
     <router-view />
   </div>
@@ -26,6 +26,9 @@ export default {
   position: relative;
   .m-header {
     z-index: 99;
+  }
+  .nav-bar {
+    z-index: 98;
   }
 }
 </style>

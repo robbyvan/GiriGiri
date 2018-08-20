@@ -2,6 +2,7 @@
 $color-background           : #fff; //白
 $color-background-l         : #f8f8f8; // sub nav浅灰
 $color-background-d         : #f4f4f4; // 浅灰
+$color-background-dg        : rgba(0, 0, 0, 0.5); // 透明深灰
 $color-border               : #ccc; // 深灰
 
 $color-theme                : #739499; // 墨绿 深
@@ -12,6 +13,8 @@ $color-text                 : #212121;
 $color-text-white           : #fff;
 $color-text-gray            : #999;
 $color-text-gray-d          : #757575;
+
+$color-border-gray          : #f0f0f0;
 
 //定义字体规范
 $font-size-small-s  : 0.5rem;

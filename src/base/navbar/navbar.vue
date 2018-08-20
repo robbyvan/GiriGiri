@@ -97,12 +97,15 @@ export default {
   .slider-nav-main {
     display: flex;
     z-index: 99;
+    padding: 0.1rem 0;
     .slider-main {
       flex: 85;
     }
     .expand-btn {
       flex: 15;
       background-color: transparent;
+      // padding-bottom: 0.22rem;
+      color: $color-text-gray;
     }
   }
   .slider-nav-sub {
@@ -115,6 +118,7 @@ export default {
   }
   .slider-sub {
     background-color: $color-background-l;
+    padding: 0.1rem 0;
   }
   .full-nav {
     position: absolute;

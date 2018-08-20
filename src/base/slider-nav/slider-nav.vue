@@ -52,14 +52,14 @@ export default {
   white-space: nowrap;
   overflow-x: scroll;
   padding-left: 2%;
-  padding-bottom: 0.22rem;
+  // padding-bottom: 0.22rem;
   background-color: $color-background;
   .tab-item {
     display: inline-block;
     font-size: $font-size-small;
     color: $color-text-gray-d;
     text-align: center;
-    margin: 0 0.65rem;
+    margin: 0 0.7rem;
     padding-bottom: 0.4rem;
     &.active-tab-main {
       color: $color-theme;
