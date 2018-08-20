@@ -9,7 +9,7 @@
           <!-- 组名 -->
           <div class="group-header">
             <h2>{{ group.name }}</h2>
-            <button>
+            <button @click.stop="navigateToMore(group)">
               <span>查看更多</span>
               <i class="icon-chevron-right" />
             </button>
@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import LoadingHome from 'base/loading/loading-home';
 import { getInitSubAll, getInitSubCategory, getSubTabLatestByPage } from 'api/subpage';
 import { MAIN_TABS } from 'api/config';
@@ -166,6 +166,10 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      setMainTabRid: 'SET_MAIN_TAB_RID',
+      setSubTabRid: 'SET_SUB_TAB_RID',
+    }),
     _formatPlays(plays) {
       plays = Number(plays);
       if (plays < 10000) {
@@ -205,6 +209,15 @@ export default {
     },
     onTouchStart() {
       this.$emit('contentTouching');
+    },
+    navigateToMore(group) {
+      console.log(group);
+      if (group.children.length > 0) {
+        // 点击了热门推荐 跳转到ranking页
+      } else {
+        this.setSubTabRid(group.rid);
+        this.$router.push(`/home/${group.rid}`);
+      }
     },
     loadMore() {
       if (this.isLoadingMore) {
