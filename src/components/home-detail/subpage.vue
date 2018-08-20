@@ -184,6 +184,7 @@ export default {
       this.isLoadingPage = true;
       getInitSubAll(this.mainTabRid)
         .then(res => {
+          console.log(res);
           this.sectionGroups = res;
           this.isLoadingPage = false;
         })
@@ -213,7 +214,8 @@ export default {
     navigateToMore(group) {
       console.log(group);
       if (group.children.length > 0) {
-        // 点击了热门推荐 跳转到ranking页
+        // 点击了热门推荐 跳转到rid的ranking页
+        this.$router.push(`/rank/${group.rid}`);
       } else {
         this.setSubTabRid(group.rid);
         this.$router.push(`/home/${group.rid}`);
@@ -225,7 +227,7 @@ export default {
       }
       const hasMore = (this.detailLatestPageNum * this.detailLatestPageInfo.size) < this.detailLatestPageInfo.count;
       if (!hasMore) {
-         return;
+        return;
       }
       this.isLoadingMore = true;
       getSubTabLatestByPage(this.subTabRid, this.detailLatestPageNum + 1)
@@ -234,8 +236,8 @@ export default {
           this.detailLatestArchive = [...this.detailLatestArchive, ...detailLatest.archives];
           this.detailLatestPageNum = detailLatest.page.num;
           this.isLoadingMore = false;
-        }).
-        catch(e => {
+        })
+        .catch(e => {
           this.isLoadingMore = false;
         });
     }

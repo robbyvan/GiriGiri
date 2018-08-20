@@ -3,6 +3,7 @@ import Router from 'vue-router';
 
 import Home from 'components/home/home';
 import HomeDetail from 'components/home-detail/home-detail';
+import Rank from 'components/rank/rank';
 import Search from 'components/search/search';
 import User from 'components/user/user';
 
@@ -19,8 +20,16 @@ export default new Router({
       redirect: '/home/0',
       component: Home,
       children: [
-        { path: ':rid', component: HomeDetail }
+        { path: ':rid', component: HomeDetail },
       ]
+    },
+    {
+      path: '/rank/:rid',
+      component: Rank,
+    },
+    {
+      path: '/rank',
+      redirect: '/rank/1'
     },
     {
       path: '/search',

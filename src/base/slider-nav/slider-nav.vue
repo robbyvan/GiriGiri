@@ -22,14 +22,6 @@ export default {
     type: { type: Number, default: 1 }, // 1: main; 2: sub
     currentTabRid: { type: Number, default: 0 }
   },
-  // watch: {
-  //   tabs(newTabs) {
-  //     if (!newTabs.length) {
-  //       return;
-  //     }
-  //     this.currentTabRid = this.tabs[0].rid;
-  //   }
-  // },
   methods: {
     selectTab(item) {
       this.$emit('select', item);
