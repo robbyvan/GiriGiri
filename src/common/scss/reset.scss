@@ -1,15 +1,23 @@
 /* 清除内外边距 */
+@import "./const.scss";
+
 @charset "utf-8";
+* {
+  box-sizing: border-box;
+}
+
 body, h1, h2, h3, h4, h5, h6, hr, p, blockquote,
 pre,dl, dt, dd, ul, ol, li,
 form, fieldset, lengend, button, input, textarea,
-th, td { margin: 0; padding: 0; }
+th, td { margin: 0; padding: 0; color: $color-text; }
+
+
 
 /* 重置列表元素 */
 ul, ol { list-style: none; }
 
 /* 重置文本格式元素 */
-a { text-decoration: none; }
+a { text-decoration: none; color: $color-text; }
 q:before, q:after { content: ''; }
 
 /* 重置表单元素 */

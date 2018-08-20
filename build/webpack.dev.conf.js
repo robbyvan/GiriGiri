@@ -10,6 +10,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
 
+const axios = require('axios');
+const bodyParser = require('body-parser');
+
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
@@ -22,6 +25,82 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
+    before(apiRoutes) {
+      apiRoutes.use(bodyParser.urlencoded({ extended: true }));
+      const queryString = require('querystring');
+      // 获取首页数据
+      apiRoutes.get('/api/homepageList', (req, res) => {
+        const url = 'https://api.bilibili.com/x/web-interface/ranking';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+
+      // 一级7天推荐
+      apiRoutes.get('/api/mainTab7dRecommend', (req, res) => {
+        const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+      // 二级3天推荐
+      apiRoutes.get('/api/subTab3dRecommend', (req, res) => {
+        console.log(req.query);
+        const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+
+      // 二级7天推荐
+      apiRoutes.get('/api/subTab7dRecommend', (req, res) => {
+        console.log(req.query);
+        const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+      // 按页查询最新
+      apiRoutes.get('/api/subTabLatestByPage', (req, res) => {
+        console.log(req.query);
+        const url = 'https://api.bilibili.com/archive_rank/getarchiverankbypartion';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+
+    },
+
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [

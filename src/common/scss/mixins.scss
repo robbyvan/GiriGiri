@@ -6,7 +6,7 @@
   }
 }
 
-// 单行文本超出显示省略号
+// 单行文本超出clip
 @mixin no-wrap() {
   -ms-text-overflow: ellipsis;
   text-overflow: ellipsis;
@@ -14,11 +14,11 @@
   white-space: nowrap;
 }
 
-// 多行文本超出显示省略号
+// 多行文本超出clip
 @mixin no-wrap-multi($n) {
   display: -webkit-box !important;
   -ms-text-overflow: ellipsis;
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
   overflow: hidden;
   word-break: break-all;
   -webkit-box-orient: vertical;
