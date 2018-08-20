@@ -1,6 +1,6 @@
 # girigiri
 
-> 仿bilibili.
+> 伪·bilibili, only for studying.
 
 ## Build Setup
 
