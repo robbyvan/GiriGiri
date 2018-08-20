@@ -6,7 +6,6 @@
       <!-- 中部navigator -->
       <navbar class="nav-bar" />
     </div>
-    <div class="line-page-content-start" ref="contentStartLine"></div>
     <!-- 正文 -->
     <div class="page-content">
       <router-view />
@@ -15,7 +14,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+// import { mapGetters } from 'vuex';
 import MHeader from 'base/m-header/m-header';
 import Navbar from 'base/navbar/navbar';
 
@@ -25,19 +24,9 @@ export default {
     Navbar
   },
   computed: {
-    ...mapGetters(['subTabRid']),
+    // ...mapGetters(['subTabRid']),
   },
   watch: {
-    subTabRid(newSubTabRid, prevSubTabRid) {
-      if (newSubTabRid === prevSubTabRid) {
-        return;
-      }
-      if (newSubTabRid === 0) {
-        this.$refs.contentStartLine.style.paddingTop = '3.3rem';
-      } else {
-        this.$refs.contentStartLine.style.paddingTop = '4.9rem';
-      }
-    }
   }
 };
 </script>
@@ -74,6 +63,5 @@ export default {
     width: 100%;
     // background-color: olive;
   }
-
 }
 </style>

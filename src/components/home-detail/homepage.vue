@@ -1,47 +1,70 @@
 <template>
-  <div class="homepage">
-    <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
-      <div class="video-cover-wrapper">
-        <!-- 封面 -->
-        <img class="video-cover"  v-lazy="item.pic" alt="cover" />
-        <!-- 信息 -->
-        <div class="video-dec">
-          <span class="video-duration">{{ item.duration }}</span>
-          <span class="video-play" v-text="_formatPlays(item.play)"></span>
-          <span class="video-review">{{ item.video_review }}弹幕</span>
+  <div class="homepage" ref="homepage">
+    <div class="page-content-start-line" ref="contentStartLine"></div>
+    <div class="page-content-detail">
+      <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
+        <div class="video-cover-wrapper">
+          <!-- 封面 -->
+          <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+          <!-- 信息 -->
+          <div class="video-dec">
+            <span class="video-duration">{{ item.duration }}</span>
+            <span class="video-play" v-text="_formatPlays(item.play)"></span>
+            <span class="video-review">{{ item.video_review }}弹幕</span>
+          </div>
         </div>
-      </div>
-      <!-- 视频title -->
-      <div class="video-title">
-        <p>{{ item.title }}</p>
+        <!-- 视频title -->
+        <div class="video-title">
+          <p>{{ item.title }}</p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 import { getHomepageVideos } from 'api/homepage';
 
 const BATCH_NUM = 20;
-// const MAX_BATCH_NUM = 100;
+const MAX_BATCH_INDEX = 5;
+const SCROLLING_THRESHOLD = 0.6;
 
 export default {
   data() {
     return {
       videos: [],
       viewVideos: [],
-      currentBatchIndex: 0,
+      currentBatchIndex: 1,
     };
   },
   created() {
     this._getVideos();
   },
   mounted() {
-    // // "无限"滚动加载
-    // window.addEventListener('scroll', throttle(() => {
-
-    // }, 200));
+    const that = this;
+    // "无限"滚动加载
+    setTimeout(() => {
+      window.addEventListener('scroll', debounce(() => {
+        const rect = that.$refs.homepage.getBoundingClientRect();
+        const scrollTop = 0 - rect.top;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        const bodyHeight = documentHeight - windowHeight;
+        const scrollPercentage = scrollTop / bodyHeight;
+        // console.log('scrollPercentage', scrollPercentage);
+        if (scrollPercentage > SCROLLING_THRESHOLD && this.currentBatchIndex < MAX_BATCH_INDEX) {
+          this.viewVideos = [
+            ...this.viewVideos,
+            ...this.videos.slice(
+              BATCH_NUM * this.currentBatchIndex,
+              BATCH_NUM * (this.currentBatchIndex + 1)
+            ),
+          ];
+          this.currentBatchIndex += 1;
+        }
+      }, 200));
+    }, 20);
   },
   methods: {
     _getVideos() {
@@ -73,19 +96,23 @@ export default {
 @import 'common/scss/const.scss';
 
 .homepage {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  margin-top: 0.3rem;
-  border-top: 0.05rem solid $color-border-gray;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  .page-content-start-line {
+    padding-top: 3.3rem;
+  }
+  .page-content-detail {
+  }
 }
 
 .video-wrapper {
-  margin: 0.3rem 0;
-  // padding: 0.5rem;
-  // background-color: gold;
+  padding: 0.4rem 0;
+  border-top: 1px solid $color-border-gray;
   .video-cover-wrapper {
     display: block;
     position: relative;
@@ -131,6 +158,7 @@ export default {
     p  {
       font-size: $font-size-small;
       color: $color-text;
+      line-height: 0.8rem;
     }
   }
 }
