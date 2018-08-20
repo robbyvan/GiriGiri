@@ -37,11 +37,13 @@ export default {
 @import 'common/scss/const.scss';
 
 .header {
-  position: relative;
+  position: fixed;
+  top: 0;
   width: 100%;
+  height: 1.6rem;
   display: flex;
   align-items: center;
-  padding: 0.35rem 0.4rem;
+  padding: 0.4rem 0.35rem;
   background-color: $color-background;
   // background-color: gold;
   .logo {

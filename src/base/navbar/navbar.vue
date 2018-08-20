@@ -94,21 +94,26 @@ export default {
 
 .navbar {
   position: relative;
+  width: 100%;
   .slider-nav-main {
     display: flex;
-    z-index: 99;
-    padding: 0.1rem 0;
+    align-items: center;
+    // background-color: gold;
+    height: 1.6rem;
     .slider-main {
       flex: 85;
     }
     .expand-btn {
       flex: 15;
       background-color: transparent;
-      // padding-bottom: 0.22rem;
       color: $color-text-gray;
     }
   }
   .slider-nav-sub {
+    height: 1.6rem;
+    // background-color: pink;
+    display: flex;
+    align-items: center;
     &.subnav-slide-enter-active {
       transition: all 0.3s ease;
     }
@@ -119,6 +124,7 @@ export default {
   .slider-sub {
     background-color: $color-background-l;
     padding: 0.1rem 0;
+    // background-color: pink;
   }
   .full-nav {
     position: absolute;

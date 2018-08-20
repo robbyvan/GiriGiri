@@ -20,19 +20,28 @@
 </template>
 
 <script>
+// import throttle from 'lodash/throttle';
 import { getHomepageVideos } from 'api/homepage';
 
 const BATCH_NUM = 20;
+// const MAX_BATCH_NUM = 100;
 
 export default {
   data() {
     return {
       videos: [],
       viewVideos: [],
+      currentBatchIndex: 0,
     };
   },
   created() {
     this._getVideos();
+  },
+  mounted() {
+    // // "无限"滚动加载
+    // window.addEventListener('scroll', throttle(() => {
+
+    // }, 200));
   },
   methods: {
     _getVideos() {
@@ -70,6 +79,7 @@ export default {
   border-top: 0.05rem solid $color-border-gray;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .video-wrapper {
