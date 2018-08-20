@@ -1,5 +1,5 @@
 <template>
-  <div class="homepage" ref="homepage">
+  <div class="homepage" ref="subpage">
     <div class="page-content-start-line" ref="contentStartLine"></div>
     <div class="page-content-detail">
       <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
@@ -72,13 +72,13 @@ export default {
       return `${(plays / 10000).toFixed(1)}万观看`;
     },
     _handleScroll() {
-      const rect = this.$refs.homepage.getBoundingClientRect();
+      const rect = this.$refs.subpage.getBoundingClientRect();
       const scrollTop = 0 - rect.top;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       const bodyHeight = documentHeight - windowHeight;
       const scrollPercentage = scrollTop / bodyHeight;
-      console.log('scrollPercentage', scrollPercentage);
+      console.log('scrollPercentage sub', scrollPercentage);
       if (scrollPercentage > SCROLLING_THRESHOLD && this.currentBatchIndex < MAX_BATCH_INDEX) {
         this.viewVideos = [
           ...this.viewVideos,
@@ -106,7 +106,7 @@ export default {
   flex-direction: column;
   overflow: hidden;
   .page-content-start-line {
-    padding-top: 3.3rem;
+    padding-top: 4.9rem;
   }
   .page-content-detail {
   }
