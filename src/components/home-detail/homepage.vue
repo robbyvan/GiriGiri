@@ -1,7 +1,7 @@
 <template>
   <div class="homepage" ref="homepage">
     <div class="page-content-start-line" ref="contentStartLine"></div>
-    <div class="page-content-detail">
+    <div class="page-content-detail" v-show="!isLoadingPage">
       <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
         <div class="video-cover-wrapper">
           <!-- 封面 -->
@@ -19,11 +19,14 @@
         </div>
       </div>
     </div>
+    <!-- 首屏加载 -->
+    <loading-index v-show="isLoadingPage" />
   </div>
 </template>
 
 <script>
 import debounce from 'lodash/debounce';
+import LoadingIndex from 'base/loading/loading-index';
 import { getHomepageVideos } from 'api/homepage';
 
 const BATCH_NUM = 20;
@@ -31,8 +34,12 @@ const MAX_BATCH_INDEX = 5;
 const SCROLLING_THRESHOLD = 0.6;
 
 export default {
+  components: {
+    LoadingIndex,
+  },
   data() {
     return {
+      isLoadingPage: false,
       videos: [],
       viewVideos: [],
       currentBatchIndex: 1,
@@ -51,6 +58,7 @@ export default {
   },
   methods: {
     _getVideos() {
+      this.isLoadingPage = true;
       getHomepageVideos()
         .then(res => {
           if (res.code === 0) {
@@ -61,6 +69,7 @@ export default {
             this.videos = [];
             this.viewVideos = [];
           }
+          this.isLoadingPage = false;
         });
     },
     _formatPlays(plays) {
@@ -98,9 +107,9 @@ export default {
 @import 'common/scss/const.scss';
 
 .homepage {
-  position: absolute;
-  top: 0;
-  left: 0;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
   width: 100%;
   display: flex;
   flex-direction: column;

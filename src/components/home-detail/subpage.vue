@@ -1,7 +1,7 @@
 <template>
   <div class="subpage" ref="subpage">
     <div class="page-content-start-line" ref="contentStartLine"></div>
-    <div class="page-content-detail">
+    <div class="page-content-detail" v-show="!isLoadingPage">
       <!-- 一级推荐 -->
       <div class="recommend" v-if="isMainTag && sectionGroups.length">
         <!-- 循环所有组 -->
@@ -44,38 +44,106 @@
         </section>
       </div>
       <!-- 二级分类 -->
-      <div class="subpageVideos" v-if="!isMainTag && sectionGroups.length > 0">
-        not recommend
+      <div class="subpageVideos" v-if="!isMainTag && detailRecommends.length && detailLatestArchive.length">
+        <!-- 热门推荐 -->
+        <section class="section-wrapper">
+          <!-- 组名 -->
+          <div class="group-header">
+            <h2>热门推荐</h2>
+          </div>
+          <!-- 视频列表 -->
+          <div class="group-videos">
+            <!-- 循环生成视频 -->
+            <div class="video-wrapper" v-for="item in detailRecommends" :key="item.aid">
+              <div class="video-cover-wrapper">
+                <!-- 封面 -->
+                <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+                <!-- 信息 -->
+                <div class="video-dec">
+                  <span class="desc-tab">
+                    <i class="icon-watch" />
+                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                  </span>
+                  <span class="desc-tab">
+                    <i class="icon-align-left" />
+                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                  </span>
+                </div>
+              </div>
+              <!-- 视频title -->
+              <div class="video-title">
+                <p>{{ item.title }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 最新视频 -->
+        <section class="section-wrapper">
+          <!-- 组名 -->
+          <div class="group-header">
+            <h2>最新视频</h2>
+          </div>
+          <!-- 视频列表 -->
+          <div class="group-videos">
+            <!-- 循环生成视频 -->
+            <div class="video-wrapper" v-for="item in detailLatestArchive" :key="item.aid">
+              <div class="video-cover-wrapper">
+                <!-- 封面 -->
+                <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+                <!-- 信息 -->
+                <div class="video-dec">
+                  <span class="desc-tab">
+                    <i class="icon-watch" />
+                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                  </span>
+                  <span class="desc-tab">
+                    <i class="icon-align-left" />
+                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                  </span>
+                </div>
+              </div>
+              <!-- 视频title -->
+              <div class="video-title">
+                <p>{{ item.title }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 加载更多按钮 -->
+        <button class="load-more-button">点击加载更多</button>
       </div>
     </div>
+    <!-- 首屏加载 -->
+    <loading-home v-show="isLoadingPage" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-// import debounce from 'lodash/debounce';
+import LoadingHome from 'base/loading/loading-home';
 import { getInitSubAll, getInitSubCategory } from 'api/subpage';
 import { MAIN_TABS } from 'api/config';
 
-const BATCH_NUM = 20;
-const MAX_BATCH_INDEX = 5;
-const SCROLLING_THRESHOLD = 0.6;
-
 export default {
   components: {
-
+    LoadingHome
   },
   data() {
     return {
+      isLoadingPage: false,
       isMainTag: true,
       sectionGroups: [],
+      detailRecommends: [],
+      detailLatestArchive: [],
+      detailLatestPageNum: 1,
     };
   },
   computed: {
     ...mapGetters(['mainTabRid', 'subTabRid']),
   },
   created() {
-    // this.debounceFunc = debounce(this._handleScroll, 200);
     // 确认是否在推荐tag, 确定渲染页面
     this.isMainTag = (MAIN_TABS.indexOf(this.subTabRid) > -1);
     // xhr
@@ -91,19 +159,12 @@ export default {
       this.isMainTag = (MAIN_TABS.indexOf(this.subTabRid) > -1);
       // 获取数据
       if (this.isMainTag) {
-        this._getAllSubpageVideos();
+        this._getInitSubAll();
       } else {
         this._getInitSubCategory();
       }
     }
   },
-  // mounted() {
-  //   // "无限"滚动加载
-  //   window.addEventListener('scroll', this.debounceFunc, false);
-  // },
-  // beforeDestroy() {
-  //   window.removeEventListener('scroll', this.debounceFunc, false);
-  // },
   methods: {
     _formatPlays(plays) {
       plays = Number(plays);
@@ -115,40 +176,32 @@ export default {
     _getGroupVideos(group) {
       return this.sectionVideos[group];
     },
-    // _handleScroll() {
-    //   const rect = this.$refs.subpage.getBoundingClientRect();
-    //   const scrollTop = 0 - rect.top;
-    //   const windowHeight = window.innerHeight;
-    //   const documentHeight = document.documentElement.scrollHeight;
-    //   const bodyHeight = documentHeight - windowHeight;
-    //   const scrollPercentage = scrollTop / bodyHeight;
-    //   console.log('scrollPercentage sub', scrollPercentage);
-    //   if (scrollPercentage > SCROLLING_THRESHOLD && this.currentBatchIndex < MAX_BATCH_INDEX) {
-    //     this.viewVideos = [
-    //       ...this.viewVideos,
-    //       ...this.videos.slice(
-    //         BATCH_NUM * this.currentBatchIndex,
-    //         BATCH_NUM * (this.currentBatchIndex + 1)
-    //       ),
-    //     ];
-    //     this.currentBatchIndex += 1;
-    //   }
-    // },
     _getInitSubAll() {
+      this.isLoadingPage = true;
       getInitSubAll(this.mainTabRid)
         .then(res => {
-          //
-          const sectionGroups = res.groups;
-          for (let i = 0; i < res.groups.length; ++i) {
-            sectionGroups[i].data = res.data[i];
-          }
-          this.sectionGroups = sectionGroups;
-          console.log(this.sectionGroups);
+          this.sectionGroups = res;
+          this.isLoadingPage = false;
+        })
+        .catch(e => {
+          this.isLoadingPage = false;
+          console.log(e);
         });
     },
     _getInitSubCategory() {
+      this.isLoadingPage = true;
       getInitSubCategory(this.subTabRid)
-        .then(res => console.log(res));
+        .then(res => {
+          this.detailRecommends = res.detailRecommends;
+          this.detailLatestArchive = res.detailLatest.archives;
+          this.detailLatestPageNum = res.detailLatest.page.num;
+          this.detailLatestPageInfo = { ...res.detailLatest.page };
+          console.log(res);
+          this.isLoadingPage = false;
+        })
+        .catch(e => {
+          this.isLoadingPage = false;
+        });
     }
   }
 };
@@ -159,9 +212,9 @@ export default {
 @import 'common/scss/mixins.scss';
 
 .subpage {
-  position: absolute;
-  top: 0;
-  left: 0;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
   width: 100%;
   background-color: $color-background-d;
   display: flex;
@@ -272,8 +325,16 @@ export default {
       font-size: $font-size-small;
       color: $color-text;
       @include no-wrap-multi(2);
-      line-height: 0.7rem;
+      line-height: 0.71rem;
     }
   }
+}
+
+.load-more-button {
+  width: 100%;
+  height: 2rem;
+  color: $color-theme;
+  font-size: $font-size-medium;
+  background-color: $color-background-m;
 }
 </style>

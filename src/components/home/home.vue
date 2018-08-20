@@ -9,6 +9,8 @@
     <!-- 正文 -->
     <div class="page-content">
       <router-view />
+      <!-- footer -->
+      <m-footer class="m-footer" />
     </div>
   </div>
 </template>
@@ -17,11 +19,13 @@
 // import { mapGetters } from 'vuex';
 import MHeader from 'base/m-header/m-header';
 import Navbar from 'base/navbar/navbar';
+import MFooter from 'base/m-footer/m-footer';
 
 export default {
   components: {
     MHeader,
-    Navbar
+    Navbar,
+    MFooter
   },
   computed: {
     // ...mapGetters(['subTabRid']),
@@ -62,6 +66,8 @@ export default {
     position: relative;
     width: 100%;
     // background-color: olive;
+  }
+  .m-footer {
   }
 }
 </style>

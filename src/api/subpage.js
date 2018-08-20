@@ -31,13 +31,18 @@ export function getInitSubAll(mainTagRid) {
   const childrenRids = TABS[mainTagRid].children;
   const childrenP = childrenRids.map(childRid => getSubTab3dRecommend(childRid));
   return Promise.all([mainP, ...childrenP])
-    .then(res => ({
-      data: res.map(r => r.data.slice(0, 4)), // 推荐页每组只显示4个
-      groups: [
+    .then(res => {
+      // 处理格式
+      const groups = [
         { ...TABS[mainTagRid], name: '热门推荐' },
         ...childrenRids.map(childRid => TABS[childRid])
-      ],
-    }));
+      ];
+      const data = res.map(r => r.data.slice(0, 4));
+      const result = data.map((item, index) => {
+        groups[index].data = item;
+      });
+      return groups;
+    });
 }
 
 // 二级标签
@@ -69,5 +74,13 @@ export function getInitSubCategory(subTagRid) {
   const recommendP = getSubTab7dRecommend(subTagRid);
   const latestP = getSubTabLatestByPage(subTagRid, 1);
   return Promise.all([recommendP, latestP])
-    .then(res => res);
+    .then(res => {
+      console.log(res);
+      const data = res.map(r => r.data);
+      const detailRecommends = res[0].data.slice(0, 4);
+      const detailLatest = res[1].data;
+      console.log(detailRecommends);
+      console.log(detailLatest);
+      return { detailRecommends, detailLatest };
+    });
 }
