@@ -53,7 +53,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.sub {
-  background-color: pink;
+.home-detail {
+  width: 100%;
 }
 </style>

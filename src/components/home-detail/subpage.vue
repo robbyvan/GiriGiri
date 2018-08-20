@@ -1,94 +1,154 @@
 <template>
-  <div class="homepage" ref="subpage">
+  <div class="subpage" ref="subpage">
     <div class="page-content-start-line" ref="contentStartLine"></div>
     <div class="page-content-detail">
-      <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
-        <div class="video-cover-wrapper">
-          <!-- 封面 -->
-          <img class="video-cover"  v-lazy="item.pic" alt="cover" />
-          <!-- 信息 -->
-          <div class="video-dec">
-            <span class="video-duration">{{ item.duration }}</span>
-            <span class="video-play" v-text="_formatPlays(item.play)"></span>
-            <span class="video-review">{{ item.video_review }}弹幕</span>
+      <!-- 一级推荐 -->
+      <div class="recommend" v-if="isMainTag && sectionGroups.length">
+        <!-- 循环所有组 -->
+        <section class="section-wrapper" v-for="group in sectionGroups" :key="group.rid">
+          <!-- 组名 -->
+          <div class="group-header">
+            <h2>{{ group.name }}</h2>
+            <button>
+              <span>查看更多</span>
+              <i class="icon-chevron-right" />
+            </button>
           </div>
-        </div>
-        <!-- 视频title -->
-        <div class="video-title">
-          <p>{{ item.title }}</p>
-        </div>
+
+          <div class="group-videos">
+            <!-- 循环生成视频 -->
+            <div class="video-wrapper" v-for="item in group.data" :key="item.aid">
+              <div class="video-cover-wrapper">
+                <!-- 封面 -->
+                <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+                <!-- 信息 -->
+                <div class="video-dec">
+                  <span class="desc-tab">
+                    <i class="icon-watch" />
+                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                  </span>
+                  <span class="desc-tab">
+                    <i class="icon-align-left" />
+                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                  </span>
+                </div>
+              </div>
+              <!-- 视频title -->
+              <div class="video-title">
+                <p>{{ item.title }}</p>
+                <!-- <p>12456</p> -->
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </div>
+      <!-- 二级分类 -->
+      <div class="subpageVideos" v-if="!isMainTag && sectionGroups.length > 0">
+        not recommend
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import debounce from 'lodash/debounce';
-import { getHomepageVideos } from 'api/homepage';
+import { mapGetters } from 'vuex';
+// import debounce from 'lodash/debounce';
+import { getInitSubAll, getInitSubCategory } from 'api/subpage';
+import { MAIN_TABS } from 'api/config';
 
 const BATCH_NUM = 20;
 const MAX_BATCH_INDEX = 5;
 const SCROLLING_THRESHOLD = 0.6;
 
 export default {
+  components: {
+
+  },
   data() {
     return {
-      videos: [],
-      viewVideos: [],
-      currentBatchIndex: 1,
+      isMainTag: true,
+      sectionGroups: [],
     };
   },
+  computed: {
+    ...mapGetters(['mainTabRid', 'subTabRid']),
+  },
   created() {
-    this._getVideos();
-    this.debounceFunc = debounce(this._handleScroll, 200);
+    // this.debounceFunc = debounce(this._handleScroll, 200);
+    // 确认是否在推荐tag, 确定渲染页面
+    this.isMainTag = (MAIN_TABS.indexOf(this.subTabRid) > -1);
+    // xhr
+    if (this.isMainTag) {
+      this._getInitSubAll();
+    } else {
+      this._getInitSubCategory();
+    }
   },
-  mounted() {
-    // "无限"滚动加载
-    window.addEventListener('scroll', this.debounceFunc, false);
+  watch: {
+    subTabRid() {
+      // 确认是否在推荐tag, 确定渲染页面
+      this.isMainTag = (MAIN_TABS.indexOf(this.subTabRid) > -1);
+      // 获取数据
+      if (this.isMainTag) {
+        this._getAllSubpageVideos();
+      } else {
+        this._getInitSubCategory();
+      }
+    }
   },
-  beforeDestroy() {
-    window.removeEventListener('scroll', this.debounceFunc, false);
-  },
+  // mounted() {
+  //   // "无限"滚动加载
+  //   window.addEventListener('scroll', this.debounceFunc, false);
+  // },
+  // beforeDestroy() {
+  //   window.removeEventListener('scroll', this.debounceFunc, false);
+  // },
   methods: {
-    _getVideos() {
-      getHomepageVideos()
-        .then(res => {
-          if (res.code === 0) {
-            this.videos = res.data.list; // 100条
-            this.viewVideos = this.videos.slice(0, BATCH_NUM); // 20条
-            console.log(this.viewVideos);
-          } else {
-            this.videos = [];
-            this.viewVideos = [];
-          }
-        });
-    },
     _formatPlays(plays) {
       plays = Number(plays);
       if (plays < 10000) {
-        return `${plays}观看`;
+        return `${plays}`;
       }
-
-      return `${(plays / 10000).toFixed(1)}万观看`;
+      return `${(plays / 10000).toFixed(1)}万`;
     },
-    _handleScroll() {
-      const rect = this.$refs.subpage.getBoundingClientRect();
-      const scrollTop = 0 - rect.top;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const bodyHeight = documentHeight - windowHeight;
-      const scrollPercentage = scrollTop / bodyHeight;
-      console.log('scrollPercentage sub', scrollPercentage);
-      if (scrollPercentage > SCROLLING_THRESHOLD && this.currentBatchIndex < MAX_BATCH_INDEX) {
-        this.viewVideos = [
-          ...this.viewVideos,
-          ...this.videos.slice(
-            BATCH_NUM * this.currentBatchIndex,
-            BATCH_NUM * (this.currentBatchIndex + 1)
-          ),
-        ];
-        this.currentBatchIndex += 1;
-      }
+    _getGroupVideos(group) {
+      return this.sectionVideos[group];
+    },
+    // _handleScroll() {
+    //   const rect = this.$refs.subpage.getBoundingClientRect();
+    //   const scrollTop = 0 - rect.top;
+    //   const windowHeight = window.innerHeight;
+    //   const documentHeight = document.documentElement.scrollHeight;
+    //   const bodyHeight = documentHeight - windowHeight;
+    //   const scrollPercentage = scrollTop / bodyHeight;
+    //   console.log('scrollPercentage sub', scrollPercentage);
+    //   if (scrollPercentage > SCROLLING_THRESHOLD && this.currentBatchIndex < MAX_BATCH_INDEX) {
+    //     this.viewVideos = [
+    //       ...this.viewVideos,
+    //       ...this.videos.slice(
+    //         BATCH_NUM * this.currentBatchIndex,
+    //         BATCH_NUM * (this.currentBatchIndex + 1)
+    //       ),
+    //     ];
+    //     this.currentBatchIndex += 1;
+    //   }
+    // },
+    _getInitSubAll() {
+      getInitSubAll(this.mainTabRid)
+        .then(res => {
+          //
+          const sectionGroups = res.groups;
+          for (let i = 0; i < res.groups.length; ++i) {
+            sectionGroups[i].data = res.data[i];
+          }
+          this.sectionGroups = sectionGroups;
+          console.log(this.sectionGroups);
+        });
+    },
+    _getInitSubCategory() {
+      getInitSubCategory(this.subTabRid)
+        .then(res => console.log(res));
     }
   }
 };
@@ -96,30 +156,75 @@ export default {
 
 <style lang="scss" scoped>
 @import 'common/scss/const.scss';
+@import 'common/scss/mixins.scss';
 
-.homepage {
+.subpage {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
+  background-color: $color-background-d;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  // overflow: hidden;
   .page-content-start-line {
     padding-top: 4.9rem;
+    background-color: $color-border;
   }
   .page-content-detail {
+    width: 100%;
+    padding-top: 0.3rem;
   }
 }
 
+.section-wrapper {
+  width: 100%;
+  margin-bottom: 2rem;
+  // background-color: pink;
+  overflow: hidden;
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2rem;
+    padding: 0 0.4rem;
+    h2 {
+      color: $color-text;
+      font-size: $font-size-medium;
+      font-weight: lighter;
+      height: 1rem;
+      line-height: 1.05rem;
+    }
+    button {
+      display: flex;
+      height: 1rem;
+      align-items: center;
+      background-color: transparent;
+      font-size: $font-size-small;
+      color: $color-text-gray;
+      span, i {
+        height: 100%;
+        line-height: 1rem;
+      }
+    }
+  }
+}
+
+.group-videos {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .video-wrapper {
-  padding: 0.4rem 0;
-  border-top: 1px solid $color-border-gray;
+  margin-top: 0.4rem;
+  width: 46%;
+  // background-color: gold;
   .video-cover-wrapper {
     display: block;
     position: relative;
-    width: 14rem;
-    height: 8.85rem;
     margin: 0 auto;
     border-radius: 0.35rem;
     overflow: hidden;
@@ -132,35 +237,42 @@ export default {
       position: absolute;
       bottom: 0;
       left: 0;
-      padding-left: 0.2rem;
-      padding-bottom: 0.3rem;
+      // padding-left: 0.2rem;
+      padding-bottom: 0.2rem;
       width: 100%;
       font-size: $font-size-small-s;
       color: $color-text-white;
       background: linear-gradient(180deg,rgba(33,33,33,0),rgba(33,33,33,.5));
-      span {
-        margin-left: 0.2rem;
-      }
-      .video-duration {
-        display: inline-block;
-        background-color: $color-background-dg;
-        padding: 0.2rem 0.15rem;
-      }
-      .video-play {
-
-      }
-      .video-review {
-
+      display: flex;
+      justify-content: space-around;
+      .desc-tab {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        i {
+          font-size: $font-size-small;
+        }
+       .video-play {
+          padding-left: 0.1rem;
+        }
+        .video-review {
+          padding-left: 0.1rem;
+        }
       }
     }
   }
+
   .video-title {
-    width: 13.8rem;
-    margin: 0.3rem auto;
+    width: 100%;
+    height: 1.5rem;
+    padding-top: 0.1rem;
     p  {
+      width: 100%;
+      height: 100%;
       font-size: $font-size-small;
       color: $color-text;
-      line-height: 0.8rem;
+      @include no-wrap-multi(2);
+      line-height: 0.7rem;
     }
   }
 }

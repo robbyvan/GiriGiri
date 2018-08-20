@@ -60,7 +60,7 @@ export default {
     color: $color-text-gray-d;
     text-align: center;
     margin: 0 0.7rem;
-    padding-bottom: 0.4rem;
+    padding: 0.4rem 0;
     &.active-tab-main {
       color: $color-theme;
       border-bottom: 0.1rem solid $color-theme;

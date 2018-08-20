@@ -41,6 +41,64 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           .then(response => res.json(response.data))
           .catch(e => console.log(e));
       });
+
+      // 一级7天推荐
+      apiRoutes.get('/api/mainTab7dRecommend', (req, res) => {
+        const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+      // 二级3天推荐
+      apiRoutes.get('/api/subTab3dRecommend', (req, res) => {
+        console.log(req.query);
+        const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+
+      // 二级7天推荐
+      apiRoutes.get('/api/subTab7dRecommend', (req, res) => {
+        console.log(req.query);
+        const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+      // 按页查询最新
+      apiRoutes.get('/api/subTabLatestByPage', (req, res) => {
+        console.log(req.query);
+        const url = 'https://api.bilibili.com/archive_rank/getarchiverankbypartion';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+
     },
 
     clientLogLevel: 'warning',
