@@ -1,7 +1,7 @@
 <template>
   <div class="subpage" ref="subpage">
     <div class="page-content-start-line" ref="contentStartLine"></div>
-    <div class="page-content-detail" v-show="!isLoadingPage">
+    <div class="page-content-detail" v-show="!isLoadingPage" @touchstart="onTouchStart">
       <!-- 一级推荐 -->
       <div class="recommend" v-if="isMainTag && sectionGroups.length">
         <!-- 循环所有组 -->
@@ -202,6 +202,9 @@ export default {
         .catch(e => {
           this.isLoadingPage = false;
         });
+    },
+    onTouchStart() {
+      this.$emit('contentTouching');
     },
     loadMore() {
       if (this.isLoadingMore) {

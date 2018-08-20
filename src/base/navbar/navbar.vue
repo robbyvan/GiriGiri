@@ -67,9 +67,12 @@ export default {
     expandFullNav() {
       this.$refs.fullNav.expand();
     },
+    collapseFullNav() {
+      this.$refs.fullNav.collapse();
+    },
     selectFullNavTab(item) {
       this.changeMainTab(item);
-      this.$refs.fullNav.collapse();
+      this.collapseFullNav();
     },
     changeMainTab(item) {
       this.setMainTabRid(item.rid);

@@ -4,11 +4,11 @@
       <!-- 顶部header -->
       <m-header class="m-header" />
       <!-- 中部navigator -->
-      <navbar class="nav-bar" />
+      <navbar ref="navbar" class="nav-bar" />
     </div>
     <!-- 正文 -->
     <div class="page-content">
-      <router-view />
+      <router-view @homeTouching="handleHomeTouch" />
       <!-- footer -->
       <m-footer class="m-footer" />
     </div>
@@ -27,10 +27,10 @@ export default {
     Navbar,
     MFooter
   },
-  computed: {
-    // ...mapGetters(['subTabRid']),
-  },
-  watch: {
+  methods: {
+    handleHomeTouch() {
+      this.$refs.navbar.collapseFullNav();
+    }
   }
 };
 </script>

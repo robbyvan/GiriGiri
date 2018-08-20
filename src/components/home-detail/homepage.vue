@@ -1,7 +1,7 @@
 <template>
   <div class="homepage" ref="homepage">
     <div class="page-content-start-line" ref="contentStartLine"></div>
-    <div class="page-content-detail" v-show="!isLoadingPage">
+    <div class="page-content-detail" v-show="!isLoadingPage" @touchstart="onTouchStart">
       <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
         <div class="video-cover-wrapper">
           <!-- 封面 -->
@@ -98,6 +98,9 @@ export default {
         ];
         this.currentBatchIndex += 1;
       }
+    },
+    onTouchStart() {
+      this.$emit('contentTouching');
     }
   }
 };
