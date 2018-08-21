@@ -1,9 +1,9 @@
 <template>
-  <ul class="video-list">
+  <ul class="loading-rank">
     <li
       class="video-item"
       v-for="(video, index) in videos"
-      :key="video.aid"
+      :key="video"
     >
       <!-- 排名 -->
       <div class="rank">
@@ -14,23 +14,23 @@
       </div>
       <!-- 封面 -->
       <div class="cover-wrapper">
-        <img v-lazy="video.pic" alt="cover" />
+        <img src="./loading.png" alt="cover" />
       </div>
       <!-- 详情 -->
       <div class="info">
-        <h2 class="title">{{ video.title }}</h2>
+        <h2 class="title">加载中...</h2>
         <p class="author">
           <i class="icon-author" />
-          <span>{{ video.author }}</span>
+          <span>--</span>
         </p>
         <div class="video-dec">
           <span class="desc-tab">
             <i class="icon-watch" />
-            <span class="video-play" v-text="_formatNumber(video.play)" />
+            <span class="video-play">--</span>
           </span>
           <span class="desc-tab">
             <i class="icon-align-left" />
-            <span class="video-review" v-text="_formatNumber(video.video_review)" />
+            <span class="video-review">--</span>
           </span>
         </div>
       </div>
@@ -40,24 +40,12 @@
 
 <script>
 export default {
-  props: {
-    videos: { type: Array, default: () => [] },
-    rank: { type: Boolean, default: true } // 排行奖杯图片
+  data() {
+    return {
+      videos: [1, 2, 3, 4, 5, 6],
+    };
   },
   methods: {
-    _formatNumber(num) {
-      num = Number(num);
-      if (num < 10000) {
-        return `${num}`;
-      }
-      return `${(num / 10000).toFixed(1)}万`;
-    },
-    getRankingNum(index) {
-      if (index > 2) {
-        return `<span class="text">${index + 1}</span>`;
-      }
-      return `<span class="icon rank${index + 1}" />`;
-    },
     getRankingClass(index) {
       if (index <= 2) {
         return `icon rank${index + 1}`;
@@ -78,7 +66,7 @@ export default {
 @import 'common/scss/const.scss';
 @import 'common/scss/mixins.scss';
 
-.video-list {
+.loading-rank {
   position: relative;
   width: 100%;
   display: flex;
@@ -109,7 +97,7 @@ export default {
           background-image: url('../../common/img/rank2.png');
         }
         &.rank3 {
-          background-image: url('../../common/img/rank3.png');
+          background-image: url('../../common//img/rank3.png');
         }
       }
       .text {

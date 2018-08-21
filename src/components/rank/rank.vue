@@ -19,7 +19,10 @@
       <div class="rank-content-start-line"></div>
       <!-- 正文 -->
       <div class="rank-content">
-        <video-list :videos="videos" />
+        <!-- 列表 -->
+        <video-list :videos="videos" v-show="!isLoadingRankList" />
+        <!-- loading -->
+        <loading-rank v-show="isLoadingRankList" />
       </div>
       <!-- 返回顶部 -->
       <div class="gotop" v-show="showGoTopButton">
@@ -34,6 +37,7 @@ import debounce from 'lodash/debounce';
 import SliderNav from 'base/slider-nav/slider-nav';
 import VideoList from 'base/video-list/video-list';
 import GotopButton from 'base/gotop-button/gotop-button';
+import LoadingRank from 'base/loading/loading-rank';
 import { TABS, RANK_TABS } from 'api/config';
 import { getRankingsByRid } from 'api/rank';
 import { scrollToTopSmoothly } from 'common/js/dom';
@@ -44,7 +48,8 @@ export default {
   components: {
     SliderNav,
     VideoList,
-    GotopButton
+    GotopButton,
+    LoadingRank
   },
   data() {
     return {
@@ -116,7 +121,7 @@ export default {
     selectTab(tab) {
       // 切换路由
       this.selectedMainTabRid = tab.rid;
-      this.$router.push(`/rank/${tab.rid}`);
+      this.$router.replace(`/rank/${tab.rid}`);
     },
     _getRankingsByRid() {
       if (this.isLoadingRankList) {
@@ -172,6 +177,7 @@ export default {
     position: fixed;
     width: 100%;
     background-color: $color-background;
+    z-index: 99;
     .title {
       position: relative;
       width: 100%;
@@ -202,7 +208,6 @@ export default {
     width: 100%;
     background-color: $color-background-d;
     overflow: hidden;
-    // height: 100%;
   }
 }
 
