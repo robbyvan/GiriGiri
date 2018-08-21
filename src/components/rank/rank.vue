@@ -19,7 +19,7 @@
       <div class="rank-content-start-line"></div>
       <!-- 正文 -->
       <div class="rank-content">
-        <video-list />
+        <video-list :videos="videos" />
       </div>
     </div>
   </transition>
@@ -59,7 +59,6 @@ export default {
     }
   },
   created() {
-    console.log('created');
     if (this.$route.params.rid) {
       // 路由而来
       let rid = Number(this.$route.params.rid);
@@ -80,7 +79,6 @@ export default {
         this.selectedMainTabRid = rid;
       }
     } else {
-      console.log('hi?');
       // 没有rid, redirect到动画
       this.$router.push('/rank/1');
       this.selectedMainTabRid = 1;
@@ -163,6 +161,7 @@ export default {
     position: relative;
     width: 100%;
     background-color: $color-background-d;
+    overflow: hidden;
     // height: 100%;
   }
 }

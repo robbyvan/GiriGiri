@@ -25,11 +25,11 @@
                 <div class="video-dec">
                   <span class="desc-tab">
                     <i class="icon-watch" />
-                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                    <span class="video-play" v-text="_formatNumber(item.play)" />
                   </span>
                   <span class="desc-tab">
                     <i class="icon-align-left" />
-                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                    <span class="video-review" v-text="_formatNumber(item.video_review)" />
                   </span>
                 </div>
               </div>
@@ -62,11 +62,11 @@
                 <div class="video-dec">
                   <span class="desc-tab">
                     <i class="icon-watch" />
-                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                    <span class="video-play" v-text="_formatNumber(item.play)" />
                   </span>
                   <span class="desc-tab">
                     <i class="icon-align-left" />
-                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                    <span class="video-review" v-text="_formatNumber(item.video_review )" />
                   </span>
                 </div>
               </div>
@@ -95,11 +95,11 @@
                 <div class="video-dec">
                   <span class="desc-tab">
                     <i class="icon-watch" />
-                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                    <span class="video-play" v-text="_formatNumber(item.play)" />
                   </span>
                   <span class="desc-tab">
                     <i class="icon-align-left" />
-                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                    <span class="video-review" v-text="_formatNumber(item.video_review )" />
                   </span>
                 </div>
               </div>
@@ -170,12 +170,12 @@ export default {
       setMainTabRid: 'SET_MAIN_TAB_RID',
       setSubTabRid: 'SET_SUB_TAB_RID',
     }),
-    _formatPlays(plays) {
-      plays = Number(plays);
-      if (plays < 10000) {
-        return `${plays}`;
+    _formatNumber(num) {
+      num = Number(num);
+      if (num < 10000) {
+        return `${num}`;
       }
-      return `${(plays / 10000).toFixed(1)}万`;
+      return `${(num / 10000).toFixed(1)}万`;
     },
     _getGroupVideos(group) {
       return this.sectionVideos[group];
