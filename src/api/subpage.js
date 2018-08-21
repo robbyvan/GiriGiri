@@ -39,7 +39,7 @@ export function getInitSubAll(mainTagRid) {
       ];
       // data添加到group上
       res.map((r, index) => {
-        groups[index].data = r.data;
+        groups[index].data = r.data.slice(0, 4);//只要4个
       });
       return groups;
     });

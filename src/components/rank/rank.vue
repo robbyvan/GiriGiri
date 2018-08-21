@@ -206,6 +206,7 @@ export default {
   .rank-content {
     position: relative;
     width: 100%;
+    padding-bottom: 2.5rem;
     background-color: $color-background-d;
     overflow: hidden;
   }

@@ -39,6 +39,8 @@
                 <!-- <p>12456</p> -->
               </div>
             </div>
+            <div class="video-wrapper empty"></div>
+            <div class="video-wrapper empty"></div>
           </div>
 
         </section>
@@ -184,7 +186,7 @@ export default {
       this.isLoadingPage = true;
       getInitSubAll(this.mainTabRid)
         .then(res => {
-          console.log(res);
+          // console.log(res);
           this.sectionGroups = res;
           this.isLoadingPage = false;
         })
@@ -201,7 +203,7 @@ export default {
           this.detailLatestArchive = res.detailLatest.archives;
           this.detailLatestPageNum = res.detailLatest.page.num;
           this.detailLatestPageInfo = { ...res.detailLatest.page };
-          console.log(res);
+          // console.log(res);
           this.isLoadingPage = false;
         })
         .catch(e => {
@@ -212,7 +214,6 @@ export default {
       this.$emit('contentTouching');
     },
     navigateToMore(group) {
-      console.log(group);
       if (group.children.length > 0) {
         // 点击了热门推荐 跳转到rid的ranking页
         this.$router.push(`/rank/${group.rid}`);
@@ -310,6 +311,12 @@ export default {
 }
 
 .video-wrapper {
+  &.empty {
+    height: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
   margin-top: 0.4rem;
   width: 46%;
   // background-color: gold;

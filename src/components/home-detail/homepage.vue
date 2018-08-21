@@ -87,7 +87,7 @@ export default {
       const documentHeight = document.documentElement.scrollHeight;
       const bodyHeight = documentHeight - windowHeight;
       const scrollPercentage = scrollTop / bodyHeight;
-      console.log('scrollPercentage', scrollPercentage);
+      // console.log('scrollPercentage', scrollPercentage);
       if (scrollPercentage > SCROLLING_THRESHOLD && this.currentBatchIndex < MAX_BATCH_INDEX) {
         this.viewVideos = [
           ...this.viewVideos,

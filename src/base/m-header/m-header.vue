@@ -1,9 +1,9 @@
 <template>
   <header class="header">
     <!-- logo -->
-    <router-link to="/" tag="a" class="logo">
+    <a tag="a" class="logo" @click="navigateToHome">
       GiriGiri
-    </router-link>
+    </a>
     <!-- controls -->
     <div class="controls">
       <!-- 放大镜 -->
@@ -28,8 +28,20 @@
 </template>
 
 <script>
-export default {
+import { mapMutations } from 'vuex';
 
+export default {
+  methods: {
+    ...mapMutations({
+      setMainTabRid: 'SET_MAIN_TAB_RID',
+      setSubTabRid: 'SET_SUB_TAB_RID',
+    }),
+    navigateToHome() {
+      this.setMainTabRid(0);
+      this.setSubTabRid(0);
+      this.$router.push('/home/0');
+    }
+  }
 };
 </script>
 
