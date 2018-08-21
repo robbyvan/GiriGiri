@@ -37,9 +37,9 @@ export function getInitSubAll(mainTagRid) {
         { ...TABS[mainTagRid], name: '热门推荐' },
         ...childrenRids.map(childRid => TABS[childRid])
       ];
-      const data = res.map(r => r.data.slice(0, 4));
-      const result = data.map((item, index) => {
-        groups[index].data = item;
+      // data添加到group上
+      res.map((r, index) => {
+        groups[index].data = r.data;
       });
       return groups;
     });
@@ -75,12 +75,12 @@ export function getInitSubCategory(subTagRid) {
   const latestP = getSubTabLatestByPage(subTagRid, 1);
   return Promise.all([recommendP, latestP])
     .then(res => {
-      console.log(res);
-      const data = res.map(r => r.data);
+      // console.log(res);
+      // const data = res.map(r => r.data);
       const detailRecommends = res[0].data.slice(0, 4);
       const detailLatest = res[1].data;
-      console.log(detailRecommends);
-      console.log(detailLatest);
+      // console.log(detailRecommends);
+      // console.log(detailLatest);
       return { detailRecommends, detailLatest };
     });
 }

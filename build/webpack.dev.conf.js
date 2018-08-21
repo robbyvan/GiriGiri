@@ -99,6 +99,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           .catch(e => console.log(e));
       });
 
+      // ranking列表
+      apiRoutes.get('/api/rankingsByRid', (req, res) => {
+        console.log(req.query);
+        const url = 'https://api.bilibili.com/x/web-interface/ranking';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+      });
+
     },
 
     clientLogLevel: 'warning',

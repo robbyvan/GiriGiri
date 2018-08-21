@@ -11,5 +11,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import 'common/scss/const.scss';
 
 </style>

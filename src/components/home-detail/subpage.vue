@@ -25,11 +25,11 @@
                 <div class="video-dec">
                   <span class="desc-tab">
                     <i class="icon-watch" />
-                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                    <span class="video-play" v-text="_formatNumber(item.play)" />
                   </span>
                   <span class="desc-tab">
                     <i class="icon-align-left" />
-                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                    <span class="video-review" v-text="_formatNumber(item.video_review)" />
                   </span>
                 </div>
               </div>
@@ -62,11 +62,11 @@
                 <div class="video-dec">
                   <span class="desc-tab">
                     <i class="icon-watch" />
-                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                    <span class="video-play" v-text="_formatNumber(item.play)" />
                   </span>
                   <span class="desc-tab">
                     <i class="icon-align-left" />
-                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                    <span class="video-review" v-text="_formatNumber(item.video_review )" />
                   </span>
                 </div>
               </div>
@@ -95,11 +95,11 @@
                 <div class="video-dec">
                   <span class="desc-tab">
                     <i class="icon-watch" />
-                    <span class="video-play" v-text="_formatPlays(item.play)" />
+                    <span class="video-play" v-text="_formatNumber(item.play)" />
                   </span>
                   <span class="desc-tab">
                     <i class="icon-align-left" />
-                    <span class="video-review" v-text="_formatPlays(item.video_review )" />
+                    <span class="video-review" v-text="_formatNumber(item.video_review )" />
                   </span>
                 </div>
               </div>
@@ -170,12 +170,12 @@ export default {
       setMainTabRid: 'SET_MAIN_TAB_RID',
       setSubTabRid: 'SET_SUB_TAB_RID',
     }),
-    _formatPlays(plays) {
-      plays = Number(plays);
-      if (plays < 10000) {
-        return `${plays}`;
+    _formatNumber(num) {
+      num = Number(num);
+      if (num < 10000) {
+        return `${num}`;
       }
-      return `${(plays / 10000).toFixed(1)}万`;
+      return `${(num / 10000).toFixed(1)}万`;
     },
     _getGroupVideos(group) {
       return this.sectionVideos[group];
@@ -184,6 +184,7 @@ export default {
       this.isLoadingPage = true;
       getInitSubAll(this.mainTabRid)
         .then(res => {
+          console.log(res);
           this.sectionGroups = res;
           this.isLoadingPage = false;
         })
@@ -213,7 +214,8 @@ export default {
     navigateToMore(group) {
       console.log(group);
       if (group.children.length > 0) {
-        // 点击了热门推荐 跳转到ranking页
+        // 点击了热门推荐 跳转到rid的ranking页
+        this.$router.push(`/rank/${group.rid}`);
       } else {
         this.setSubTabRid(group.rid);
         this.$router.push(`/home/${group.rid}`);
@@ -225,7 +227,7 @@ export default {
       }
       const hasMore = (this.detailLatestPageNum * this.detailLatestPageInfo.size) < this.detailLatestPageInfo.count;
       if (!hasMore) {
-         return;
+        return;
       }
       this.isLoadingMore = true;
       getSubTabLatestByPage(this.subTabRid, this.detailLatestPageNum + 1)
@@ -234,8 +236,8 @@ export default {
           this.detailLatestArchive = [...this.detailLatestArchive, ...detailLatest.archives];
           this.detailLatestPageNum = detailLatest.page.num;
           this.isLoadingMore = false;
-        }).
-        catch(e => {
+        })
+        .catch(e => {
           this.isLoadingMore = false;
         });
     }

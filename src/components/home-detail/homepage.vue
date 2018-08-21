@@ -9,8 +9,8 @@
           <!-- 信息 -->
           <div class="video-dec">
             <span class="video-duration">{{ item.duration }}</span>
-            <span class="video-play" v-text="_formatPlays(item.play)"></span>
-            <span class="video-review">{{ item.video_review }}弹幕</span>
+            <span class="video-play" v-text="_formatNumber(item.play)"></span>
+            <span class="video-review">{{ _formatNumber(item.video_review) }}弹幕</span>
           </div>
         </div>
         <!-- 视频title -->
@@ -72,13 +72,13 @@ export default {
           this.isLoadingPage = false;
         });
     },
-    _formatPlays(plays) {
-      plays = Number(plays);
-      if (plays < 10000) {
-        return `${plays}观看`;
+    _formatNumber(num) {
+      num = Number(num);
+      if (num < 10000) {
+        return `${num}观看`;
       }
 
-      return `${(plays / 10000).toFixed(1)}万观看`;
+      return `${(num / 10000).toFixed(1)}万观看`;
     },
     _handleScroll() {
       const rect = this.$refs.homepage.getBoundingClientRect();
