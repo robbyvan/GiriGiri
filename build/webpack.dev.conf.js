@@ -57,7 +57,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
       // 二级3天推荐
       apiRoutes.get('/api/subTab3dRecommend', (req, res) => {
-        console.log(req.query);
         const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
         axios.get(url, {
           headers: {
@@ -72,7 +71,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
       // 二级7天推荐
       apiRoutes.get('/api/subTab7dRecommend', (req, res) => {
-        console.log(req.query);
         const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
         axios.get(url, {
           headers: {
@@ -86,7 +84,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
       // 按页查询最新
       apiRoutes.get('/api/subTabLatestByPage', (req, res) => {
-        console.log(req.query);
         const url = 'https://api.bilibili.com/archive_rank/getarchiverankbypartion';
         axios.get(url, {
           headers: {
@@ -101,7 +98,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
       // ranking列表
       apiRoutes.get('/api/rankingsByRid', (req, res) => {
-        console.log(req.query);
         const url = 'https://api.bilibili.com/x/web-interface/ranking';
         axios.get(url, {
           headers: {
