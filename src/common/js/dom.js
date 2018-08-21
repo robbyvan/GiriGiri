@@ -24,3 +24,11 @@ export function prefixStyle(style) {
   }
   return vendor + style.charAt(0).toUpperCase() + style.substr(1);
 }
+
+export function scrollToTopSmoothly() {
+  let currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+  if (currentScroll > 0) {
+    window.requestAnimationFrame(scrollToTopSmoothly);
+    window.scrollTo(0, currentScroll - (currentScroll / 8));
+  }
+}

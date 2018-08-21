@@ -1,6 +1,6 @@
 <template>
   <transition name="slide">
-    <div class="rank">
+    <div class="rank" ref="rank">
       <!-- header -->
       <header class="rank-header">
         <div class="title">
@@ -21,26 +21,37 @@
       <div class="rank-content">
         <video-list :videos="videos" />
       </div>
+      <!-- 返回顶部 -->
+      <div class="gotop" v-show="showGoTopButton">
+        <gotop-button @goTop="scrollToTop" />
+      </div>
     </div>
   </transition>
 </template>
 
 <script>
+import debounce from 'lodash/debounce';
 import SliderNav from 'base/slider-nav/slider-nav';
 import VideoList from 'base/video-list/video-list';
+import GotopButton from 'base/gotop-button/gotop-button';
 import { TABS, RANK_TABS } from 'api/config';
 import { getRankingsByRid } from 'api/rank';
+import { scrollToTopSmoothly } from 'common/js/dom';
+
+const SCROLLING_THRESHOLD = 0.12;
 
 export default {
   components: {
     SliderNav,
-    VideoList
+    VideoList,
+    GotopButton
   },
   data() {
     return {
       isLoadingRankList: false,
       selectedMainTabRid: 0,
       videos: [],
+      showGoTopButton: false,
     };
   },
   computed: {
@@ -59,6 +70,7 @@ export default {
     }
   },
   created() {
+    //
     if (this.$route.params.rid) {
       // 路由而来
       let rid = Number(this.$route.params.rid);
@@ -84,10 +96,22 @@ export default {
       this.selectedMainTabRid = 1;
     }
     this._getRankingsByRid();
+    // 定义滚动回调
+    this.debounceFunc = debounce(this._handleScroll, 200);
+  },
+  mounted() {
+    // 观察滚动距离
+    window.addEventListener('scroll', this.debounceFunc, false);
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.debounceFunc, false);
   },
   methods: {
     goBack() {
       this.$router.back();
+    },
+    scrollToTop() {
+      scrollToTopSmoothly();
     },
     selectTab(tab) {
       // 切换路由
@@ -101,12 +125,28 @@ export default {
       this.isLoadingRankList = true;
       getRankingsByRid(this.selectedMainTabRid)
         .then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code === 0) {
             this.videos = res.data.list;
           }
           this.isLoadingRankList = false;
         });
+    },
+    _handleScroll() {
+      const rect = this.$refs.rank.getBoundingClientRect();
+      const scrollTop = 0 - rect.top;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const bodyHeight = documentHeight - windowHeight;
+      const scrollPercentage = scrollTop / bodyHeight;
+      // console.log('scrollPercentage', scrollPercentage);
+      if (scrollPercentage > SCROLLING_THRESHOLD) {
+        // console.log('show goTop');
+        this.showGoTopButton = true;
+      } else {
+        // console.log('hide goTop');
+        this.showGoTopButton = false;
+      }
     }
   }
 };
@@ -164,5 +204,11 @@ export default {
     overflow: hidden;
     // height: 100%;
   }
+}
+
+.gotop {
+  position: fixed;
+  right: 1rem;
+  bottom: 2rem;
 }
 </style>
