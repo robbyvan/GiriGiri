@@ -57,6 +57,14 @@
     </div>
 
     <div class="below-video" ref="belowVideo">
+      <!-- 分P -->
+      <div class="video-pages">
+        <slider-video-pages
+          :pages="videoPages"
+          :currentPageNum="currentPageNum"
+          @selectPage="selectPage"
+        />
+      </div>
       <!-- 推荐 -->
       <div class="video-recommend">
         <video-list
@@ -84,6 +92,7 @@ import moment from 'moment';
 import MHeader from 'base/m-header/m-header';
 import VideoList from 'base/video-list/video-list';
 import VideoPathNav from 'base/video-path-nav/video-path-nav';
+import SliderVideoPages from 'base/slider-video-pages/slider-video-pages';
 import { loadVideoScreenData } from 'api/video';
 import { prefixStyle } from 'common/js/dom';
 
@@ -94,6 +103,7 @@ export default {
     MHeader,
     VideoList,
     VideoPathNav,
+    SliderVideoPages
   },
   data() {
     return {
@@ -103,6 +113,7 @@ export default {
       videoViewInfo: {}, // pic, title | owner, stat{}, pubdate | copyright, desc | tid aid
       tags: [], // data[]
       videoPages: [], // pages[]
+      currentPageNum: 1,
       recommendVideos: [], // data.slice(0, 20)
       replies: [] // data.replies.slice(0, 5)
     };
@@ -125,6 +136,7 @@ export default {
           this.playUrlInfo = res.playUrlInfo;
           this.tags = res.tags;
           this.recommendVideos = res.recommendVideos;
+          this.videoPages = res.videoPages;
           this.dataLoaded = true;
         });
     },
@@ -149,6 +161,10 @@ export default {
       } else {
         this.$refs.belowVideo.style[transform] = 'translate3d(0, -6.2rem, 0)';
       }
+    },
+    selectPage(page) {
+      this.currentPageNum = page.page;
+      // 重新获取视频源
     }
   }
 };
@@ -313,6 +329,7 @@ export default {
 
 .below-video {
   position: relative;
+  padding-top: 0.4rem;
   background-color: $color-background;
   transform: translate3d(0, -6.2rem, 0);
 }

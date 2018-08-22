@@ -26,7 +26,8 @@ export function loadVideoScreenData(aid) {
       };
       const tags = res[2].data.data;
       const recommendVideos = res[3].data.data;
-      return { playUrlInfo, videoViewInfo, tags, recommendVideos };
+      const videoPages = res[1].data.data.pages;
+      return { playUrlInfo, videoViewInfo, tags, recommendVideos, videoPages };
     });
 }
 
