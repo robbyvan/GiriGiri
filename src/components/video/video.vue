@@ -68,7 +68,7 @@
       <!-- 推荐 -->
       <div class="video-recommend">
         <video-list
-          :videos="recommendVideos"
+          :videos="recommendVideosPassToVideolist"
           v-show="true"
           :rank="false"
         />
@@ -121,6 +121,17 @@ export default {
   computed: {
     videoInfoToggleButtonStyle() {
       return this.showDetailedInfo ? 'icon-chevron-up' : 'icon-chevron-down';
+    },
+    recommendVideosPassToVideolist() {
+      return this.recommendVideos.map(item => ({
+        aid: item.aid,
+        cid: item.cid,
+        pic: item.pic,
+        title: item.title,
+        author: item.owner.name,
+        play: item.stat.view,
+        video_review: item.stat.danmaku,
+      }));
     }
   },
   created() {
