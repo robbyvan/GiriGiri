@@ -165,6 +165,12 @@ export default {
   left: 0;
   width: 100%;
   background-color: lavender;
+  .video-header {
+    position: absolute;
+    background-color: $color-background;
+    top: 0;
+    z-index: 98;
+  }
 }
 
 .content-start-line {
@@ -177,6 +183,7 @@ export default {
   width: 100%;
   height: 8.4rem;
   background-color: coral;
+  z-index: 99;
 }
 
 .open-app-btn {
