@@ -20,7 +20,7 @@
       <!-- 正文 -->
       <div class="rank-content">
         <!-- 列表 -->
-        <video-list :videos="videos" v-show="!isLoadingRankList" />
+        <video-list :videos="videos" v-show="!isLoadingRankList" :rank="true" />
         <!-- loading -->
         <loading-rank v-show="isLoadingRankList" />
       </div>

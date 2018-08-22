@@ -110,6 +110,132 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           .catch(e => console.log(e));
       });
 
+      // 获取视频相关信息: 播放相关地址
+      apiRoutes.get('/api/video_url', (req, res) => {
+        // 模拟获取视频地址
+        const url = 'https://api.bilibili.com/x/web-interface/ranking';
+        const fakeResponse = {
+          from: "local",
+          result: "suee",
+          quality: 6,
+          format: "mp4",
+          timelength: 573600,
+          accept_format: "mp4",
+          accept_quality: [
+            6
+          ],
+          video_codecid: 7,
+          video_project: false,
+          seek_param: "start",
+          seek_type: "second",
+          durl: [
+            {
+              order: 1,
+              length: 909300,
+              size: 27840724,
+              url: "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
+            }
+          ],
+          img: "https://i1.hdslb.com/bfs/archive/37cc39abd87a8ca3730740d4ccdc0d66573e08be.jpg",
+          cid: "https://comment.bilibili.com/50403051.xml",
+          fromview: "vupload"
+        };
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query
+        })
+          .then(response => res.json(fakeResponse))
+          .catch(e => console.log(e));
+        // const url = 'https://api.bilibili.com/playurl';
+        // // 三方api
+        // console.log(req.query);
+        // axios.get(url, {
+        //   headers: {
+        //     referer: 'https://m.bilibili.com/index.html/',
+        //     host: 'api.bilibili.com'
+        //   },
+        //   params: req.query,
+        // })
+        // .then(response => res.json(response.data))
+        // .catch(e => console.log(e));
+      });
+
+      // 获取view信息: 分集 描述
+      apiRoutes.get('/api/video_view', (req, res) => {
+        const url = 'https://api.bilibili.com/x/web-interface/view';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query,
+        })
+        .then(response => res.json(response.data))
+        .catch(e => console.log(e));
+      });
+
+      // 获取视频tags
+      apiRoutes.get('/api/video_tags', (req, res) => {
+        const url = 'https://api.bilibili.com/x/tag/archive/tags';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query,
+        })
+        .then(response => res.json(response.data))
+        .catch(e => console.log(e));
+      });
+
+      // 获取推荐
+      apiRoutes.get('/api/video_recommendnew', (req, res) => {
+        const url = `https://comment.bilibili.com/recommendnew,${req.query.aid}`;
+        // console.log(url);
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            // host: 'api.bilibili.com' // 不能加host
+          },
+          // params: req.query,
+        })
+        .then(response => {
+          return res.json(response.data)
+        })
+        .catch(e => console.log(e));
+      });
+
+      // 获取评论
+      apiRoutes.get('/api/video_tags', (req, res) => {
+        const url = 'https://api.bilibili.com/x/v2/reply';
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          params: req.query,
+        })
+        .then(response => res.json(response.data))
+        .catch(e => console.log(e));
+      });
+
+      // 获取弹幕: xml
+      apiRoutes.get('/api/video_danmu', (req, res) => {
+        const url = `https://comment.bilibili.com/${req.query.aid}.xml`;
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com'
+          },
+          // params: req.query,
+        })
+        .then(response => res) // 返回xml
+        .catch(e => console.log(e));
+      });
+
     },
 
     clientLogLevel: 'warning',

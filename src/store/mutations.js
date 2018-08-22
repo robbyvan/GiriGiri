@@ -6,6 +6,12 @@ const mutations = {
   },
   [types.SET_SUB_TAB_RID](state, tab) {
     state.subTabRid = tab;
+  },
+  [types.SET_VIDEO_AID](state, aid) {
+    state.videoAid = aid;
+  },
+  [types.SET_CURRENT_VIDEO_PAGE](state, pn) {
+    state.currentVideoPage = pn;
   }
 };
 

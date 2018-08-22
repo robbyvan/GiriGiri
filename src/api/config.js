@@ -19,7 +19,7 @@ export const TABS = {
   },
   4: {
     name: '游戏',
-    children: [172, 65, 173, 121, 136, 19],
+    children: [17, 171, 172, 65, 173, 121, 136, 19],
     rid: 4,
     parent: 4
   },
@@ -40,6 +40,12 @@ export const TABS = {
     children: [33, 32, 51, 152],
     rid: 13,
     parent: 13
+  },
+  17: {
+    name: '单机游戏',
+    children: [],
+    rid: 17,
+    parent: 4
   },
   19: {
     name: 'Mugen',
@@ -430,6 +436,12 @@ export const TABS = {
     children: [],
     rid: 170,
     parent: 167
+  },
+  171: {
+    name: '电子竞技',
+    children: [],
+    rid: 171,
+    parent: 4
   },
   172: {
     name: '手机游戏',

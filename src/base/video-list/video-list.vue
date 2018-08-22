@@ -6,7 +6,7 @@
       :key="video.aid"
     >
       <!-- 排名 -->
-      <div class="rank">
+      <div class="rank" v-show="rank">
         <span
           :class="getRankingClass(index)"
           v-text="getRankingText(index)">
@@ -42,7 +42,7 @@
 export default {
   props: {
     videos: { type: Array, default: () => [] },
-    rank: { type: Boolean, default: true } // 排行奖杯图片
+    rank: { type: Boolean, default: false } // 排行奖杯图片
   },
   methods: {
     _formatNumber(num) {

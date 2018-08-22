@@ -16,6 +16,7 @@
     "fastclick": "^1.0.6",
     "jsonp": "^0.2.1",
     "lodash": "^4.17.10",
+    "moment": "^2.22.2",
     "node-sass": "^4.9.3",
     "querystring": "^0.2.0",
     "sass-loader": "^7.1.0",
