@@ -209,7 +209,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
 
       // 获取评论
-      apiRoutes.get('/api/video_tags', (req, res) => {
+      apiRoutes.get('/api/video_reply', (req, res) => {
         const url = 'https://api.bilibili.com/x/v2/reply';
         axios.get(url, {
           headers: {

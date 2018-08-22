@@ -1,8 +1,13 @@
 <template>
-  <div class="video">
+  <div class="video" ref="video">
     <!-- 顶部导航 -->
     <div class="video-header">
       <m-header></m-header>
+    </div>
+
+    <!-- 返回顶部 -->
+    <div class="gotop" v-show="showGoTopButton">
+      <gotop-button @goTop="scrollToTop" />
     </div>
 
     <!-- 播放器 -->
@@ -57,43 +62,62 @@
     </div>
 
     <div class="below-video" ref="belowVideo">
+      <!-- 分P -->
+      <div class="video-pages">
+        <slider-video-pages
+          :pages="videoPages"
+          :currentPageNum="currentPageNum"
+          @selectPage="selectPage"
+        />
+      </div>
       <!-- 推荐 -->
       <div class="video-recommend">
         <video-list
-          :videos="recommendVideos"
+          :videos="recommendVideosPassToVideolist"
           v-show="true"
           :rank="false"
         />
       </div>
 
       <!-- 评论 -->
-      <div class="video-comment">
-
+      <div class="video-comment" v-show="haveRepliesLoaded">
+        <comment-list :comments="replies" :totalRepliesCount="totalRepliesCount" />
       </div>
+
       <!-- footer -->
-      <div class="video-footer">
-
+      <div class="video-footer" ref="footer">
+        <m-footer />
       </div>
-      Video works!
     </div>
   </div>
 </template>
 
 <script>
 import moment from 'moment';
+import debounce from 'lodash/debounce';
 import MHeader from 'base/m-header/m-header';
 import VideoList from 'base/video-list/video-list';
 import VideoPathNav from 'base/video-path-nav/video-path-nav';
-import { loadVideoScreenData } from 'api/video';
-import { prefixStyle } from 'common/js/dom';
+import SliderVideoPages from 'base/slider-video-pages/slider-video-pages';
+import CommentList from 'base/comment-list/comment-list';
+import GotopButton from 'base/gotop-button/gotop-button';
+import MFooter from 'base/m-footer/m-footer';
+import { loadVideoScreenData, getVideoReplies } from 'api/video';
+import { prefixStyle, scrollToTopSmoothly } from 'common/js/dom';
 
 const transform = prefixStyle('transform');
+const SCROLLING_THRESHOLD = 0.1;
+const GO_TOP_THRESHOLD = 0.2;
 
 export default {
   components: {
     MHeader,
     VideoList,
     VideoPathNav,
+    SliderVideoPages,
+    CommentList,
+    GotopButton,
+    MFooter
   },
   data() {
     return {
@@ -103,30 +127,83 @@ export default {
       videoViewInfo: {}, // pic, title | owner, stat{}, pubdate | copyright, desc | tid aid
       tags: [], // data[]
       videoPages: [], // pages[]
+      currentPageNum: 1,
       recommendVideos: [], // data.slice(0, 20)
-      replies: [] // data.replies.slice(0, 5)
+      haveRepliesLoaded: false,
+      replies: [], // data.replies.slice(0, 5)
+      totalRepliesCount: 0,
+      showGoTopButton: false,
     };
   },
   computed: {
     videoInfoToggleButtonStyle() {
       return this.showDetailedInfo ? 'icon-chevron-up' : 'icon-chevron-down';
+    },
+    recommendVideosPassToVideolist() {
+      return this.recommendVideos.map(item => ({
+        aid: item.aid,
+        cid: item.cid,
+        pic: item.pic,
+        title: item.title,
+        author: item.owner.name,
+        play: item.stat.view,
+        video_review: item.stat.danmaku,
+      }));
     }
   },
   created() {
     // fetch视频info & view & recommends, 评论滚动再加载
     this._loadVideoScreenData();
+    this.debounceFunc = debounce(this._handleScroll, 200);
+  },
+  mounted() {
+    // 滚动加载评论
+    window.addEventListener('scroll', this.debounceFunc, false);
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.debounceFunc, false);
   },
   methods: {
     _loadVideoScreenData() {
       loadVideoScreenData('29053024')
         .then(res => {
-          console.log(res);
+          // console.log(res);
           this.videoViewInfo = res.videoViewInfo;
           this.playUrlInfo = res.playUrlInfo;
           this.tags = res.tags;
-          this.recommendVideos = res.recommendVideos;
+          this.recommendVideos = res.recommendVideos.slice(0, 20); // 只要20;
+          this.videoPages = res.videoPages;
           this.dataLoaded = true;
         });
+    },
+    scrollToTop() {
+      scrollToTopSmoothly();
+    },
+    _handleScroll() {
+      const rect = this.$refs.video.getBoundingClientRect();
+      const scrollTop = 0 - rect.top;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const bodyHeight = documentHeight - windowHeight;
+      const scrollPercentage = scrollTop / bodyHeight;
+      // console.log('scrollPercentage', scrollPercentage);
+      // 评论threshold
+      if (scrollPercentage > SCROLLING_THRESHOLD && !this.haveRepliesLoaded) {
+        // 加载评论
+        getVideoReplies('29053024', 1)
+          .then(res => {
+            // console.log(res.data);
+            this.totalRepliesCount = res.data.data.page.count;
+            this.replies = res.data.data.replies.slice(0, 5); // 不超过5条
+            this.haveRepliesLoaded = true;
+          });
+      }
+      // goTop theshold
+      if (scrollPercentage > GO_TOP_THRESHOLD) {
+        this.showGoTopButton = true;
+      } else {
+        this.showGoTopButton = false;
+      }
     },
     _formatDate(ts) {
       return moment.unix(ts).format('M-D');
@@ -146,10 +223,16 @@ export default {
       this.$refs.belowVideo.style.transition = 'all 0.4s';
       if (this.showDetailedInfo) {
         this.$refs.belowVideo.style[transform] = 'translate3d(0, 0, 0)';
+        // this.$refs.footer.style[transform] = 'translate3d(0, 0, 0)';
       } else {
         this.$refs.belowVideo.style[transform] = 'translate3d(0, -6.2rem, 0)';
+        // this.$refs.footer.style[transform] = 'translate3d(0, -6.2rem, 0)';
       }
-    }
+    },
+    selectPage(page) {
+      this.currentPageNum = page.page;
+      // 重新获取视频源
+    },
   }
 };
 </script>
@@ -159,12 +242,26 @@ export default {
 @import 'common/scss/mixins.scss';
 
 .video {
-  position: absolute;
+  position: relative;
   top: 0;
   // bottom: 0;
   left: 0;
   width: 100%;
   background-color: lavender;
+  .video-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: $color-background;
+    height: 2rem;
+    z-index: 98;
+  }
+  .gotop {
+    position: fixed;
+    right: 1rem;
+    bottom: 2rem;
+    z-index: 100;
+  }
 }
 
 .content-start-line {
@@ -177,6 +274,7 @@ export default {
   width: 100%;
   height: 8.4rem;
   background-color: coral;
+  z-index: 99;
 }
 
 .open-app-btn {
@@ -196,7 +294,7 @@ export default {
 }
 
 .video-info {
-  display: relative;
+  position: relative;
   // background-color: white;
   padding: 0 0.5rem;
   border-bottom: 0.03rem solid $color-background-m;
@@ -305,8 +403,26 @@ export default {
 }
 
 .below-video {
-  position: relative;
+  position: absolute;
+  width: 100%;
+  padding-top: 0.4rem;
   background-color: $color-background;
   transform: translate3d(0, -6.2rem, 0);
+}
+
+.video-pages {
+  padding: 0 0.5rem;
+}
+
+.video-recommend {
+  padding: 0 0.5rem;
+}
+
+.video-comment {
+  padding: 1.5rem 0.5rem 0 0.5rem;
+}
+
+.video-footer {
+
 }
 </style>
