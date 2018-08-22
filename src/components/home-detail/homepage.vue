@@ -3,7 +3,7 @@
     <div class="page-content-start-line" ref="contentStartLine"></div>
     <div class="page-content-detail" v-show="!isLoadingPage" @touchstart="onTouchStart">
       <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
-        <div class="video-cover-wrapper">
+        <div class="video-cover-wrapper" @click.stop="selectVideo(item)">
           <!-- 封面 -->
           <img class="video-cover"  v-lazy="item.pic" alt="cover" />
           <!-- 信息 -->
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import debounce from 'lodash/debounce';
 import LoadingIndex from 'base/loading/loading-index';
 import { getHomepageVideos } from 'api/homepage';
@@ -57,6 +58,7 @@ export default {
     window.removeEventListener('scroll', this.debounceFunc, false);
   },
   methods: {
+    ...mapActions(['selectVideoPlay']),
     _getVideos() {
       this.isLoadingPage = true;
       getHomepageVideos()
@@ -101,6 +103,13 @@ export default {
     },
     onTouchStart() {
       this.$emit('contentTouching');
+    },
+    selectVideo(item) {
+      this.selectVideoPlay({
+        aid: item.aid,
+        pageNum: 1,
+      });
+      this.$router.push(`/video/av${item.aid}`);
     }
   }
 };

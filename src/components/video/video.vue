@@ -31,42 +31,45 @@
         <button @click="toggleVideoInfoPanel"><i :class="videoInfoToggleButtonStyle" /></button>
       </div>
 
-      <p class="basic-info">
+      <p class="basic-info" ref="basicInfo">
         <span class="video-info-author">{{ videoViewInfo.owner.name }}</span>
         <span class="video-info-plays">{{ _formatNumber(videoViewInfo.stat.view) }}次观看</span>
         <span class="video-info-danmu">{{ _formatNumber(videoViewInfo.stat.danmaku) }}弹幕</span>
         <span class="video-info-pubTime">{{ _formatDate(videoViewInfo.pubdate) }}</span>
       </p>
 
-      <div class="detailed-info">
-        <p class="detailed-info-copyright"><i class="icon-award" />未经作者授权禁止转载</p>
-        <p class="detailed-info-desc">{{ videoViewInfo.desc }}</p>
-        <video-path-nav
-          :cid="videoViewInfo.tid"
-          :aid="videoViewInfo.aid"
-          @navigateTo="handlePathNavClick"
-        />
-        <div class="video-tags">
-          <button class="tag-item" v-for="item in tags" :key="item.tag_id">{{ item.tag_name }}</button>
-          <button class="tag-item"></button>
-          <button class="tag-item"></button>
-          <button class="tag-item"></button>
-          <button class="tag-item"></button>
-        </div>
-        <div class="video-socials">
-          <button class="favorite"><i class="icon-heart" />收藏</button>
-          <button class="favorite"><i class="icon-download" />缓存</button>
-          <button class="favorite"><i class="icon-share-2" />分享</button>
+      <div class="detailed-inso-start-line">
+        <div class="detailed-info" ref="detailedInfo">
+          <p class="detailed-info-copyright"><i class="icon-award" />未经作者授权禁止转载</p>
+          <p class="detailed-info-desc">{{ videoViewInfo.desc }}</p>
+          <video-path-nav
+            :cid="videoViewInfo.tid"
+            :aid="videoViewInfo.aid"
+            @navigateTo="handlePathNavClick"
+          />
+          <div class="video-tags">
+            <button class="tag-item" v-for="item in tags" :key="item.tag_id">{{ item.tag_name }}</button>
+            <button class="tag-item"></button>
+            <button class="tag-item"></button>
+            <button class="tag-item"></button>
+            <button class="tag-item"></button>
+          </div>
+          <div class="video-socials">
+            <button class="favorite"><i class="icon-heart" />收藏</button>
+            <button class="favorite"><i class="icon-download" />缓存</button>
+            <button class="favorite"><i class="icon-share-2" />分享</button>
+          </div>
         </div>
       </div>
+
     </div>
 
     <div class="below-video" ref="belowVideo">
       <!-- 分P -->
-      <div class="video-pages">
+      <div class="video-pages" v-show="videoPages.length > 1">
         <slider-video-pages
           :pages="videoPages"
-          :currentPageNum="currentPageNum"
+          :currentPageNum="currentVideoPage"
           @selectPage="selectPage"
         />
       </div>
@@ -93,6 +96,7 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import moment from 'moment';
 import debounce from 'lodash/debounce';
 import MHeader from 'base/m-header/m-header';
@@ -127,7 +131,6 @@ export default {
       videoViewInfo: {}, // pic, title | owner, stat{}, pubdate | copyright, desc | tid aid
       tags: [], // data[]
       videoPages: [], // pages[]
-      currentPageNum: 1,
       recommendVideos: [], // data.slice(0, 20)
       haveRepliesLoaded: false,
       replies: [], // data.replies.slice(0, 5)
@@ -136,6 +139,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'videoAid',
+      'currentVideoPage'
+    ]),
     videoInfoToggleButtonStyle() {
       return this.showDetailedInfo ? 'icon-chevron-up' : 'icon-chevron-down';
     },
@@ -151,6 +158,11 @@ export default {
       }));
     }
   },
+  watch: {
+    dataLoaded() {
+      setTimeout(() => this.syncVideoInfoPanel(), 20);
+    }
+  },
   created() {
     // fetch视频info & view & recommends, 评论滚动再加载
     this._loadVideoScreenData();
@@ -164,8 +176,17 @@ export default {
     window.removeEventListener('scroll', this.debounceFunc, false);
   },
   methods: {
+    ...mapMutations({
+      setCurrentVideoPage: 'SET_CURRENT_VIDEO_PAGE',
+    }),
+    ...mapActions(['selectVideoPlay']),
+    // calculateStartY() {
+    //   const rect = this.$refs.basicInfo.getBoundingClientRect();
+    //   const top = rect.top;
+    //   const bottom = rect.bottom;
+    // },
     _loadVideoScreenData() {
-      loadVideoScreenData('29053024')
+      loadVideoScreenData(this.videoAid)
         .then(res => {
           // console.log(res);
           this.videoViewInfo = res.videoViewInfo;
@@ -186,11 +207,11 @@ export default {
       const documentHeight = document.documentElement.scrollHeight;
       const bodyHeight = documentHeight - windowHeight;
       const scrollPercentage = scrollTop / bodyHeight;
-      // console.log('scrollPercentage', scrollPercentage);
+      console.log('scrollPercentage', scrollPercentage);
       // 评论threshold
       if (scrollPercentage > SCROLLING_THRESHOLD && !this.haveRepliesLoaded) {
         // 加载评论
-        getVideoReplies('29053024', 1)
+        getVideoReplies(this.videoAid, this.currentPageNum)
           .then(res => {
             // console.log(res.data);
             this.totalRepliesCount = res.data.data.page.count;
@@ -218,19 +239,26 @@ export default {
     handlePathNavClick(rid) {
       console.log(rid);
     },
+    _calculateDetailInfoOffsetHeight() {
+      const diRect = this.$refs.detailedInfo.getBoundingClientRect();
+      // console.log(diRect.top - diRect.bottom, '!');
+      return diRect.bottom - diRect.top;
+    },
     toggleVideoInfoPanel() {
       this.showDetailedInfo = !this.showDetailedInfo;
+      this.syncVideoInfoPanel();
+    },
+    syncVideoInfoPanel() {
       this.$refs.belowVideo.style.transition = 'all 0.4s';
-      if (this.showDetailedInfo) {
+      const offsetHeight = this._calculateDetailInfoOffsetHeight();
+      if (!this.showDetailedInfo) {
         this.$refs.belowVideo.style[transform] = 'translate3d(0, 0, 0)';
-        // this.$refs.footer.style[transform] = 'translate3d(0, 0, 0)';
       } else {
-        this.$refs.belowVideo.style[transform] = 'translate3d(0, -6.2rem, 0)';
-        // this.$refs.footer.style[transform] = 'translate3d(0, -6.2rem, 0)';
+        this.$refs.belowVideo.style[transform] = `translate3d(0, ${offsetHeight}px, 0)`;
       }
     },
     selectPage(page) {
-      this.currentPageNum = page.page;
+      this.setCurrentVideoPage(page.page);
       // 重新获取视频源
     },
   }
@@ -242,7 +270,7 @@ export default {
 @import 'common/scss/mixins.scss';
 
 .video {
-  position: relative;
+  position: absolute;
   top: 0;
   // bottom: 0;
   left: 0;
@@ -278,13 +306,16 @@ export default {
 }
 
 .open-app-btn {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem 0.5rem;
-  // background-color: lightcyan;
+  // padding: 0.5rem 0.5rem;
+  // z-index: 2;
+  height: 2.4rem;
+  background-color: $color-background;
   button {
-    height: 1.4rem;
+    height: 1.6rem;
     width: 100%;
     border-radius: 2rem;
     font-size: $font-size-medium;
@@ -295,9 +326,10 @@ export default {
 
 .video-info {
   position: relative;
-  // background-color: white;
+  // height: 3.4rem;
+  background-color: transparent;
+  // background-color: pink;
   padding: 0 0.5rem;
-  border-bottom: 0.03rem solid $color-background-m;
   .title-wrapper {
     display: flex;
     width: 100%;
@@ -312,17 +344,15 @@ export default {
     }
     button {
       flex: 1;
-      height: 100%;
       background-color: transparent;
       color: $color-text-gray;
+      align-self: flex-start;
       display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-end;
+      justify-content: center;
     }
   }
   .mini-title-wrapper {
-    height: 1rem;
+    // height: 1rem;
     white-space: nowrap;
     h2 {
       overflow: hidden;
@@ -330,14 +360,14 @@ export default {
     }
   }
   .full-title-wrapper {
-    height: 2rem;
+    // height: 2rem;
   }
   .basic-info {
     color: $color-text-gray;
     font-size: $font-size-small-s;
     display: flex;
     align-items: center;
-    margin-bottom: 0.5rem;
+    // margin-bottom: 0.5rem;
     .video-info-author {
       color: $color-text;
       padding-right: 0.5rem;
@@ -346,39 +376,51 @@ export default {
       margin-right: 0.5rem;
     }
   }
+}
 
-  .detailed-info {
-    height: 6rem;
-    // background-color: gold;
-    p {
-      color: $color-text-gray;
-      font-size: $font-size-small-s;
-      margin-bottom: 0.5rem;
-    }
-    .icon-award {
-      color: $color-theme;
-    }
+.detailed-inso-start-line {
+  position: relative;
+}
+
+.detailed-info {
+  // height: 6rem;
+  position: absolute;
+  width: 100%;
+  top: 0.5rem;
+  left: 0;
+  // background-color: lavender;
+  border-bottom: 0.03rem solid $color-background-m;
+  // background-color: lightcyan;
+  p {
+    color: $color-text-gray;
+    font-size: $font-size-small-s;
+    margin-bottom: 0.5rem;
+    line-height: 0.7rem;
   }
-  .video-tags {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    overflow: hidden;
-    .tag-item {
-      height: 1.2rem;
-      width: 3rem;
-      font-size: $font-size-small-s;
-      background-color: $color-border-gray;
-      border: 1px solid $color-border-gray;
-      border-radius: 2rem;
-      margin-bottom: 0.5rem;
-      &:empty {
-        height: 0;
-        margin: 0;
-        padding: 0;
-        border: none;
-      }
+  .icon-award {
+    color: $color-theme;
+  }
+}
+.video-tags {
+  display: flex;
+  padding: 0 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  overflow: hidden;
+  .tag-item {
+    height: 1.2rem;
+    width: 3rem;
+    font-size: $font-size-small-s;
+    background-color: $color-border-gray;
+    border: 1px solid $color-border-gray;
+    border-radius: 2rem;
+    margin-bottom: 0.5rem;
+    &:empty {
+      height: 0;
+      margin: 0;
+      padding: 0;
+      border: none;
     }
   }
 }
@@ -386,6 +428,7 @@ export default {
 .video-socials {
   display: flex;
   align-items: center;
+  padding-bottom: 0.3rem;
   button {
     display: flex;
     justify-content: center;
@@ -403,11 +446,12 @@ export default {
 }
 
 .below-video {
-  position: absolute;
+  // position: absolute;
   width: 100%;
-  padding-top: 0.4rem;
+  // padding-top: 0.4rem;
   background-color: $color-background;
-  transform: translate3d(0, -6.2rem, 0);
+  z-index: 1;
+  // transform: translate3d(0, 0, 0);
 }
 
 .video-pages {

@@ -1,7 +1,7 @@
 const state = {
   mainTabRid: 0,
   subTabRid: 0,
-  videoAid: '',
+  videoAid: '29365735',
   currentVideoPage: 1,
 };
 

@@ -22,7 +22,7 @@ export default {
     window.addEventListener('resize', this.throttleFunc);
   },
   beforeDestroy() {
-     window.removeEventListener('resize', this.throttleFunc);
+    window.removeEventListener('resize', this.throttleFunc);
   },
   methods: {
     _adjustBaseFontSize() {
