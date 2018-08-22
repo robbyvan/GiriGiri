@@ -13,14 +13,24 @@ const MAX_WIDTH = 1095;
 
 export default {
   name: 'App',
+  created() {
+    this.throttleFunc = throttle(this._adjustBaseFontSize, 200);
+  },
   mounted() {
     // 响应式字体
-    window.addEventListener('resize', throttle(() => {
+    this._adjustBaseFontSize();
+    window.addEventListener('resize', this.throttleFunc);
+  },
+  beforeDestroy() {
+     window.removeEventListener('resize', this.throttleFunc);
+  },
+  methods: {
+    _adjustBaseFontSize() {
       const currentWidth = document.documentElement.clientWidth;
       const ftSize = Math.max(Math.min((currentWidth / MAX_WIDTH) * MAX_FONT_SIZE, MAX_FONT_SIZE), MIN_FONT_SIZE);
       document.querySelector('html').style.fontSize = `${ftSize}px`;
-    }), 200);
-  },
+    }
+  }
 };
 </script>
 

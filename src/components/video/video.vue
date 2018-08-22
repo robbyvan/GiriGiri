@@ -247,7 +247,7 @@ export default {
   // bottom: 0;
   left: 0;
   width: 100%;
-  background-color: lavender;
+  // background-color: lavender;
   .video-header {
     position: fixed;
     top: 0;
