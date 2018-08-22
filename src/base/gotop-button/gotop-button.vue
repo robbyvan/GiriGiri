@@ -25,7 +25,7 @@ export default {
   overflow: hidden;
   border-radius: 50%;
   border: 1px solid $color-background;
-  background-color: $color-background;
+  background-color: $color-background-l;
   .icon {
     width: 100%;
     height: 100%;

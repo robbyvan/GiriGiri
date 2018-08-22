@@ -90,7 +90,7 @@ export default {
     width: 100%;
     height: 3.6rem;
     .rank {
-      flex: 10;
+      flex: 8;
       height: 100%;
       padding: 0 0.5rem;
       display: flex;
@@ -118,7 +118,7 @@ export default {
       }
     }
     .cover-wrapper {
-      flex: 40;
+      flex: 37;
       margin-right: 0.5rem;
       overflow: hidden;
       border-radius: 0.3rem;
@@ -130,7 +130,7 @@ export default {
       }
     }
     .info {
-      flex: 50;
+      flex: 55;
       margin-right: 0.5rem;
       display: flex;
       flex-direction: column;

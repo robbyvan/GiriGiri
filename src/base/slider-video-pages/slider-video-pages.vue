@@ -48,7 +48,7 @@ export default {
     height: 100%;
     width: 5.4rem;
     margin-right: 0.5rem;
-
+    padding: 0.2rem 0;
     border: 0.03rem solid $color-text-gray;
     border-radius: 5px;
     font-size: $font-size-small-s;
@@ -57,7 +57,7 @@ export default {
     .tab-item-text {
       height: 100%;
       padding: 0 0.3rem;
-      line-height: 0.9rem;
+      line-height: 0.7rem;
       overflow: hidden;
       white-space: normal;
       text-overflow: ellipsis;

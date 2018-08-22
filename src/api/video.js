@@ -69,13 +69,14 @@ export function getVideoRecommend(aid) {
 }
 
 // 获取评论
-export function getVideoReplies(aid, pageNum) {
+export function getVideoReplies(aid, pageNum = 1) {
   const url = '/api/video_reply';
   const options = {
     oid: aid,
     pn: pageNum,
     sort: 2,
     nohot: 1,
+    type: 1,
   };
   return axios.get(url, { params: options });
 }
