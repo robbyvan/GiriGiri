@@ -12,6 +12,9 @@ const mutations = {
   },
   [types.SET_CURRENT_VIDEO_PAGE](state, pn) {
     state.currentVideoPage = pn;
+  },
+  [types.SET_PLAY_URL_INFO](state, playUrlInfo) {
+    state.playUrlInfo = playUrlInfo;
   }
 };
 

@@ -166,8 +166,8 @@ export default {
     }
     .video-dec {
       position: absolute;
-      bottom: 0;
-      left: 0;
+      bottom: 0rem;
+      left: 0rem;
       padding-left: 0.2rem;
       padding-bottom: 0.3rem;
       width: 100%;

@@ -111,15 +111,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       });
 
       // 获取视频相关信息: 播放相关地址
-      apiRoutes.get('/api/video_url', (req, res) => {
-        // 模拟获取视频地址
-        const url = 'https://api.bilibili.com/x/web-interface/ranking';
-        const fakeResponse = {
+      const fakeResponse1 = {
           from: "local",
           result: "suee",
           quality: 6,
           format: "mp4",
-          timelength: 573600,
+          timelength: 596504,
           accept_format: "mp4",
           accept_quality: [
             6
@@ -131,15 +128,51 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           durl: [
             {
               order: 1,
-              length: 909300,
-              size: 27840724,
+              length: 83349,
+              size: 2433530,
               url: "https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4"
             }
           ],
-          img: "https://i1.hdslb.com/bfs/archive/37cc39abd87a8ca3730740d4ccdc0d66573e08be.jpg",
-          cid: "https://comment.bilibili.com/50403051.xml",
+          img: "https://i0.hdslb.com/bfs/archive/13621bff1dd94ea78acb91e9ce1ae9530aa43651.jpg",
+          cid: "https://comment.bilibili.com/51636117.xml",
           fromview: "vupload"
         };
+      const fakeResponse2 = {
+        from: "local",
+        result: "suee",
+        quality: 6,
+        format: "mp4",
+        timelength: 888064,
+        accept_format: "mp4",
+        accept_quality: [
+          6
+        ],
+        video_codecid: 7,
+        video_project: false,
+        seek_param: "start",
+        seek_type: "second",
+        durl: [
+          {
+            order: 1,
+            length: 888064,
+            size: 27840724,
+            url: "https://archive.org/download/Sintel/sintel-2048-surround_512kb.mp4"
+          }
+        ],
+        img: "https://i0.hdslb.com/bfs/archive/339c8e9883a197d2acc9cef57695bfa556e0d250.jpg",
+        cid: "https://comment.bilibili.com/51967819.xml",
+        fromview: "vupload"
+      };
+      function* FSM() {
+        while (true) {
+          yield fakeResponse1;
+          yield fakeResponse2;
+        }
+      }
+      const fsm = FSM();
+      apiRoutes.get('/api/video_url', (req, res) => {
+        // 模拟获取视频地址
+        const url = 'https://api.bilibili.com/x/web-interface/ranking';
         axios.get(url, {
           headers: {
             referer: 'https://m.bilibili.com/index.html/',
@@ -147,7 +180,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           },
           params: req.query
         })
-          .then(response => res.json(fakeResponse))
+          .then(response => res.json(fsm.next().value))
           .catch(e => console.log(e));
         // const url = 'https://api.bilibili.com/playurl';
         // // 三方api
