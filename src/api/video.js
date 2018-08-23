@@ -1,4 +1,5 @@
 import axios from 'axios';
+// import { delayPromise } from './config';
 
 export function loadVideoScreenData(aid) {
   const playUrlP = getVideoUrl(aid);

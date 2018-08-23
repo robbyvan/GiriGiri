@@ -2,7 +2,12 @@
   <div class="homepage" ref="homepage">
     <div class="page-content-start-line" ref="contentStartLine"></div>
     <div class="page-content-detail" v-show="!isLoadingPage" @touchstart="onTouchStart">
-      <div class="video-wrapper" v-for="item in viewVideos" :key="item.aid">
+      <div
+        class="video-wrapper"
+        v-for="item in viewVideos"
+        :key="item.aid"
+        @click.stop="selectVideo(item)"
+      >
         <div class="video-cover-wrapper">
           <!-- 封面 -->
           <img class="video-cover"  v-lazy="item.pic" alt="cover" />
@@ -25,6 +30,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import debounce from 'lodash/debounce';
 import LoadingIndex from 'base/loading/loading-index';
 import { getHomepageVideos } from 'api/homepage';
@@ -45,6 +51,12 @@ export default {
       currentBatchIndex: 1,
     };
   },
+  computed: {
+    ...mapGetters([
+      'mainTabRid',
+      'subTabRid'
+    ]),
+  },
   created() {
     this._getVideos();
     this.debounceFunc = debounce(this._handleScroll, 200);
@@ -57,6 +69,7 @@ export default {
     window.removeEventListener('scroll', this.debounceFunc, false);
   },
   methods: {
+    ...mapActions(['selectVideoPlay']),
     _getVideos() {
       this.isLoadingPage = true;
       getHomepageVideos()
@@ -101,6 +114,17 @@ export default {
     },
     onTouchStart() {
       this.$emit('contentTouching');
+    },
+    selectVideo(item) {
+      if (this.mainTabRid === 13) {
+        console.log('是番剧');
+      } else {
+        this.selectVideoPlay({
+          aid: item.aid,
+          pageNum: 1,
+        });
+        this.$router.push(`/video/av${item.aid}`);
+      }
     }
   }
 };

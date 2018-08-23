@@ -29,7 +29,9 @@ export default {
   },
   methods: {
     _formatDate(ts) {
-      return moment.unix(ts).format('M-D');
+      const pubDate = moment.unix(ts);
+      const moreThanOneYear = pubDate.isBefore(moment(), 'year');
+      return moreThanOneYear ? pubDate.format('YYYY-M-D') : pubDate.format('M-D');
     },
   }
 };

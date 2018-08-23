@@ -50,7 +50,7 @@ export default {
     },
     onTouchStart() {
       this.$emit('homeTouching');
-    }
+    },
   }
 };
 </script>
