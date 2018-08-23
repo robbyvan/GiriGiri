@@ -1,95 +1,101 @@
 <template>
   <div class="video" ref="video">
-    <!-- 顶部导航 -->
-    <div class="video-header">
-      <m-header></m-header>
-    </div>
+    <!-- loading -->
+    <loading-video v-show="!dataLoaded" />
 
-    <!-- 返回顶部 -->
-    <div class="gotop" v-show="showGoTopButton">
-      <gotop-button @goTop="scrollToTop" />
-    </div>
-
-    <!-- 播放器 -->
-    <div class="content-start-line"></div>
-    <div class="video-player-wrapper">
-      <video />
-    </div>
-
-    <!-- 打开App -->
-    <div class="open-app-btn">
-      <button>高清更流畅, App内打开观看</button>
-    </div>
-
-    <!-- 基本信息 -->
-    <div class="video-info" v-if="dataLoaded">
-      <div
-        class="title-wrapper"
-        :class="{'full-title-wrapper': showDetailedInfo, 'mini-title-wrapper': !showDetailedInfo}"
-      >
-        <h2>{{ videoViewInfo.title }}</h2>
-        <button @click="toggleVideoInfoPanel"><i :class="videoInfoToggleButtonStyle" /></button>
+    <div class="video-box" v-show="dataLoaded">
+      <!-- 顶部导航 -->
+      <div class="video-header">
+        <m-header></m-header>
       </div>
 
-      <p class="basic-info" ref="basicInfo">
-        <span class="video-info-author">{{ videoViewInfo.owner.name }}</span>
-        <span class="video-info-plays">{{ _formatNumber(videoViewInfo.stat.view) }}次观看</span>
-        <span class="video-info-danmu">{{ _formatNumber(videoViewInfo.stat.danmaku) }}弹幕</span>
-        <span class="video-info-pubTime">{{ _formatDate(videoViewInfo.pubdate) }}</span>
-      </p>
+      <!-- 返回顶部 -->
+      <div class="gotop" v-show="showGoTopButton">
+        <gotop-button @goTop="scrollToTop" />
+      </div>
 
-      <div class="detailed-inso-start-line">
-        <div class="detailed-info" ref="detailedInfo">
-          <p class="detailed-info-copyright"><i class="icon-award" />未经作者授权禁止转载</p>
-          <p class="detailed-info-desc">{{ videoViewInfo.desc }}</p>
-          <video-path-nav
-            :cid="videoViewInfo.tid"
-            :aid="videoViewInfo.aid"
-            @navigateTo="handlePathNavClick"
-          />
-          <div class="video-tags">
-            <button class="tag-item" v-for="item in tags" :key="item.tag_id">{{ item.tag_name }}</button>
-            <button class="tag-item"></button>
-            <button class="tag-item"></button>
-            <button class="tag-item"></button>
-            <button class="tag-item"></button>
-          </div>
-          <div class="video-socials">
-            <button class="favorite"><i class="icon-heart" />收藏</button>
-            <button class="favorite"><i class="icon-download" />缓存</button>
-            <button class="favorite"><i class="icon-share-2" />分享</button>
+      <!-- 播放器 -->
+      <div class="content-start-line"></div>
+      <div class="video-player-wrapper">
+        <video />
+      </div>
+
+      <!-- 打开App -->
+      <div class="open-app-btn">
+        <button>高清更流畅, App内打开观看</button>
+      </div>
+
+      <!-- 基本信息 -->
+      <div class="video-info" v-if="dataLoaded">
+        <div
+          class="title-wrapper"
+          :class="{'full-title-wrapper': showDetailedInfo, 'mini-title-wrapper': !showDetailedInfo}"
+        >
+          <h2>{{ videoViewInfo.title }}</h2>
+          <button @click="toggleVideoInfoPanel"><i :class="videoInfoToggleButtonStyle" /></button>
+        </div>
+
+        <p class="basic-info" ref="basicInfo">
+          <span class="video-info-author">{{ videoViewInfo.owner.name }}</span>
+          <span class="video-info-plays">{{ _formatNumber(videoViewInfo.stat.view) }}次观看</span>
+          <span class="video-info-danmu">{{ _formatNumber(videoViewInfo.stat.danmaku) }}弹幕</span>
+          <span class="video-info-pubTime">{{ _formatDate(videoViewInfo.pubdate) }}</span>
+        </p>
+
+        <div class="detailed-inso-start-line">
+          <div class="detailed-info" ref="detailedInfo">
+            <p class="detailed-info-copyright"><i class="icon-award" />未经作者授权禁止转载</p>
+            <p class="detailed-info-desc">{{ videoViewInfo.desc }}</p>
+            <video-path-nav
+              :cid="videoViewInfo.tid"
+              :aid="videoViewInfo.aid"
+              @navigateTo="handlePathNavClick"
+            />
+            <div class="video-tags">
+              <button class="tag-item" v-for="item in tags" :key="item.tag_id">{{ item.tag_name }}</button>
+              <button class="tag-item"></button>
+              <button class="tag-item"></button>
+              <button class="tag-item"></button>
+              <button class="tag-item"></button>
+            </div>
+            <div class="video-socials">
+              <button class="favorite"><i class="icon-heart" />收藏</button>
+              <button class="favorite"><i class="icon-download" />缓存</button>
+              <button class="favorite"><i class="icon-share-2" />分享</button>
+            </div>
           </div>
         </div>
+
       </div>
 
-    </div>
+      <div class="below-video" ref="belowVideo">
+        <!-- 分P -->
+        <div class="video-pages" v-show="videoPages.length > 1">
+          <slider-video-pages
+            :pages="videoPages"
+            :currentPageNum="currentVideoPage"
+            @selectPage="selectPage"
+          />
+        </div>
+        <!-- 推荐 -->
+        <div class="video-recommend">
+          <video-list
+            :videos="recommendVideosPassToVideolist"
+            v-show="true"
+            :rank="false"
+            @select="selectVideo"
+          />
+        </div>
 
-    <div class="below-video" ref="belowVideo">
-      <!-- 分P -->
-      <div class="video-pages" v-show="videoPages.length > 1">
-        <slider-video-pages
-          :pages="videoPages"
-          :currentPageNum="currentVideoPage"
-          @selectPage="selectPage"
-        />
-      </div>
-      <!-- 推荐 -->
-      <div class="video-recommend">
-        <video-list
-          :videos="recommendVideosPassToVideolist"
-          v-show="true"
-          :rank="false"
-        />
-      </div>
+        <!-- 评论 -->
+        <div class="video-comment" v-show="haveRepliesLoaded">
+          <comment-list :comments="replies" :totalRepliesCount="totalRepliesCount" />
+        </div>
 
-      <!-- 评论 -->
-      <div class="video-comment" v-show="haveRepliesLoaded">
-        <comment-list :comments="replies" :totalRepliesCount="totalRepliesCount" />
-      </div>
-
-      <!-- footer -->
-      <div class="video-footer" ref="footer">
-        <m-footer />
+        <!-- footer -->
+        <div class="video-footer" ref="footer">
+          <m-footer />
+        </div>
       </div>
     </div>
   </div>
@@ -106,6 +112,7 @@ import SliderVideoPages from 'base/slider-video-pages/slider-video-pages';
 import CommentList from 'base/comment-list/comment-list';
 import GotopButton from 'base/gotop-button/gotop-button';
 import MFooter from 'base/m-footer/m-footer';
+import LoadingVideo from 'base/loading/loading-video';
 import { loadVideoScreenData, getVideoReplies } from 'api/video';
 import { prefixStyle, scrollToTopSmoothly } from 'common/js/dom';
 
@@ -121,12 +128,13 @@ export default {
     SliderVideoPages,
     CommentList,
     GotopButton,
-    MFooter
+    MFooter,
+    LoadingVideo
   },
   data() {
     return {
-      showDetailedInfo: false,
       dataLoaded: false,
+      showDetailedInfo: false,
       playUrlInfo: null, // timelength | durl.url,
       videoViewInfo: {}, // pic, title | owner, stat{}, pubdate | copyright, desc | tid aid
       tags: [], // data[]
@@ -161,6 +169,12 @@ export default {
   watch: {
     dataLoaded() {
       setTimeout(() => this.syncVideoInfoPanel(), 20);
+    },
+    videoAid(newAid, prevAid) {
+      if (newAid === prevAid) {
+        return;
+      }
+      this._loadVideoScreenData();
     }
   },
   created() {
@@ -179,13 +193,23 @@ export default {
     ...mapMutations({
       setCurrentVideoPage: 'SET_CURRENT_VIDEO_PAGE',
     }),
-    ...mapActions(['selectVideoPlay']),
-    // calculateStartY() {
-    //   const rect = this.$refs.basicInfo.getBoundingClientRect();
-    //   const top = rect.top;
-    //   const bottom = rect.bottom;
+    ...mapActions(['selectVideoPlay', 'setAllTabsBySubTabRid']),
+    // _syncVideoAid() {
+    //   if (this.$route.params.aid) {
+    //     const aidStr = this.$route.params.aid;
+    //     let aid = '';
+    //     if (aidStr.starsWith('av')) {
+    //       aid =
+    //     }
+    //   } else {
+    //     this.$router.push('/home');
+    //   }
     // },
     _loadVideoScreenData() {
+      if (!this.videoAid) {
+        this.$router.push('/home');
+        return;
+      }
       loadVideoScreenData(this.videoAid)
         .then(res => {
           // console.log(res);
@@ -207,7 +231,7 @@ export default {
       const documentHeight = document.documentElement.scrollHeight;
       const bodyHeight = documentHeight - windowHeight;
       const scrollPercentage = scrollTop / bodyHeight;
-      console.log('scrollPercentage', scrollPercentage);
+      // console.log('scrollPercentage', scrollPercentage);
       // 评论threshold
       if (scrollPercentage > SCROLLING_THRESHOLD && !this.haveRepliesLoaded) {
         // 加载评论
@@ -227,7 +251,9 @@ export default {
       }
     },
     _formatDate(ts) {
-      return moment.unix(ts).format('M-D');
+      const pubDate = moment.unix(ts);
+      const moreThanOneYear = pubDate.isBefore(moment(), 'year');
+      return moreThanOneYear ? pubDate.format('YYYY-M-D') : pubDate.format('M-D');
     },
     _formatNumber(num) {
       num = Number(num);
@@ -237,7 +263,8 @@ export default {
       return `${(num / 10000).toFixed(1)}万`;
     },
     handlePathNavClick(rid) {
-      console.log(rid);
+      this.$router.push(`/home/${rid}`);
+      this.setAllTabsBySubTabRid({ rid });
     },
     _calculateDetailInfoOffsetHeight() {
       const diRect = this.$refs.detailedInfo.getBoundingClientRect();
@@ -261,6 +288,13 @@ export default {
       this.setCurrentVideoPage(page.page);
       // 重新获取视频源
     },
+    selectVideo(item) {
+      this.selectVideoPlay({
+        aid: item.aid,
+        pageNum: 1,
+      });
+      this.$router.push(`/video/av${item.aid}`);
+    }
   }
 };
 </script>
@@ -270,12 +304,14 @@ export default {
 @import 'common/scss/mixins.scss';
 
 .video {
-  position: absolute;
-  top: 0;
-  // bottom: 0;
-  left: 0;
-  width: 100%;
+  position: relative;
   // background-color: lavender;
+  .video-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
   .video-header {
     position: fixed;
     top: 0;
@@ -302,6 +338,7 @@ export default {
   width: 100%;
   height: 8.4rem;
   background-color: coral;
+  background-color: $color-background-d;
   z-index: 99;
 }
 
@@ -310,7 +347,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  // padding: 0.5rem 0.5rem;
+  padding: 0 0.5rem;
   // z-index: 2;
   height: 2.4rem;
   background-color: $color-background;
@@ -403,14 +440,16 @@ export default {
 }
 .video-tags {
   display: flex;
-  padding: 0 0.5rem;
-  justify-content: space-between;
+  width: 100%;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: wrap;
   overflow: hidden;
   .tag-item {
     height: 1.2rem;
-    width: 3rem;
+    min-width: 3.2rem;
+    padding: 0 0.4rem;
+    margin-right: 0.1rem;
     font-size: $font-size-small-s;
     background-color: $color-border-gray;
     border: 1px solid $color-border-gray;
@@ -448,7 +487,7 @@ export default {
 .below-video {
   // position: absolute;
   width: 100%;
-  // padding-top: 0.4rem;
+  padding-top: 0.5rem;
   background-color: $color-background;
   z-index: 1;
   // transform: translate3d(0, 0, 0);

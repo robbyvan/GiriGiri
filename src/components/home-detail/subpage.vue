@@ -17,7 +17,12 @@
 
           <div class="group-videos">
             <!-- 循环生成视频 -->
-            <div class="video-wrapper" v-for="item in group.data" :key="item.aid">
+            <div
+              class="video-wrapper"
+              v-for="item in group.data"
+              :key="item.aid"
+              @click.stop="selectVideo(item)"
+            >
               <div class="video-cover-wrapper">
                 <!-- 封面 -->
                 <img class="video-cover"  v-lazy="item.pic" alt="cover" />
@@ -36,7 +41,6 @@
               <!-- 视频title -->
               <div class="video-title">
                 <p>{{ item.title }}</p>
-                <!-- <p>12456</p> -->
               </div>
             </div>
             <div class="video-wrapper empty"></div>
@@ -46,7 +50,10 @@
         </section>
       </div>
       <!-- 二级分类 -->
-      <div class="subpageVideos" v-if="!isMainTag && detailRecommends.length && detailLatestArchive.length">
+      <div
+        class="subpageVideos"
+        v-if="!isMainTag && detailRecommends.length && detailLatestArchive.length"
+      >
         <!-- 热门推荐 -->
         <section class="section-wrapper">
           <!-- 组名 -->
@@ -56,7 +63,12 @@
           <!-- 视频列表 -->
           <div class="group-videos">
             <!-- 循环生成视频 -->
-            <div class="video-wrapper" v-for="item in detailRecommends" :key="item.aid">
+            <div
+              class="video-wrapper"
+              v-for="item in detailRecommends"
+              :key="item.aid"
+              @click.stop="selectVideo(item)"
+            >
               <div class="video-cover-wrapper">
                 <!-- 封面 -->
                 <img class="video-cover"  v-lazy="item.pic" alt="cover" />
@@ -89,7 +101,12 @@
           <!-- 视频列表 -->
           <div class="group-videos">
             <!-- 循环生成视频 -->
-            <div class="video-wrapper" v-for="item in detailLatestArchive" :key="item.aid">
+            <div
+              class="video-wrapper"
+              v-for="item in detailLatestArchive"
+              :key="item.aid"
+              @click.stop="selectVideo(item)"
+            >
               <div class="video-cover-wrapper">
                 <!-- 封面 -->
                 <img class="video-cover"  v-lazy="item.pic" alt="cover" />
@@ -123,7 +140,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 import LoadingHome from 'base/loading/loading-home';
 import { getInitSubAll, getInitSubCategory, getSubTabLatestByPage } from 'api/subpage';
 import { MAIN_TABS } from 'api/config';
@@ -143,7 +160,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['mainTabRid', 'subTabRid']),
+    ...mapGetters([
+      'mainTabRid',
+      'subTabRid'
+    ]),
   },
   created() {
     // 确认是否在推荐tag, 确定渲染页面
@@ -172,6 +192,7 @@ export default {
       setMainTabRid: 'SET_MAIN_TAB_RID',
       setSubTabRid: 'SET_SUB_TAB_RID',
     }),
+    ...mapActions(['selectVideoPlay']),
     _formatNumber(num) {
       num = Number(num);
       if (num < 10000) {
@@ -241,7 +262,18 @@ export default {
         .catch(e => {
           this.isLoadingMore = false;
         });
-    }
+    },
+    selectVideo(item) {
+      if (this.mainTabRid === 13) {
+        console.log('是番剧');
+      } else {
+        this.selectVideoPlay({
+          aid: item.aid,
+          pageNum: 1,
+        });
+        this.$router.push(`/video/av${item.aid}`);
+      }
+    },
   }
 };
 </script>

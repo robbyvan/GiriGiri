@@ -6,7 +6,7 @@
       :key="video"
     >
       <!-- 排名 -->
-      <div class="rank">
+      <div class="rank" v-show="showRank">
         <span
           :class="getRankingClass(index)"
           v-text="getRankingText(index)">
@@ -18,19 +18,19 @@
       </div>
       <!-- 详情 -->
       <div class="info">
-        <h2 class="title">加载中...</h2>
+        <h2 class="title"><span class="tombstone"></span></h2>
         <p class="author">
           <i class="icon-author" />
-          <span>--</span>
+          <span class="video-author"><span class="tombstone"></span></span>
         </p>
         <div class="video-dec">
           <span class="desc-tab">
             <i class="icon-watch" />
-            <span class="video-play">--</span>
+            <span class="video-play"><span class="tombstone"></span></span>
           </span>
           <span class="desc-tab">
             <i class="icon-align-left" />
-            <span class="video-review">--</span>
+            <span class="video-review"><span class="tombstone"></span></span>
           </span>
         </div>
       </div>
@@ -40,10 +40,9 @@
 
 <script>
 export default {
-  data() {
-    return {
-      videos: [1, 2, 3, 4, 5, 6],
-    };
+  props: {
+    showRank: { type: Boolean, default: true },
+    videos: { type: Array, default: () => [1, 2, 3, 4, 5, 6] }
   },
   methods: {
     getRankingClass(index) {
@@ -65,6 +64,13 @@ export default {
 <style lang="scss" scoped>
 @import 'common/scss/const.scss';
 @import 'common/scss/mixins.scss';
+
+.tombstone {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  background-color: $color-background-m;
+}
 
 .loading-rank {
   position: relative;
@@ -125,12 +131,14 @@ export default {
       justify-content: space-between;
       .title {
         flex: 2;
-        max-height: 1.5rem;
-        line-height: 0.75rem;
+        max-height: 1rem;
         font-size: $font-size-small;
         text-align: left;
         word-break: break-all;
         @include no-wrap-multi(2);
+        position: relative;
+        display: flex;
+        align-items: center;
       }
       .author {
         flex: 1;
@@ -139,8 +147,11 @@ export default {
         color: $color-text-gray;
         display: flex;
         align-items: center;
-        span {
+        .video-author {
           padding-left: 0.2rem;
+          width: 2.5rem;
+          height: 100%;
+          position: relative;
         }
       }
       .video-dec {
@@ -152,8 +163,14 @@ export default {
         color: $color-text-gray;
         .desc-tab {
           padding-right: 0.5rem;
-          span {
-             padding-left: 0.1rem;
+          display: flex;
+          .video-play, .video-review {
+            padding-left: 0.1rem;
+            width: 2.5rem;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
           }
         }
       }

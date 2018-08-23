@@ -45,25 +45,29 @@ export default {
   height: 1.8rem;
   .tab-item {
     display: inline-block;
+    position: relative;
     height: 100%;
     width: 5.4rem;
     margin-right: 0.5rem;
-    padding: 0.2rem 0;
     border: 0.03rem solid $color-text-gray;
     border-radius: 5px;
     font-size: $font-size-small-s;
     color: $color-text-gray-d;
-    text-align: center;
     .tab-item-text {
-      height: 100%;
-      padding: 0 0.3rem;
-      line-height: 0.7rem;
-      overflow: hidden;
-      white-space: normal;
-      text-overflow: ellipsis;
       -webkit-line-clamp: 2;
       display: -webkit-box;
       -webkit-box-orient: vertical;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      transform: translate(-50%, -50%);
+      padding: 0 0.3rem;
+      line-height: 0.6rem;
+      overflow: hidden;
+      white-space: normal;
+      text-overflow: ellipsis;
+      // text-align: center;
     }
     &.active-page {
       color: $color-theme;

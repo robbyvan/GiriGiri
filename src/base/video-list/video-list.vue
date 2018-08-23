@@ -4,6 +4,7 @@
       class="video-item"
       v-for="(video, index) in videos"
       :key="video.aid"
+      @click="selectItem(video)"
     >
       <!-- 排名 -->
       <div class="rank" v-show="rank">
@@ -69,6 +70,9 @@ export default {
       if (index > 2) {
         return index + 1;
       }
+    },
+    selectItem(item) {
+      this.$emit('select', item);
     }
   }
 };

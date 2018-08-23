@@ -20,7 +20,12 @@
       <!-- 正文 -->
       <div class="rank-content">
         <!-- 列表 -->
-        <video-list :videos="videos" v-show="!isLoadingRankList" :rank="true" />
+        <video-list
+          :videos="videos"
+          v-show="!isLoadingRankList"
+          :rank="true"
+          @select="selectVideo"
+        />
         <!-- loading -->
         <loading-rank v-show="isLoadingRankList" />
       </div>
@@ -33,6 +38,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import debounce from 'lodash/debounce';
 import SliderNav from 'base/slider-nav/slider-nav';
 import VideoList from 'base/video-list/video-list';
@@ -60,6 +66,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      'mainTabRid',
+      'subTabRid'
+    ]),
     rankTabs() {
       const navTabs = RANK_TABS.map(mRid => TABS[mRid]);
       navTabs[0].name = '全站';
@@ -75,10 +85,15 @@ export default {
     }
   },
   created() {
-    //
     if (this.$route.params.rid) {
       // 路由而来
       let rid = Number(this.$route.params.rid);
+      if (typeof rid !== 'number') {
+        // rid不是数字
+        this.router.push('/rank/1');
+        this.selectedMainTabRid = 1;
+        return;
+      }
       if (RANK_TABS.indexOf(rid) === -1) {
         // 不在nav内的rid
         if (rid === 167 || rid === 13) {
@@ -112,6 +127,7 @@ export default {
     window.removeEventListener('scroll', this.debounceFunc, false);
   },
   methods: {
+    ...mapActions(['selectVideoPlay']),
     goBack() {
       this.$router.back();
     },
@@ -152,6 +168,14 @@ export default {
         // console.log('hide goTop');
         this.showGoTopButton = false;
       }
+    },
+    selectVideo(item) {
+      // rank推荐内貌似无番剧
+      this.selectVideoPlay({
+        aid: item.aid,
+        pageNum: 1,
+      });
+      this.$router.push(`/video/av${item.aid}`);
     }
   }
 };
