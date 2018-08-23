@@ -24,6 +24,10 @@
         </div>
       </div>
     </div>
+    <!-- 返回顶部 -->
+    <div class="gotop" v-show="showGoTopButton">
+      <gotop-button />
+    </div>
     <!-- 首屏加载 -->
     <loading-index v-show="isLoadingPage" />
   </div>
@@ -33,18 +37,22 @@
 import { mapGetters, mapActions } from 'vuex';
 import debounce from 'lodash/debounce';
 import LoadingIndex from 'base/loading/loading-index';
+import GotopButton from 'base/gotop-button/gotop-button';
 import { getHomepageVideos } from 'api/homepage';
 
 const BATCH_NUM = 20;
 const MAX_BATCH_INDEX = 5;
 const SCROLLING_THRESHOLD = 0.6;
+const GO_TOP_THRESHOLD = 0.2;
 
 export default {
   components: {
     LoadingIndex,
+    GotopButton
   },
   data() {
     return {
+      showGoTopButton: false,
       isLoadingPage: false,
       videos: [],
       viewVideos: [],
@@ -110,6 +118,12 @@ export default {
           ),
         ];
         this.currentBatchIndex += 1;
+      }
+      // goTop theshold
+      if (scrollPercentage > GO_TOP_THRESHOLD) {
+        this.showGoTopButton = true;
+      } else {
+        this.showGoTopButton = false;
       }
     },
     onTouchStart() {
@@ -199,5 +213,11 @@ export default {
       line-height: 0.8rem;
     }
   }
+}
+.gotop {
+  position: fixed;
+  right: 1rem;
+  bottom: 2rem;
+  z-index: 100;
 }
 </style>

@@ -11,7 +11,7 @@
 
       <!-- 返回顶部 -->
       <div class="gotop" v-show="showGoTopButton">
-        <gotop-button @goTop="scrollToTop" />
+        <gotop-button />
       </div>
 
       <!-- 播放器 -->
@@ -115,7 +115,7 @@ import GotopButton from 'base/gotop-button/gotop-button';
 import MFooter from 'base/m-footer/m-footer';
 import LoadingVideo from 'base/loading/loading-video';
 import { loadVideoScreenData, getVideoReplies } from 'api/video';
-import { prefixStyle, scrollToTopSmoothly } from 'common/js/dom';
+import { prefixStyle } from 'common/js/dom';
 
 const transform = prefixStyle('transform');
 const SCROLLING_THRESHOLD = 0.1;
@@ -224,9 +224,6 @@ export default {
           this.videoPages = res.videoPages;
           this.dataLoaded = true;
         });
-    },
-    scrollToTop() {
-      scrollToTopSmoothly();
     },
     _handleScroll() {
       const rect = this.$refs.video.getBoundingClientRect();

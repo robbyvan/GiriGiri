@@ -31,7 +31,7 @@
       </div>
       <!-- 返回顶部 -->
       <div class="gotop" v-show="showGoTopButton">
-        <gotop-button @goTop="scrollToTop" />
+        <gotop-button />
       </div>
     </div>
   </transition>
@@ -46,7 +46,6 @@ import GotopButton from 'base/gotop-button/gotop-button';
 import LoadingRank from 'base/loading/loading-rank';
 import { TABS, RANK_TABS } from 'api/config';
 import { getRankingsByRid } from 'api/rank';
-import { scrollToTopSmoothly } from 'common/js/dom';
 
 const SCROLLING_THRESHOLD = 0.12;
 
@@ -130,9 +129,6 @@ export default {
     ...mapActions(['selectVideoPlay']),
     goBack() {
       this.$router.back();
-    },
-    scrollToTop() {
-      scrollToTopSmoothly();
     },
     selectTab(tab) {
       // 切换路由
