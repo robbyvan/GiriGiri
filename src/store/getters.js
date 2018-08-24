@@ -5,3 +5,4 @@ export const subTabRid = state => state.subTabRid;
 // 当前视频
 export const videoAid = state => state.videoAid;
 export const currentVideoPage = state => state.currentVideoPage;
+export const playUrlInfo = state => state.playUrlInfo;

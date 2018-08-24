@@ -7,10 +7,13 @@
 </template>
 
 <script>
+import { scrollToTopSmoothly } from 'common/js/dom';
+
 export default {
   methods: {
     goTop() {
-      this.$emit('goTop');
+      scrollToTopSmoothly();
+      // this.$emit('goTop');
     }
   }
 };

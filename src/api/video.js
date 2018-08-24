@@ -2,7 +2,7 @@ import axios from 'axios';
 // import { delayPromise } from './config';
 
 export function loadVideoScreenData(aid) {
-  const playUrlP = getVideoUrl(aid);
+  const playUrlP = getVideoUrl(aid); // 盗链限制, mock data
   const viewP = getVideoView(aid);
   const tagsP = getVideoTags(aid);
   const recommendsP = getVideoRecommend(aid);
@@ -10,8 +10,11 @@ export function loadVideoScreenData(aid) {
     .then(res => {
       console.log(res);
       const playUrlInfo = {
-        timelength: res[0].data,
-        playUrl: res[0].data.durl[0].url
+        // 盗链限制, mock data
+        timelength: res[0].data.timelength,
+        playUrl: res[0].data.durl[0].url,
+        img: res[1].data.data.pic,
+        aid: res[1].data.data.aid,
       };
       const videoViewInfo = {
         pic: res[1].data.data.pic,
@@ -62,10 +65,20 @@ export function getVideoTags(aid) {
   return axios.get(url, { params: options });
 }
 
-// 获取推荐
+// 获取首页推荐
 export function getVideoRecommend(aid) {
   const url = '/api/video_recommendnew';
   const options = { aid };
+  return axios.get(url, { params: options });
+}
+
+// 获取结束推荐
+export function getFinishedRecommend(tid) {
+  const url = '/api/finished_recommend';
+  const options = {
+    rid: tid,
+    day: 7,
+  };
   return axios.get(url, { params: options });
 }
 

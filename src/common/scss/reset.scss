@@ -10,9 +10,7 @@
 body, h1, h2, h3, h4, h5, h6, hr, p, blockquote,
 pre,dl, dt, dd, ul, ol, li,
 form, fieldset, lengend, button, input, textarea,
-th, td { margin: 0; padding: 0; color: $color-text; }
-
-
+th, td { margin: 0; padding: 0; color: $color-text; word-break: break-all;}
 
 /* 重置列表元素 */
 ul, ol { list-style: none; }

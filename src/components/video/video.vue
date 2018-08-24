@@ -11,13 +11,13 @@
 
       <!-- 返回顶部 -->
       <div class="gotop" v-show="showGoTopButton">
-        <gotop-button @goTop="scrollToTop" />
+        <gotop-button />
       </div>
 
       <!-- 播放器 -->
       <div class="content-start-line"></div>
       <div class="video-player-wrapper">
-        <video />
+        <player />
       </div>
 
       <!-- 打开App -->
@@ -59,7 +59,7 @@
               <button class="tag-item"></button>
             </div>
             <div class="video-socials">
-              <button class="favorite"><i class="icon-heart" />收藏</button>
+              <button class="favorite"><i class="icon-star" />收藏</button>
               <button class="favorite"><i class="icon-download" />缓存</button>
               <button class="favorite"><i class="icon-share-2" />分享</button>
             </div>
@@ -106,6 +106,7 @@ import { mapGetters, mapMutations, mapActions } from 'vuex';
 import moment from 'moment';
 import debounce from 'lodash/debounce';
 import MHeader from 'base/m-header/m-header';
+import Player from 'components/player/player';
 import VideoList from 'base/video-list/video-list';
 import VideoPathNav from 'base/video-path-nav/video-path-nav';
 import SliderVideoPages from 'base/slider-video-pages/slider-video-pages';
@@ -114,7 +115,7 @@ import GotopButton from 'base/gotop-button/gotop-button';
 import MFooter from 'base/m-footer/m-footer';
 import LoadingVideo from 'base/loading/loading-video';
 import { loadVideoScreenData, getVideoReplies } from 'api/video';
-import { prefixStyle, scrollToTopSmoothly } from 'common/js/dom';
+import { prefixStyle } from 'common/js/dom';
 
 const transform = prefixStyle('transform');
 const SCROLLING_THRESHOLD = 0.1;
@@ -123,6 +124,7 @@ const GO_TOP_THRESHOLD = 0.2;
 export default {
   components: {
     MHeader,
+    Player,
     VideoList,
     VideoPathNav,
     SliderVideoPages,
@@ -135,7 +137,7 @@ export default {
     return {
       dataLoaded: false,
       showDetailedInfo: false,
-      playUrlInfo: null, // timelength | durl.url,
+      // playUrlInfo: null, ,
       videoViewInfo: {}, // pic, title | owner, stat{}, pubdate | copyright, desc | tid aid
       tags: [], // data[]
       videoPages: [], // pages[]
@@ -149,7 +151,8 @@ export default {
   computed: {
     ...mapGetters([
       'videoAid',
-      'currentVideoPage'
+      'currentVideoPage',
+      'playUrlInfo', // timelength | durl.url
     ]),
     videoInfoToggleButtonStyle() {
       return this.showDetailedInfo ? 'icon-chevron-up' : 'icon-chevron-down';
@@ -192,6 +195,7 @@ export default {
   methods: {
     ...mapMutations({
       setCurrentVideoPage: 'SET_CURRENT_VIDEO_PAGE',
+      setPlayUrlInfo: 'SET_PLAY_URL_INFO'
     }),
     ...mapActions(['selectVideoPlay', 'setAllTabsBySubTabRid']),
     // _syncVideoAid() {
@@ -212,17 +216,14 @@ export default {
       }
       loadVideoScreenData(this.videoAid)
         .then(res => {
-          // console.log(res);
+          console.log(res);
           this.videoViewInfo = res.videoViewInfo;
-          this.playUrlInfo = res.playUrlInfo;
+          this.setPlayUrlInfo(res.playUrlInfo);
           this.tags = res.tags;
           this.recommendVideos = res.recommendVideos.slice(0, 20); // 只要20;
           this.videoPages = res.videoPages;
           this.dataLoaded = true;
         });
-    },
-    scrollToTop() {
-      scrollToTopSmoothly();
     },
     _handleScroll() {
       const rect = this.$refs.video.getBoundingClientRect();
@@ -336,7 +337,7 @@ export default {
 .video-player-wrapper {
   position: relative;
   width: 100%;
-  height: 8.4rem;
+  height: 8.5rem;
   background-color: coral;
   background-color: $color-background-d;
   z-index: 99;
@@ -433,6 +434,7 @@ export default {
     font-size: $font-size-small-s;
     margin-bottom: 0.5rem;
     line-height: 0.7rem;
+    word-break: break-all;
   }
   .icon-award {
     color: $color-theme;
