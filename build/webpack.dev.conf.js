@@ -224,7 +224,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         .catch(e => console.log(e));
       });
 
-      // 获取推荐
+      // 获取首页推荐
       apiRoutes.get('/api/video_recommendnew', (req, res) => {
         const url = `https://comment.bilibili.com/recommendnew,${req.query.aid}`;
         // console.log(url);
@@ -234,6 +234,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             // host: 'api.bilibili.com' // 不能加host
           },
           // params: req.query,
+        })
+        .then(response => {
+          return res.json(response.data)
+        })
+        .catch(e => console.log(e));
+      });
+
+       // 获取结束推荐
+      apiRoutes.get('/api/finished_recommend', (req, res) => {
+        const url = `https://api.bilibili.com/x/web-interface/ranking/region`;
+        // console.log(url);
+        axios.get(url, {
+          headers: {
+            referer: 'https://m.bilibili.com/index.html/',
+            host: 'api.bilibili.com',
+          },
+          params: req.query,
         })
         .then(response => {
           return res.json(response.data)

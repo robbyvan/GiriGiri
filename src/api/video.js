@@ -65,10 +65,20 @@ export function getVideoTags(aid) {
   return axios.get(url, { params: options });
 }
 
-// 获取推荐
+// 获取首页推荐
 export function getVideoRecommend(aid) {
   const url = '/api/video_recommendnew';
   const options = { aid };
+  return axios.get(url, { params: options });
+}
+
+// 获取结束推荐
+export function getFinishedRecommend(tid) {
+  const url = '/api/finished_recommend';
+  const options = {
+    rid: tid,
+    day: 7,
+  };
   return axios.get(url, { params: options });
 }
 
