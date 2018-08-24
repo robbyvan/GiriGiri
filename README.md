@@ -3,4 +3,4 @@
 > 伪·bilibili, only for studying.
 
 ## Build Setup
-哔哩哔哩h5端仿写
+高仿哔哩哔哩h5（之ギリギリ...(つ｀Д｀)･ﾟ･
