@@ -191,6 +191,7 @@ export default {
     window.addEventListener('scroll', this.debounceFunc, false);
   },
   beforeDestroy() {
+    this.$refs.player.beforeDestroyPlayer();
     window.removeEventListener('scroll', this.debounceFunc, false);
   },
   methods: {
@@ -324,9 +325,6 @@ export default {
         pageNum: 1,
       });
       this.$router.push(`/video/av${item.aid}`);
-    },
-    beforeDestroy() {
-
     }
   }
 };

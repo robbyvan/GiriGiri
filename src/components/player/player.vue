@@ -197,11 +197,15 @@ export default {
     },
   },
   created() {
-    // console.log(this.playUrlInfo);
-    // console.log(this.playUrlInfo.timelength);
+    this.loopRecommendTimer = null;
+    this.autoHideTimer = null;
   },
   methods: {
     resetPlayer(src) {
+      // console.log('reset!');
+      // 清除定时器
+      clearInterval(this.loopRecommendTimer);
+      clearTimeout(this.autoHideTimer);
       // 状态重置
       this.showCoverLayer = true;
       this.showControlLayer = false;
@@ -313,6 +317,7 @@ export default {
       if (this.finishedRecommend.length > 0) {
         // 有推荐
         this.loopRecommendTimer = setInterval(() => {
+          // console.log('tick tock');
           this.finishedRecommendItemIndex = (1 + this.finishedRecommendItemIndex) % this.finishedRecommend.length;
         }, 3000);
       }
@@ -326,8 +331,8 @@ export default {
     error(e) {
       console.log('error', e);
     },
-    beforeDestroy() {
-      console.log('beforeDestroy');
+    beforeDestroyPlayer() {
+      this.pauseVideo();
       // 清空timer
       clearInterval(this.loopRecommendTimer);
       clearTimeout(this.autoHideTimer);
