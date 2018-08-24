@@ -1,5 +1,4 @@
 import axios from 'axios';
-// import { delayPromise } from './config';
 
 export function loadVideoScreenData(aid) {
   const playUrlP = getVideoUrl(aid); // 盗链限制, mock data
@@ -8,7 +7,7 @@ export function loadVideoScreenData(aid) {
   const recommendsP = getVideoRecommend(aid);
   return Promise.all([playUrlP, viewP, tagsP, recommendsP])
     .then(res => {
-      console.log(res);
+      // console.log(res);
       const playUrlInfo = {
         // 盗链限制, mock data
         timelength: res[0].data.timelength,

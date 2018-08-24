@@ -191,6 +191,10 @@ export default {
         }, 20);
       }
     },
+    $route(to, from) {
+      console.log(to);
+      console.log(from);
+    },
   },
   created() {
     // console.log(this.playUrlInfo);
@@ -323,6 +327,7 @@ export default {
       console.log('error', e);
     },
     beforeDestroy() {
+      console.log('beforeDestroy');
       // 清空timer
       clearInterval(this.loopRecommendTimer);
       clearTimeout(this.autoHideTimer);

@@ -85,7 +85,7 @@ export default {
           if (res.code === 0) {
             this.videos = res.data.list; // 100条
             this.viewVideos = this.videos.slice(0, BATCH_NUM); // 20条
-            console.log(this.viewVideos);
+            // console.log(this.viewVideos);
           } else {
             this.videos = [];
             this.viewVideos = [];

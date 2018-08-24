@@ -17,7 +17,7 @@
       <!-- 播放器 -->
       <div class="content-start-line"></div>
       <div class="video-player-wrapper">
-        <player />
+        <player ref="player" />
       </div>
 
       <!-- 打开App -->
@@ -114,7 +114,7 @@ import CommentList from 'base/comment-list/comment-list';
 import GotopButton from 'base/gotop-button/gotop-button';
 import MFooter from 'base/m-footer/m-footer';
 import LoadingVideo from 'base/loading/loading-video';
-import { loadVideoScreenData, getVideoView, getVideoReplies } from 'api/video';
+import { loadVideoScreenData, getVideoUrl, getVideoView, getVideoReplies } from 'api/video';
 import { prefixStyle } from 'common/js/dom';
 
 const transform = prefixStyle('transform');
@@ -307,6 +307,16 @@ export default {
     selectPage(page) {
       this.setCurrentVideoPage(page.page);
       // 重新获取视频源
+      getVideoUrl()
+        .then(res => {
+          const playUrlInfo = {
+            // 盗链限制, mock data
+            ...this.playUrlInfo,
+            timelength: res.data.timelength,
+            playUrl: res.data.durl[0].url,
+          };
+          this.setPlayUrlInfo(playUrlInfo);
+        });
     },
     selectVideo(item) {
       this.selectVideoPlay({
@@ -314,6 +324,9 @@ export default {
         pageNum: 1,
       });
       this.$router.push(`/video/av${item.aid}`);
+    },
+    beforeDestroy() {
+
     }
   }
 };
