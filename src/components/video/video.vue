@@ -253,8 +253,13 @@ export default {
         getVideoReplies(this.videoAid, this.currentPageNum)
           .then(res => {
             // console.log(res.data);
-            this.totalRepliesCount = res.data.data.page.count;
-            this.replies = res.data.data.replies.slice(0, 5); // 不超过5条
+            if (res.data.code === 0) {
+              this.totalRepliesCount = res.data.data.page.count;
+              this.replies = res.data.data.replies.slice(0, 5); // 不超过5条
+            } else {
+              this.totalRepliesCount = 0;
+              this.replies = [];
+            }
             this.haveRepliesLoaded = true;
           });
       }

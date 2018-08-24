@@ -193,7 +193,7 @@ export default {
     },
   },
   created() {
-    console.log(this.playUrlInfo);
+    // console.log(this.playUrlInfo);
     // console.log(this.playUrlInfo.timelength);
   },
   methods: {
@@ -222,7 +222,7 @@ export default {
       return str;
     },
     toggleControlLayer() {
-      console.log('click');
+      // console.log('click');
       this.showControlLayer = !this.showControlLayer;
 
       this.clearAutoHideTimer();
@@ -262,7 +262,7 @@ export default {
           } else {
             this.finishedRecommend = [];
           }
-        }).catch(e => console.log('!'));
+        }).catch(e => console.log(e));
     },
     pauseVideo() {
       this.clearAutoHideTimer();
@@ -297,7 +297,7 @@ export default {
     onProgressBarChange(percent) {
       const currentTime = this.playUrlInfo.timelength * percent;
       this.$refs.video.currentTime = currentTime / 1000;
-      console.log(currentTime / 1000);
+      // console.log(currentTime / 1000);
       if (!this.shouldVideoPlay) {
         this.playVideo();
       }
@@ -309,11 +309,10 @@ export default {
       if (this.finishedRecommend.length > 0) {
         // 有推荐
         this.loopRecommendTimer = setInterval(() => {
-          console.log('hello?');
           this.finishedRecommendItemIndex = (1 + this.finishedRecommendItemIndex) % this.finishedRecommend.length;
         }, 3000);
       }
-      console.log('end');
+      // console.log('end');
     },
     replay() {
       this.$refs.video.currentTime = 0;

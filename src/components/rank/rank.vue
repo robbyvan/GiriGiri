@@ -145,6 +145,8 @@ export default {
           // console.log(res);
           if (res.code === 0) {
             this.videos = res.data.list;
+          } else {
+            this.videos = [];
           }
           this.isLoadingRankList = false;
         });
