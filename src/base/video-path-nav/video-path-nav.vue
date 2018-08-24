@@ -19,7 +19,7 @@
 <script>
 import { TABS, MAIN_TABS } from 'api/config';
 
-const allTabs = Object.keys(TABS);
+const allTabs = Object.keys(TABS).map(s => Number(s));
 
 export default {
   props: {
@@ -44,7 +44,7 @@ export default {
       return TABS[this.subTabRid].name;
     },
     showPath() {
-      return Object.keys(allTabs).indexOf(this.cid.toString()) !== -1;
+      return allTabs.indexOf(this.cid) !== -1;
     },
     hasSubTab() {
       return MAIN_TABS.indexOf(this.cid) === -1;

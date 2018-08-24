@@ -4,6 +4,7 @@
     v-if="playUrlInfo !== null"
     :class="isFullScreenClass"
   >
+    <!-- 视频 -->
     <div
       class="player-video-wrapper"
       :class="isFullScreenClass"
@@ -15,19 +16,20 @@
         preload="auto"
         webkit-playsinline
         playsinline
-        loop
-        muted
         @loadeddata="loaded"
         @error="error"
         @timeupdate="updateTime"
         @playing="ready"
         @waiting="wait"
         @pause="pauseVideo"
+        @ended="end"
       ></video>
     </div>
+    <!-- 加载中 -->
     <div class="video-loading" v-show="!firstFrameLoaded">
       <img src="../../common/img/lazy2.gif" alt="loading gif" />
     </div>
+    <!-- 加载完毕 -->
     <div class="video-layers" v-show="firstFrameLoaded">
       <!-- 弹幕层: z-index 1 -->
       <div class="video-danmu" v-show="showDanmuLayer"></div>
@@ -36,6 +38,7 @@
         class="video-controls"
         :class="{'hide-controls': !showControlLayer}"
       >
+        <!-- 时间信息 -->
         <div class="video-time-box">
           <p class="video-time">
             <span class="video-current-time">{{formatedCurrentTime}}</span>
@@ -43,9 +46,16 @@
             <span class="video-duration">{{timeLen}}</span>
           </p>
         </div>
+        <!-- 进度条 -->
         <div class="video-controls-progressbar">
-          <!-- <progressbar /> -->
+          <progress-bar
+            :percent="percent"
+            @percentChange="onProgressBarChange"
+            @startTouchingProgress="clearAutoHideTimer"
+            @stopTouchingProgress="hideControlLayerInTime"
+          />
         </div>
+        <!-- UI控制 -->
         <div class="video-controls-buttons">
           <span class="toggle-danmu" @click="toggleDanmuLayer">
             <i :class="showDanmuIconClass" />
@@ -70,7 +80,7 @@
         </div>
         <button class="video-start-play-btn" />
       </div>
-      <!-- 控制播放: z-index 2 -->
+      <!-- 播放控制: z-index 2 -->
       <div
         class="player-state-button"
         @click="toggleControlLayer"
@@ -94,8 +104,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import moment from 'moment';
+import ProgressBar from 'base/progress-bar/progress-bar';
+import { getFinishedRecommend } from 'api/video';
 
 export default {
+  components: {
+    ProgressBar
+  },
   data() {
     return {
       // UI相关
@@ -105,7 +120,7 @@ export default {
       isFullScreen: false,
       // 视频播放相关
       firstFrameLoaded: false,
-      shouldVideoPlay: false, // 有可能在缓冲
+      shouldVideoPlay: false, // 期望的播放状态(有可能实际在缓冲)
       isBuffering: false,
       currentPlayingTime: 0,
     };
@@ -122,6 +137,12 @@ export default {
         return `${this._paddingZero(Math.floor(dr.asMinutes()))}:${this._paddingZero(dr.seconds())}`;
       }
       return '00:00:00';
+    },
+    percent() {
+      if (this.playUrlInfo !== null && this.playUrlInfo.timelength > 0) {
+        return this.currentPlayingTime * 1000 / this.playUrlInfo.timelength;
+      }
+      return 0;
     },
     showDanmuIconClass() {
       return this.showDanmuLayer ? 'icon-list' : 'icon-slash';
@@ -175,7 +196,7 @@ export default {
       console.log('click');
       this.showControlLayer = !this.showControlLayer;
 
-      clearTimeout(this.hideTimer);
+      this.clearAutoHideTimer();
       // 自动隐藏
       if (this.showControlLayer) {
         this.hideControlLayerInTime();
@@ -183,9 +204,12 @@ export default {
     },
     hideControlLayerInTime(delay = 3000) {
       const that = this;
-      this.hideTimer = setTimeout(() => {
+      this.autoHideTimer = setTimeout(() => {
         that.showControlLayer = false;
       }, delay);
+    },
+    clearAutoHideTimer() {
+      clearTimeout(this.autoHideTimer);
     },
     toggleDanmuLayer() {
       this.showDanmuLayer = !this.showDanmuLayer;
@@ -198,12 +222,17 @@ export default {
       this.firstFrameLoaded = true;
     },
     startPlaying() {
-      // 开始播放 & 隐藏cover层
+      // 开始播放 & 隐藏cover层 & 获取结束推荐
       this.playVideo();
       this.showCoverLayer = false;
+      console.log('?');
+      getFinishedRecommend().then(res => {
+        console.log('?');
+        console.log(res);
+      }).catch(e => console.log('!'));
     },
     pauseVideo() {
-      clearTimeout(this.hideTimer);
+      this.clearAutoHideTimer();
       // 暂停视频播放
       const video = this.$refs.video;
       video.pause();
@@ -212,7 +241,7 @@ export default {
       // 之后还要暂停弹幕
     },
     playVideo() {
-      clearTimeout(this.hideTimer);
+      this.clearAutoHideTimer();
       const video = this.$refs.video;
       video.play();
       this.shouldVideoPlay = true;
@@ -231,6 +260,20 @@ export default {
       this.shouldVideoPlay = false;
       this.isBuffering = true;
       // console.log('waiting!');
+    },
+    onProgressBarChange(percent) {
+      const currentTime = this.playUrlInfo.timelength * percent;
+      this.$refs.video.currentTime = currentTime / 1000;
+      console.log(currentTime / 1000);
+      if (!this.shouldVideoPlay) {
+        this.playVideo();
+      }
+      // 之后还需同步弹幕
+    },
+    end() {
+      console.log('end');
+      getFinishedRecommend()
+        .then(res => console.log(res));
     },
     error(e) {
       console.log('error', e);
@@ -321,11 +364,13 @@ export default {
 
 .video-time-box {
   flex: 27;
+  height: 1rem;
   background-color: gold;
   p {
     font-size: $font-size-small;
     color: $color-text-white;
     text-align: center;
+    line-height: 1rem;
   }
   .video-time-slash::before {
     content: '/';
@@ -334,14 +379,19 @@ export default {
 
 .video-controls-progressbar {
   flex: 50;
-  background-color: lightcyan;
-  height: 100%;
+  // background-color: lightcyan;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
 .video-controls-buttons {
   flex: 23;
   display: flex;
+  height: 1rem;
   justify-content: space-around;
+  align-items: center;
   span {
     color: $color-text-white;
   }

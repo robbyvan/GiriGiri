@@ -434,6 +434,7 @@ export default {
     font-size: $font-size-small-s;
     margin-bottom: 0.5rem;
     line-height: 0.7rem;
+    word-break: break-all;
   }
   .icon-award {
     color: $color-theme;
