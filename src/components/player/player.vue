@@ -30,7 +30,7 @@
       <img src="../../common/img/lazy2.gif" alt="loading gif" />
     </div>
     <!-- 加载完毕 -->
-    <div class="video-layers" v-show="firstFrameLoaded">
+    <div class="video-layers" v-show="firstFrameLoaded && !isVideoEnd">
       <!-- 弹幕层: z-index 1 -->
       <div class="video-danmu" v-show="showDanmuLayer"></div>
       <!-- 控制层: z-index 2 -->
@@ -98,6 +98,25 @@
         <span class="video-buffering-state" :class="{'active-state': isBuffering}" />
       </div>
     </div>
+    <!-- 播放结束 -->
+    <div class="finished-layer" v-show="isVideoEnd">
+      <div class="finished-content" v-if="finishedRecommendItem !== null">
+        <p class="finished-title">为你推荐:</p>
+        <div class="finished-item">
+          <!-- 封面 -->
+          <div class="finished-cover-wrapper">
+            <img :src="finishedRecommendItem.pic" atl="image cover"/>
+            <div class="count-down-progress"></div>
+          </div>
+          <!-- 内容 -->
+          <div class="finished-text-box">
+            <p>{{ finishedRecommendItem.title }}</p>
+            <button class="open-in-app-btn">App内打开</button>
+          </div>
+        </div>
+      </div>
+      <button class="loop-btn" @click="replay"><i class="icon-heart" />重新播放</button>
+    </div>
   </div>
 </template>
 
@@ -122,11 +141,20 @@ export default {
       firstFrameLoaded: false,
       shouldVideoPlay: false, // 期望的播放状态(有可能实际在缓冲)
       isBuffering: false,
+      isVideoEnd: false,
       currentPlayingTime: 0,
+      finishedRecommend: [],
+      finishedRecommendItemIndex: 0,
     };
   },
   computed: {
     ...mapGetters(['videoAid', 'playUrlInfo']),
+    finishedRecommendItem() {
+      if (this.finishedRecommend.length > 0) {
+        return this.finishedRecommend[this.finishedRecommendItemIndex];
+      }
+      return null;
+    },
     formatedCurrentTime() {
       const dr = moment.duration(this.currentPlayingTime, 'seconds');
       return `${this._paddingZero(Math.floor(dr.asMinutes()))}:${this._paddingZero(dr.seconds())}`;
@@ -162,7 +190,7 @@ export default {
           that.resetPlayer(newVal.playUrl);
         }, 20);
       }
-    }
+    },
   },
   created() {
     console.log(this.playUrlInfo);
@@ -179,6 +207,7 @@ export default {
       this.shouldVideoPlay = false;
       this.isBuffering = false;
       this.currentPlayingTime = 0;
+      this.isVideoEnd = false;
       // video重置
       this.$refs.video.pause();
       this.$refs.video.src = src;
@@ -222,14 +251,18 @@ export default {
       this.firstFrameLoaded = true;
     },
     startPlaying() {
-      // 开始播放 & 隐藏cover层 & 获取结束推荐
+      // 开始播放 & 隐藏cover层
       this.playVideo();
       this.showCoverLayer = false;
-      console.log('?');
-      getFinishedRecommend().then(res => {
-        console.log('?');
-        console.log(res);
-      }).catch(e => console.log('!'));
+      // 获取结束推荐
+      getFinishedRecommend(this.playUrlInfo.tid)
+        .then(res => {
+          if (res.data.code === 0) {
+            this.finishedRecommend = res.data.data;
+          } else {
+            this.finishedRecommend = [];
+          }
+        }).catch(e => console.log('!'));
     },
     pauseVideo() {
       this.clearAutoHideTimer();
@@ -271,14 +304,30 @@ export default {
       // 之后还需同步弹幕
     },
     end() {
+      this.isVideoEnd = true;
+      // 定时切换推荐
+      if (this.finishedRecommend.length > 0) {
+        // 有推荐
+        this.loopRecommendTimer = setInterval(() => {
+          console.log('hello?');
+          this.finishedRecommendItemIndex = (1 + this.finishedRecommendItemIndex) % this.finishedRecommend.length;
+        }, 3000);
+      }
       console.log('end');
-      getFinishedRecommend()
-        .then(res => console.log(res));
+    },
+    replay() {
+      this.$refs.video.currentTime = 0;
+      this.playVideo();
+      this.isVideoEnd = false;
     },
     error(e) {
       console.log('error', e);
-    }
-
+    },
+    beforeDestroy() {
+      // 清空timer
+      clearInterval(this.loopRecommendTimer);
+      clearTimeout(this.autoHideTimer);
+    },
   }
 };
 </script>
@@ -365,7 +414,7 @@ export default {
 .video-time-box {
   flex: 27;
   height: 1rem;
-  background-color: gold;
+  // background-color: gold;
   p {
     font-size: $font-size-small;
     color: $color-text-white;
@@ -395,7 +444,7 @@ export default {
   span {
     color: $color-text-white;
   }
-  background-color: lavender;
+  // background-color: lavender;
 }
 
 // Cover Layer
@@ -500,6 +549,108 @@ export default {
 .hide-controls {
   visibility: hidden;
   opacity: 0;
+}
+
+.finished-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.88);
+}
+
+.finished-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  // background-color: lightcyan;
+}
+
+.finished-title {
+  height: 2.5rem;
+  width: 100%;
+  line-height: 3rem;
+  padding-left: 0.5rem;
+  font-size: $font-size-small;
+  color: $color-text-white;
+}
+
+.finished-item {
+  position: absolute;
+  top: 2.5rem;
+  left: 0;
+  padding: 0 0.5rem;
+  width: 100%;
+  height: 3rem;
+  display: flex;
+  align-items: flex-start;
+  // background-color: coral;
+}
+
+.finished-cover-wrapper {
+  flex: 0 0 5rem;
+  height: 3rem;
+  border-radius: 0.2rem;
+  overflow: hidden;
+  position: relative;
+  background-color: olive;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  .count-down-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0.11rem;
+    background-color: $color-theme;
+    animation: decrease-length 3s cubic-bezier(.08,.75,.21,.88) infinite;
+  }
+}
+
+@keyframes decrease-length {
+  0% { width: 100% }
+  100% { width: 0}
+}
+
+.finished-text-box {
+  flex: auto;
+  width: 100%;
+  height: 100%;
+  padding-left: 0.3rem;
+  // background-color: pink;
+  display: flex;
+  flex-direction: column;
+  p {
+    flex: 0 0 2rem;
+    line-height: 1rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: $font-size-small;
+    color: $color-text-white;
+    word-break: break-all;
+  }
+  .open-in-app-btn {
+    flex: auto;
+    width: 3.5rem;
+    color: $color-theme;
+    border: 0.05rem solid $color-theme;
+    border-radius: 0.02rem;
+    background-color: transparent;
+    font-size: $font-size-small;
+    font-weight: normal;
+  }
+}
+
+.loop-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: transparent;
+  font-size: $font-size-small;
+  color: $color-text-white;
 }
 
 </style>

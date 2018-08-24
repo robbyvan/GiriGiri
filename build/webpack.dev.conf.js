@@ -235,28 +235,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           },
           // params: req.query,
         })
-        .then(response => {
-          return res.json(response.data)
-        })
+        .then(response => res.json(response.data))
         .catch(e => console.log(e));
       });
 
-       // 获取结束推荐
+      // 获取结束推荐
       apiRoutes.get('/api/finished_recommend', (req, res) => {
-        const url = `https://api.bilibili.com/x/web-interface/ranking/region`;
-        // console.log(url);
+        const url = 'https://api.bilibili.com/x/web-interface/ranking/region';
         axios.get(url, {
           headers: {
             referer: 'https://m.bilibili.com/index.html/',
-            host: 'api.bilibili.com',
+            host: 'api.bilibili.com'
           },
-          params: req.query,
+          params: req.query
         })
-        .then(response => {
-          return res.json(response.data)
-        })
-        .catch(e => console.log(e));
-      });
+          .then(response => res.json(response.data))
+          .catch(e => console.log(e));
+        });
 
       // 获取评论
       apiRoutes.get('/api/video_reply', (req, res) => {

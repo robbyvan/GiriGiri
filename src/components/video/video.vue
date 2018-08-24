@@ -114,7 +114,7 @@ import CommentList from 'base/comment-list/comment-list';
 import GotopButton from 'base/gotop-button/gotop-button';
 import MFooter from 'base/m-footer/m-footer';
 import LoadingVideo from 'base/loading/loading-video';
-import { loadVideoScreenData, getVideoReplies } from 'api/video';
+import { loadVideoScreenData, getVideoView, getVideoReplies } from 'api/video';
 import { prefixStyle } from 'common/js/dom';
 
 const transform = prefixStyle('transform');
@@ -177,6 +177,7 @@ export default {
       if (newAid === prevAid) {
         return;
       }
+      // 重载页面数据
       this._loadVideoScreenData();
     }
   },
@@ -198,32 +199,45 @@ export default {
       setPlayUrlInfo: 'SET_PLAY_URL_INFO'
     }),
     ...mapActions(['selectVideoPlay', 'setAllTabsBySubTabRid']),
-    // _syncVideoAid() {
-    //   if (this.$route.params.aid) {
-    //     const aidStr = this.$route.params.aid;
-    //     let aid = '';
-    //     if (aidStr.starsWith('av')) {
-    //       aid =
-    //     }
-    //   } else {
-    //     this.$router.push('/home');
-    //   }
-    // },
     _loadVideoScreenData() {
+      const that = this;
       if (!this.videoAid) {
-        this.$router.push('/home');
-        return;
+        // 首次url + av 进入video页, 检查aid是否合法
+        const path = this.$route.params.aid;
+        // console.log(path);
+        if (path !== '') {
+          const reg = /^av\d+$/;
+          const res = path.match(reg);
+          if (!res) {
+            // not valid path
+            this.$router.push('/home');
+            return;
+          }
+          const aid = res[0].slice(2);
+          // 检查存在此av号否
+          getVideoView(aid).then(res => {
+            if (res.data.code === 0) {
+              // 存在av
+              that.selectVideoPlay({aid});
+            } else {
+              that.$router.push('/home');
+            }
+          });
+        } else {
+          this.$router.push('/home');
+        }
+      } else {
+        loadVideoScreenData(this.videoAid)
+          .then(res => {
+            // console.log(res);
+            this.videoViewInfo = res.videoViewInfo;
+            this.setPlayUrlInfo(res.playUrlInfo);
+            this.tags = res.tags;
+            this.recommendVideos = res.recommendVideos.slice(0, 20); // 只要20;
+            this.videoPages = res.videoPages;
+            this.dataLoaded = true;
+          });
       }
-      loadVideoScreenData(this.videoAid)
-        .then(res => {
-          console.log(res);
-          this.videoViewInfo = res.videoViewInfo;
-          this.setPlayUrlInfo(res.playUrlInfo);
-          this.tags = res.tags;
-          this.recommendVideos = res.recommendVideos.slice(0, 20); // 只要20;
-          this.videoPages = res.videoPages;
-          this.dataLoaded = true;
-        });
     },
     _handleScroll() {
       const rect = this.$refs.video.getBoundingClientRect();
@@ -264,8 +278,8 @@ export default {
       return `${(num / 10000).toFixed(1)}万`;
     },
     handlePathNavClick(rid) {
-      this.$router.push(`/home/${rid}`);
       this.setAllTabsBySubTabRid({ rid });
+      this.$router.push(`/home/${rid}`);
     },
     _calculateDetailInfoOffsetHeight() {
       const diRect = this.$refs.detailedInfo.getBoundingClientRect();

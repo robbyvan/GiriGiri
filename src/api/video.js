@@ -15,6 +15,7 @@ export function loadVideoScreenData(aid) {
         playUrl: res[0].data.durl[0].url,
         img: res[1].data.data.pic,
         aid: res[1].data.data.aid,
+        tid: res[1].data.data.tid,
       };
       const videoViewInfo = {
         pic: res[1].data.data.pic,
