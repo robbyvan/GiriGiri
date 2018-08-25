@@ -13,7 +13,6 @@ const portfinder = require('portfinder')
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const http = require('http');
-// const xml = require('xml');
 const zlib = require('zlib');
 const request = require('request');
 
@@ -176,28 +175,23 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       const fsm = FSM();
       apiRoutes.get('/api/video_url', (req, res) => {
         // 模拟获取视频地址
-        const url = 'https://api.bilibili.com/x/web-interface/ranking';
+        const url = 'https://api.bilibili.com/x/web-interface/view';
         axios.get(url, {
           headers: {
             referer: 'https://m.bilibili.com/index.html/',
             host: 'api.bilibili.com'
           },
-          params: req.query
+          params: { aid: req.query.cid }
         })
-          .then(response => res.json(fsm.next().value))
+          .then(response => {
+            const cidArr = response.data.data.pages.filter(p => p.page === Number(req.query.page));
+            const r = {
+              ...fsm.next().value,
+              cid: cidArr[0].cid
+            };
+            res.json(r);
+          })
           .catch(e => console.log(e));
-        // const url = 'https://api.bilibili.com/playurl';
-        // // 三方api
-        // console.log(req.query);
-        // axios.get(url, {
-        //   headers: {
-        //     referer: 'https://m.bilibili.com/index.html/',
-        //     host: 'api.bilibili.com'
-        //   },
-        //   params: req.query,
-        // })
-        // .then(response => res.json(response.data))
-        // .catch(e => console.log(e));
       });
 
       // 获取view信息: 分集 描述
@@ -274,20 +268,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       // 获取弹幕: xml
       apiRoutes.get('/api/video_danmu', (req, res) => {
         const url = `http://api.bilibili.com/x/v1/dm/list.so?oid=${req.query.cid}`;
-        // let completeRes = '';
+        console.log(url);
+        let completeRes = '';
         request({ method: 'GET', url: url, gzip: true, multipart: { chunked: true, data: []} }, (error, response, body) => {
-          // console.log('error', error);
-          // console.log('statusCode', response && response.statusCode);
+          console.log('error', error);
+          console.log('statusCode', response && response.statusCode);
           // console.log('server encoded the data as: ' + (response.headers['content-encoding'] || 'identity'));
           // console.log('the decoded data is: ' + body)
-          // console.log(typeof body);
-          // res.send(body);
-          res.end();
+          console.log(typeof body);
+          res.send(body);
+          // res.end();
         }).on('data', chunk => {
           // decompressed data as it is received
-          // console.log('decoded chunk: ');
-          // completeRes += chunk;
-          res.write(chunk);
+          console.log('decoded chunk: ');
+          completeRes += chunk;
+          // res.write(chunk);
         }).on('response', response => {
           // unmodified http.IncomingMessage object
           // response.on('data', chunk => {

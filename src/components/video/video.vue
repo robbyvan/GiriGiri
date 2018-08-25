@@ -228,7 +228,7 @@ export default {
           this.$router.push('/home');
         }
       } else {
-        loadVideoScreenData(this.videoAid)
+        loadVideoScreenData(this.videoAid, this.currentVideoPage)
           .then(res => {
             // console.log(res);
             this.videoViewInfo = res.videoViewInfo;

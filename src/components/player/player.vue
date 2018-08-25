@@ -29,11 +29,13 @@
     <div class="video-loading" v-show="!firstFrameLoaded">
       <img src="../../common/img/lazy2.gif" alt="loading gif" />
     </div>
-    <!-- 加载完毕 -->
-    <div class="video-layers" v-show="firstFrameLoaded && !isVideoEnd">
-      <!-- 弹幕层: z-index 1 -->
-      <div class="video-danmu" v-show="showDanmuLayer"></div>
+    <!-- danmaku -->
 
+    <!-- 加载完毕 -->
+    <div class="video-layers">
+      <!-- 弹幕层: z-index 1 -->
+      <div class="video-danmaku">
+      </div>
       <!-- 控制层: z-index 2 -->
       <div
         class="video-controls"
@@ -83,10 +85,7 @@
         <button class="video-start-play-btn" />
       </div>
       <!-- 播放控制: z-index 2 -->
-      <div
-        class="player-state-button"
-        @click="toggleControlLayer"
-      >
+      <div class="player-state-button" @click="toggleControlLayer">
         <button
           class="video-resume-btn"
           :class="{'active-state': !shouldVideoPlay, 'hide-controls': !showControlLayer}"
@@ -125,8 +124,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import moment from 'moment';
+import Danmu from 'bilidanmaku-parser';
+// import { CommentManager } from 'comment-core-library/build/CommentCoreLibrary.js';
+// import 'comment-core-library/build/style.css';
 import ProgressBar from 'base/progress-bar/progress-bar';
 import { getFinishedRecommend, getVideoDanmu } from 'api/video';
+
+// const CommentManager = require('exports-loader?CommentManager!./CommentCoreLibrary.js');
 
 export default {
   components: {
@@ -137,7 +141,7 @@ export default {
       // UI相关
       showCoverLayer: true,
       showControlLayer: false,
-      showDanmuLayer: false,
+      showDanmuLayer: true,
       isFullScreen: false,
       // 视频播放相关
       firstFrameLoaded: false,
@@ -147,6 +151,12 @@ export default {
       currentPlayingTime: 0,
       finishedRecommend: [],
       finishedRecommendItemIndex: 0,
+      // 弹幕播放相关
+      danmaku: null,
+      // canDanmakuPlay: false,
+      // danmakuList: [],
+      // bindCCL: false,
+      // playingDanmaku: null,
     };
   },
   computed: {
@@ -201,8 +211,25 @@ export default {
   created() {
     this.loopRecommendTimer = null;
     this.autoHideTimer = null;
+    // this.danmakuTimer = -1;
+  },
+  mounted() {
+  },
+  updated() {
+    // if (!this.bindCCL) {
+    //   console.log(this.$refs.myCommentStage);
+    //   this.CM = new CommentManager(this.$refs.myCommentStage);
+    //   this.CM.init();
+    //   this.CM.start();
+    //   console.log(this.CM);
+    //   this.bindCCL = true;
+    // }
   },
   methods: {
+    loadDanmakuToCCL() {
+      console.log(this.danmakuList);
+    },
+    // UI相关
     resetPlayer(src) {
       // console.log('reset!');
       // 清除定时器
@@ -211,13 +238,21 @@ export default {
       // 状态重置
       this.showCoverLayer = true;
       this.showControlLayer = false;
-      this.showDanmuLayer = false;
-      this.isFullScreen = false;
+      // this.showDanmuLayer = true;
+      // this.isFullScreen = false;
       this.firstFrameLoaded = false;
       this.shouldVideoPlay = false;
       this.isBuffering = false;
       this.currentPlayingTime = 0;
       this.isVideoEnd = false;
+      // 弹幕重置
+      this.canDanmakuPlay = false;
+      this.danmakuTimer = -1;
+      if (this.danmaku) {
+        // this.danmaku.stop();
+        // this.playingDanmaku = null;
+        this.danmaku = null;
+      }
       // video重置
       this.$refs.video.pause();
       this.$refs.video.src = src;
@@ -251,6 +286,7 @@ export default {
       clearTimeout(this.autoHideTimer);
     },
     toggleDanmuLayer() {
+      console.log('点击了');
       this.showDanmuLayer = !this.showDanmuLayer;
     },
     toggleFullsScreen() {
@@ -260,12 +296,29 @@ export default {
     loaded() {
       this.firstFrameLoaded = true;
       // 开始获取弹幕
-      getVideoDanmu(this.playUrlInfo.tid).then(res => {
-        console.log(res);
+      getVideoDanmu(this.playUrlInfo.cid).then(res => {
+        const rawJson = JSON.parse(res);
+        console.log(rawJson);
+        const danmaku = new Danmu(rawJson, this.handleDanmaku, this.playUrlInfo.timelength);
+        console.log('loaded', danmaku);
+        // const danmakuList = danmaku.danmu.map(d => ({
+        //   mode: 1, // Number(d.mode),
+        //   text: d.content,
+        //   stime: d.time,
+        //   size: Number(d.fontSize) / 1.5,
+        //   color: parseInt(`0x${d.color.substr(1)}`),
+        // }));
+        // this.CM.load(danmakuList);
+        // console.log(this.CM);
       });
     },
+    // 弹幕操作
+    handleDanmaku({ item, index }) {
+      console.log('当前', item.content);
+    },
+    // 视频操作
     startPlaying() {
-      // 开始播放 & 隐藏cover层
+      // 开始播放/弹幕 & 隐藏cover层
       this.playVideo();
       this.showCoverLayer = false;
       // 获取结束推荐
@@ -287,6 +340,7 @@ export default {
       this.shouldVideoPlay = false;
       this.isBuffering = false;
       // 之后还要暂停弹幕
+      // this.CM.stop();
     },
     playVideo() {
       this.clearAutoHideTimer();
@@ -295,19 +349,25 @@ export default {
       this.shouldVideoPlay = true;
       this.showControlLayer = true;
       this.hideControlLayerInTime();
+      // 弹幕?
     },
     updateTime(e) {
       this.currentPlayingTime = e.target.currentTime;
+      // console.log(this.CM.position);
+      // this.CM.time(e.target.currentTime * 1000);
     },
     ready() {
       this.shouldVideoPlay = true;
       this.isBuffering = false;
       // console.log('playing!');
+      // 影响弹幕
     },
     wait() {
       this.shouldVideoPlay = false;
       this.isBuffering = true;
+      this.canDanmakuPlay = false;
       // console.log('waiting!');
+      // 暂停弹幕
     },
     onProgressBarChange(percent) {
       const currentTime = this.playUrlInfo.timelength * percent;
@@ -316,7 +376,6 @@ export default {
       if (!this.shouldVideoPlay) {
         this.playVideo();
       }
-      // 之后还需同步弹幕
     },
     end() {
       this.isVideoEnd = true;
@@ -383,12 +442,23 @@ export default {
   }
 }
 
+#my-player {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background-color: transparent;
+}
+
 .video-layers {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .video-loading {
@@ -405,11 +475,13 @@ export default {
   }
 }
 
-.video-danmu {
+.video-danmaku {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
-  background-color: rgba(169, 193, 196, 0.5);
+  // z-index: 1;
 }
 
 // Control Layer
@@ -573,6 +645,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 99;
   background-color: rgba(0, 0, 0, 0.88);
 }
 

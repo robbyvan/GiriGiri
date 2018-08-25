@@ -1,13 +1,14 @@
 import axios from 'axios';
+import convert from 'xml-js';
 
-export function loadVideoScreenData(aid) {
-  const playUrlP = getVideoUrl(aid); // 盗链限制, mock data
+export function loadVideoScreenData(aid, pn = 1) {
+  const playUrlP = getVideoUrl(aid, pn); // 盗链限制, mock data
   const viewP = getVideoView(aid);
   const tagsP = getVideoTags(aid);
   const recommendsP = getVideoRecommend(aid);
   return Promise.all([playUrlP, viewP, tagsP, recommendsP])
     .then(res => {
-      // console.log(res);
+      console.log(res);
       const playUrlInfo = {
         // 盗链限制, mock data
         timelength: res[0].data.timelength,
@@ -15,6 +16,7 @@ export function loadVideoScreenData(aid) {
         img: res[1].data.data.pic,
         aid: res[1].data.data.aid,
         tid: res[1].data.data.tid,
+        cid: res[0].data.cid,
       };
       const videoViewInfo = {
         pic: res[1].data.data.pic,
@@ -96,8 +98,9 @@ export function getVideoReplies(aid, pageNum = 1) {
 }
 
 // 获取弹幕
-export function getVideoDanmu(cid = '50403051') {
+export function getVideoDanmu(cid) {
   const url = '/api/video_danmu';
+  console.log(cid);
   const options = {
     cid
   };
@@ -105,8 +108,10 @@ export function getVideoDanmu(cid = '50403051') {
     axios.get(url, { params: options })
       .then(res => {
         // console.log(res.data);
-        console.log(typeof res.data);
-        resolve(res.data);
+        // console.log(typeof res.data);
+        const formatedData = convert.xml2json(res.data, { compact: true, spaces: 2 });
+        // console.log(formatedData);
+        resolve(formatedData);
       })
       .catch(e => {
         console.log(e);
