@@ -33,6 +33,7 @@
     <div class="video-layers" v-show="firstFrameLoaded && !isVideoEnd">
       <!-- 弹幕层: z-index 1 -->
       <div class="video-danmu" v-show="showDanmuLayer"></div>
+
       <!-- 控制层: z-index 2 -->
       <div
         class="video-controls"
@@ -65,6 +66,7 @@
           </span>
         </div>
       </div>
+
       <!-- 封面层: z-index 3 -->
       <div
         v-show="showCoverLayer"
@@ -124,7 +126,7 @@
 import { mapGetters } from 'vuex';
 import moment from 'moment';
 import ProgressBar from 'base/progress-bar/progress-bar';
-import { getFinishedRecommend } from 'api/video';
+import { getFinishedRecommend, getVideoDanmu } from 'api/video';
 
 export default {
   components: {
@@ -257,6 +259,10 @@ export default {
     // 视频播放相关
     loaded() {
       this.firstFrameLoaded = true;
+      // 开始获取弹幕
+      getVideoDanmu(this.playUrlInfo.tid).then(res => {
+        console.log(res);
+      });
     },
     startPlaying() {
       // 开始播放 & 隐藏cover层
@@ -271,6 +277,7 @@ export default {
             this.finishedRecommend = [];
           }
         }).catch(e => console.log(e));
+      // 获取弹幕x 改到在loaded中
     },
     pauseVideo() {
       this.clearAutoHideTimer();

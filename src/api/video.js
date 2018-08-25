@@ -96,10 +96,20 @@ export function getVideoReplies(aid, pageNum = 1) {
 }
 
 // 获取弹幕
-export function getVideoDanmu(cid) {
+export function getVideoDanmu(cid = '50403051') {
   const url = '/api/video_danmu';
   const options = {
-    cid,
+    cid
   };
-  return axios.get(url, { params: options });
+  return new Promise((resolve, reject) => {
+    axios.get(url, { params: options })
+      .then(res => {
+        // console.log(res.data);
+        console.log(typeof res.data);
+        resolve(res.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  });
 }
