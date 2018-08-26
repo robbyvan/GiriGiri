@@ -12,18 +12,22 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bilidanmaku-parser": "^1.0.1",
     "body-parser": "^1.18.3",
+    // "comment-core-library": "^0.9.3",
     "fastclick": "^1.0.6",
     "jsonp": "^0.2.1",
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "node-sass": "^4.9.3",
     "querystring": "^0.2.0",
+    "request": "^2.88.0",
     "sass-loader": "^7.1.0",
     "vue": "^2.5.2",
     "vue-lazyload": "^1.2.6",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "xml-js": "^1.6.7"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

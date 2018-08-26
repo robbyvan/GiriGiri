@@ -254,9 +254,11 @@ export default {
       this.isLoadingMore = true;
       getSubTabLatestByPage(this.subTabRid, this.detailLatestPageNum + 1)
         .then(res => {
-          const detailLatest = res.data;
-          this.detailLatestArchive = [...this.detailLatestArchive, ...detailLatest.archives];
-          this.detailLatestPageNum = detailLatest.page.num;
+          if (res.data.code === 0) {
+            const detailLatest = res.data;
+            this.detailLatestArchive = [...this.detailLatestArchive, ...detailLatest.archives];
+            this.detailLatestPageNum = detailLatest.page.num;
+          }
           this.isLoadingMore = false;
         })
         .catch(e => {

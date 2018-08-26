@@ -1,7 +1,7 @@
 import * as types from './mutation-types';
 import { TABS, MAIN_TABS } from 'api/config';
 
-export function selectVideoPlay({ commit }, { aid, pageNum }) {
+export function selectVideoPlay({ commit }, { aid, pageNum = 1 }) {
   commit(types.SET_VIDEO_AID, aid);
   commit(types.SET_CURRENT_VIDEO_PAGE, pageNum);
 }

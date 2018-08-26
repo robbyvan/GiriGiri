@@ -48,6 +48,8 @@ export default {
     progressClick(e) {
       const rect = this.$refs.progressBar.getBoundingClientRect();
       const offsetWidth = e.pageX - rect.left;
+      // console.log('click', offsetWidth);
+      this._offset(offsetWidth);
       this._triggerPercent(offsetWidth);
     },
     progressTouchStart(e) {
