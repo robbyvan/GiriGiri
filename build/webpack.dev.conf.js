@@ -290,6 +290,20 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           // });
         })
       });
+
+
+      //获取热搜词
+      apiRoutes.get('/api/hotword', (req, res) => {
+        const url = 'https://s.search.bilibili.com/main/hotword';
+        axios.get(url, {
+          headers: {
+            'referer': 'https://m.bilibili.com/search.html',
+            'host': 's.search.bilibili.com',
+          }
+        })
+        .then(response => res.json(response.data))
+        .catch(e => console.log(e));
+      });
     },
     clientLogLevel: 'warning',
     historyApiFallback: {

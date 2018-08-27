@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('../fonts/icomoon.eot?s0vg9x');
-  src:  url('../fonts/icomoon.eot?s0vg9x#iefix') format('embedded-opentype'),
-    url('../fonts/icomoon.ttf?s0vg9x') format('truetype'),
-    url('../fonts/icomoon.woff?s0vg9x') format('woff'),
-    url('../fonts/icomoon.svg?s0vg9x#icomoon') format('svg');
+  src:  url('../fonts/icomoon.eot?6nfkef');
+  src:  url('../fonts/icomoon.eot?6nfkef#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.ttf?6nfkef') format('truetype'),
+    url('../fonts/icomoon.woff?6nfkef') format('woff'),
+    url('../fonts/icomoon.svg?6nfkef#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -111,24 +111,27 @@
 .icon-tv:before {
   content: "\e91c";
 }
+.icon-clock1:before {
+  content: "\e925";
+}
 .icon-list:before {
   content: "\e91d";
 }
 .icon-maximize:before {
   content: "\e91e";
 }
-.icon-maximize-2:before {
-  content: "\e91f";
-}
 .icon-minimize:before {
   content: "\e920";
 }
-.icon-minimize-2:before {
-  content: "\e921";
+.icon-music:before {
+  content: "\e926";
 }
 .icon-slash:before {
   content: "\e922";
 }
 .icon-star:before {
   content: "\e923";
+}
+.icon-x-circle:before {
+  content: "\e927";
 }
