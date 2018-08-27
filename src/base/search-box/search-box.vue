@@ -2,7 +2,7 @@
   <div class="search-box">
     <i class="icon-search" />
     <input type="text" class="box" ref="query" :placeholder="placeholder" v-model="query" />
-    <i class="icon-x-circle" v-show="true" />
+    <i class="icon-x-circle" v-show="showClear" @click="clear" />
   </div>
 </template>
 
@@ -16,11 +16,16 @@ export default {
   data() {
     return {
       query: '',
+      showClear: false,
     };
   },
   created() {
     this.$watch('query', debounce(newQuery => {
-      console.log(newQuery);
+      if (!this.showClear && newQuery.length > 0) {
+        this.showClear = true;
+      } else if (this.showClear && newQuery.length === 0) {
+        this.showClear = false;
+      }
       this.$emit('query', newQuery);
     }, 200));
   },
