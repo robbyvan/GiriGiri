@@ -26,3 +26,28 @@ https://comment.bilibili.com/50403051.xml
 第七个参数是发送者的ID，用于“屏蔽此弹幕的发送者”功能
 第八个参数是弹幕在弹幕数据库中rowID 用于“历史弹幕”功能。
 
+
+// 搜索推荐
+https://s.search.bilibili.com/main/suggest?func=suggest&suggest_type=accurate&sub_type=tag&main_ver=v1&highlight=&bangumi_acc_num=3&special_acc_num=0&upuser_acc_num=0&tag_num=10&term=%E6%8B%92%E7%BB%9D
+
+
+搜索Host: https://m.bilibili.com/search/searchengine
+
+// 搜索综合
+  默认排序
+  {"keyword":"","page":1,"pagesize":20,"platform":"h5","search_type":"all","main_ver":"v3","order":"totalrank","bangumi_num":3,"movie_num":3}
+  播放多
+  {"keyword":"","page":1,"pagesize":20,"platform":"h5","search_type":"all","main_ver":"v3","order":"click","bangumi_num":3,"movie_num":3}
+  新发布
+  {"keyword":"","page":1,"pagesize":20,"platform":"h5","search_type":"all","main_ver":"v3","order":"pubdate","bangumi_num":3,"movie_num":3}
+  弹幕多
+  {"keyword":"","page":1,"pagesize":20,"platform":"h5","search_type":"all","main_ver":"v3","order":"dm","bangumi_num":3,"movie_num":3}
+
+// 搜索用户
+{"keyword":"","page":1,"pagesize":20,"platform":"h5","search_type":"upuser","main_ver":"v3","order":"totalrank"}
+
+// 搜索番剧
+{"keyword":"","page":1,"pagesize":20,"platform":"h5","search_type":"bangumi","main_ver":"v3","order":"totalrank"}
+
+// 搜索影视
+{"keyword":"","page":1,"pagesize":20,"platform":"h5","search_type":"pgc","main_ver":"v3","order":"totalrank"}

@@ -7,24 +7,41 @@
       </div>
       <button class="cancel-btn">取消</button>
     </div>
-    <!-- 热搜 -->
-    <div class="hotword-wrapper">
-      <h2>大家都在搜</h2>
-      <div class="words-wrapper">
-        <p
-          v-for="hw in hotWords"
-          :key="hw.keyword"
-          @click="selectHotwordTag(hw.keyword)"
-        >{{hw.keyword}}</p>
-        <p></p>
-        <p></p>
-        <p></p>
-        <p></p>
-      </div>
-    </div>
 
-    <!-- 搜索建议 -->
-    <div class="suggest-list" v-show="showSuggest">
+    <!-- 热搜 -->
+    <div class="search-home">
+      <div class="hotword-wrapper">
+        <h2>大家都在搜</h2>
+        <div class="words-wrapper">
+          <p
+            v-for="hw in hotWords"
+            :key="hw.keyword"
+            @click="selectHotwordTag(hw.keyword)"
+          >{{hw.keyword}}</p>
+          <p></p>
+          <p></p>
+          <p></p>
+          <p></p>
+        </div>
+      </div>
+      <!-- 搜索历史 -->
+      <div class="search-history">
+        <h2 class="history-title">历史搜索</h2>
+        <p
+          class="search-history-item"
+          v-for="s in searchHistory"
+          :key="s"
+          @click="selectHistoryItem(s)"
+        ><i class="icon-clock" />{{ s }}</p>
+        <button
+          class="clear-history-btn"
+          v-show="searchHistory.length > 0"
+          @click="clearSearchHistory"
+        >清除历史记录</button>
+      </div>
+      </div>
+      <!-- 搜索建议 -->
+      <div class="suggest-list" v-show="showSuggest">
       <div class="suggest-list-start-line"></div>
       <p
         class="suggest-item"
@@ -35,21 +52,8 @@
       ></p>
     </div>
 
-    <!-- 搜索历史 -->
-    <div class="search-history">
-      <h2 class="history-title">历史搜索</h2>
-      <p
-        class="search-history-item"
-        v-for="s in searchHistory"
-        :key="s"
-        @click="selectHistoryItem(s)"
-      ><i class="icon-clock" />{{ s }}</p>
-      <button
-        class="clear-history-btn"
-        v-show="searchHistory.length > 0"
-        @click="clearSearchHistory"
-      >清除历史记录</button>
-    </div>
+    <router-view></router-view>
+
   </div>
 </template>
 
@@ -131,7 +135,7 @@ export default {
 }
 
 .search-top-wrapper {
-  position: relative;
+  position: fixed;
   z-index: 3;
   width: 100%;
   height: 2rem;
@@ -150,6 +154,13 @@ export default {
     height: 100%;
     background-color: transparent;
   }
+}
+
+.search-home {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding-top: 2rem;
 }
 
 .hotword-wrapper {
