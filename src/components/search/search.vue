@@ -5,7 +5,7 @@
       <div class="search-box-wrapper">
         <search-box @query="handleQueryChange" ref="searchBox" />
       </div>
-      <button class="cancel-btn">取消</button>
+      <button class="cancel-btn" @click="backToHome">取消</button>
     </div>
 
     <!-- 热搜 -->
@@ -103,21 +103,26 @@ export default {
       });
     },
     selectHotwordTag(tag) {
+      // this.$refs.searchBox.setQuery(tag);
       // 直接搜tag
-      this.$refs.searchBox.setQuery(tag);
+      this.$router.push(`/search/${tag}`);
     },
     selectHistoryItem(s) {
+      // this.$refs.searchBox.setQuery(s);
       // 直接搜s
-      this.$refs.searchBox.setQuery(s);
+      this.$router.push(`/search/${s}`);
     },
     clearSearchHistory() {
       this.searchHistory = clearSearch();
     },
     selectSuggestItem(item) {
-      console.log('select', item.value);
+      // console.log('select', item.value);
       this.searchHistory = saveSearch(item.value);
+      this.$router.push(`/search/${item.value}`);
     },
-
+    backToHome() {
+      this.$router.push('/home');
+    }
   }
 };
 </script>

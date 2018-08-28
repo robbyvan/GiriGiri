@@ -308,8 +308,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       // 获取当前搜索推荐
       apiRoutes.get('/api/suggest', (req, res) => {
         const url = 'https://s.search.bilibili.com/main/suggest';
-        console.log(url);
-        console.log(req.query);
+        // console.log(url);
+        // console.log(req.query);
         axios.get(url, {
           headers: {
             'referer': 'https://m.bilibili.com/search.html',
@@ -324,14 +324,18 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         .catch(e => console.log(e))
       });
 
-      apiRoutes.post('/api/searchengine', (req, res) => {
-        console.log(req.body);
+      // 搜索
+      apiRoutes.get('/api/searchengine', (req, res) => {
+        console.log(req.query);
         const url = 'https://m.bilibili.com/search/searchengine';
-        axios.post(url, {
-          ...req.body
-        })
-        .then(response => res.json(response.data))
-        .catch(e => console.log(e));
+        const options = {
+          url: url,
+          method: 'POST',
+          json: {
+            ...req.query,
+          },
+        };
+        request(options, (err, response, body) => res.json(body));
       });
 
     },

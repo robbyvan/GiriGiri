@@ -10,7 +10,8 @@
         {{ _categoryText(index) }}
       </button>
     </div>
-    <div class="search-content-wrapper">
+    <div class="search-content-wrapper" v-if="showSearchContent">
+      <!-- 综合 -->
       <div class="total-wrapper">
         <div class="order-box">
           <button
@@ -22,16 +23,28 @@
             {{ item }}
           </button>
         </div>
+        <div class="bangumi-list-wrapper" v-show="showBangumiList">
+          <bangumi-list :bangumis="totalInfo.result.bangumi" />
+        </div>
       </div>
+      <!-- 番剧 -->
       <div class="bangumi-wrapper"></div>
+      <!-- UP主 -->
       <div class="upuser-wrapper"></div>
+      <!-- 影视 -->
       <div class="pgc-wrapper"></div>
     </div>
   </div>
 </template>
 
 <script>
+import BangumiList from 'base/bangumi-list/bangumi-list';
+import { searchTotal } from 'api/search';
+
 export default {
+  components: {
+    BangumiList
+  },
   props: {
     categories: { type: Array, default: () => ['综合', '番剧', 'UP主', '影视'] },
     orders: { type: Array, default: () => ['默认排序', '播放多', '新发布', '弹幕多'] }
@@ -40,6 +53,7 @@ export default {
     return {
       currentCategoryIndex: 0,
       currentOrderIndex: 0,
+      totalInfo: null,
       bangumis: [],
       upusers: [],
       pgcs: [],
@@ -47,8 +61,22 @@ export default {
     };
   },
   computed: {
+    showSearchContent() {
+      return this.totalInfo !== null;
+    },
+    showBangumiList() {
+      if (this.totalInfo.result.bangumi.length === 0) {
+        return false;
+      }
+      return true;
+    }
+  },
+  created() {
+    this.keyword = this.$route.params.keyword;
+    this._loadTotalInfo();
   },
   methods: {
+    // UI相关
     _categoryText(index) {
       switch (index) {
         case 1:
@@ -74,6 +102,15 @@ export default {
         return;
       }
       this.currentOrderIndex = index;
+    },
+    // 数据相关
+    _loadTotalInfo() {
+      searchTotal(this.keyword).then(res => {
+        if (res.data.code === 0) {
+          console.log(res.data);
+          this.totalInfo = res.data;
+        }
+      });
     }
   }
 };
@@ -143,6 +180,10 @@ export default {
       }
     }
   }
+}
+
+.bangumi-list-wrapper {
+  padding: 0 0.5rem;
 }
 
 </style>
