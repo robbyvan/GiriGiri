@@ -37,7 +37,18 @@
 
     <!-- 搜索历史 -->
     <div class="search-history">
-      <button>清除历史记录</button>
+      <h2 class="history-title">历史搜索</h2>
+      <p
+        class="search-history-item"
+        v-for="s in searchHistory"
+        :key="s"
+        @click="selectHistoryItem(s)"
+      ><i class="icon-clock" />{{ s }}</p>
+      <button
+        class="clear-history-btn"
+        v-show="searchHistory.length > 0"
+        @click="clearSearchHistory"
+      >清除历史记录</button>
     </div>
   </div>
 </template>
@@ -45,6 +56,7 @@
 <script>
 import SearchBox from 'base/search-box/search-box';
 import { getHotWords, getSuggestions } from 'api/search';
+import { loadSearches, saveSearch, clearSearch } from 'common/js/cache';
 
 export default {
   components: {
@@ -55,6 +67,7 @@ export default {
       showSuggest: false,
       hotWords: [],
       suggests: [],
+      searchHistory: loadSearches(),
     };
   },
   created() {
@@ -76,21 +89,31 @@ export default {
         this.showSuggest = false;
         return;
       }
+      this.showSuggest = true;
       getSuggestions(query).then(res => {
         if (res.data.code === 0) {
           this.suggests = res.data.result.tag;
-          this.showSuggest = true;
         } else {
           this.suggests = [];
         }
       });
     },
     selectHotwordTag(tag) {
+      // 直接搜tag
       this.$refs.searchBox.setQuery(tag);
+    },
+    selectHistoryItem(s) {
+      // 直接搜s
+      this.$refs.searchBox.setQuery(s);
+    },
+    clearSearchHistory() {
+      this.searchHistory = clearSearch();
     },
     selectSuggestItem(item) {
       console.log('select', item.value);
-    }
+      this.searchHistory = saveSearch(item.value);
+    },
+
   }
 };
 </script>
@@ -104,7 +127,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: $color-background-l;
+  // background-color: $color-background-l;
 }
 
 .search-top-wrapper {
@@ -134,12 +157,13 @@ export default {
   width: 100%;
   background-color: $color-background;
   h2 {
-    font-size: $font-size-medium;
+    font-size: $font-size-small;
     color: $color-text-gray;
     padding-left: 0.5rem;
+    height: 1rem;
   }
   .words-wrapper {
-    margin-top: 0.5rem;
+    padding-top: 0.5rem;
     height: 4rem;
     // background-color: lavender;
     overflow: hidden;
@@ -189,7 +213,46 @@ export default {
 }
 
 .search-history {
+  margin-top: 1rem;
+  border-top: 0.5rem solid $color-background-l;
+  padding: 0.5rem;
+  width: 100%;
+  // background-color: lavender;
+  // text-align: center;
+}
 
+.history-title {
+  font-size: $font-size-small;
+  color: $color-text-gray;
+  height: 1rem;
+  line-height: 1rem;
+  // background-color: lightcyan;
+}
+
+.search-history-item {
+  box-sizing: border-box;
+  font-size: $font-size-small;
+  height: 2rem;
+  border-bottom: 0.06rem solid $color-border;
+  display: flex;
+  align-items: center;
+  i {
+    color: $color-text-gray;
+    font-size: $font-size-medium;
+    margin-right: 0.5rem;
+  }
+}
+
+.clear-history-btn {
+  display: block;
+  background-color: transparent;
+  width: 6rem;
+  height: 1rem;
+  margin: 0.5rem auto;
+  color: $color-text-gray;
+  font-size: $font-size-small;
+  text-align: center;
+  // background-color: coral;
 }
 
 </style>
