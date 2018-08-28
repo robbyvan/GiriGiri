@@ -25,6 +25,13 @@
         </div>
         <div class="bangumi-list-wrapper" v-show="showBangumiList">
           <bangumi-list :bangumis="totalInfo.result.bangumi" />
+          <div class="more-bangumi-wrapper">
+            <div class="more-line"></div>
+            <button class="more-bangumi-btn" @click="viewAllBangumis">
+              查看更多番剧<i class="icon-eye" />
+            </button>
+            <div class="more-line"></div>
+          </div>
         </div>
       </div>
       <!-- 番剧 -->
@@ -102,6 +109,9 @@ export default {
         return;
       }
       this.currentOrderIndex = index;
+    },
+    viewAllBangumis() {
+      this.selectCategory(1);
     },
     // 数据相关
     _loadTotalInfo() {
@@ -184,6 +194,26 @@ export default {
 
 .bangumi-list-wrapper {
   padding: 0 0.5rem;
+}
+
+.more-bangumi-wrapper {
+  // background-color: lightcyan;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  .more-line {
+    height: 1px;
+    width: 25%;
+    background-color: $color-text-gray;
+  }
+  .more-bangumi-btn {
+    margin: 0 0.5rem;
+    background-color: transparent;
+    font-size: $font-size-small;
+    color: $color-text-gray;
+  }
+
 }
 
 </style>
