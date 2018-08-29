@@ -16,6 +16,9 @@
       <!-- 封面 -->
       <div class="cover-wrapper">
         <img v-lazy="video.pic" alt="cover" />
+        <div class="duration" v-if="duration">
+          <p>{{_formatDuration(video.duration)}}</p>
+        </div>
       </div>
       <!-- 详情 -->
       <div class="info">
@@ -40,18 +43,27 @@
 </template>
 
 <script>
+import moment from 'moment';
+import { formatNumber, paddingZero } from 'common/js/format';
+
 export default {
   props: {
     videos: { type: Array, default: () => [] },
-    rank: { type: Boolean, default: false } // 排行奖杯图片
+    rank: { type: Boolean, default: false }, // 排行奖杯图片
+    duration: { type: Boolean, default: false } // 视频时长
   },
   methods: {
     _formatNumber(num) {
-      num = Number(num);
-      if (num < 10000) {
-        return `${num}`;
+      return formatNumber(num);
+    },
+    _formatDuration(time) {
+      let d;
+      if (typeof time === 'number') {
+        d = moment.duration(`0:0:${time}`);
+      } else {
+        d = moment.duration(`0:${time}`);
       }
-      return `${(num / 10000).toFixed(1)}万`;
+      return `${paddingZero(d.hours())}:${paddingZero(d.minutes())}:${paddingZero(d.seconds())}`;
     },
     getRankingNum(index) {
       if (index > 2) {
@@ -92,7 +104,8 @@ export default {
     flex-direction: row;
     margin-top: 0.8rem;
     width: 100%;
-    height: 3.6rem;
+    height: 3.2rem;
+
     .rank {
       flex: 8;
       height: 100%;
@@ -121,21 +134,36 @@ export default {
         font-size: $font-size-small;
       }
     }
+
     .cover-wrapper {
       flex: 37;
       margin-right: 0.5rem;
       overflow: hidden;
       border-radius: 0.3rem;
+      position: relative;
       img {
         width: 100%;
         height: 100%;
         vertical-align: top;
         text-align: left;
       }
+      .duration{
+        position: absolute;
+        bottom: 0.15rem;
+        right: 0.15rem;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding: 0.1rem;
+        p {
+          font-size: $font-size-small-s;
+          color: $color-text-white;
+        }
+      }
     }
+
     .info {
       flex: 55;
       margin-right: 0.5rem;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -150,7 +178,7 @@ export default {
       }
       .author {
         flex: 1;
-        max-height: 0.5rem;
+        max-height: 0.4rem;
         font-size: $font-size-small-s;
         color: $color-text-gray;
         display: flex;

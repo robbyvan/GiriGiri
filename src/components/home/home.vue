@@ -66,6 +66,7 @@ export default {
     position: relative;
     width: 100%;
     // background-color: olive;
+    padding-top: 0.5rem;
   }
   .m-footer {
   }

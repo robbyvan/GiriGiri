@@ -1,6 +1,10 @@
 <template>
   <div class="bangumi-list">
-    <div class="bangumi-item" v-for="item in bangumis" :key="item.bangumi_id">
+    <div
+      class="bangumi-item"
+      v-for="item in bangumis"
+      :key="item.newest_ep_id"
+    >
       <div class="cover-wrapper">
         <img :src="item.cover" alt="bangumi cover" />
       </div>

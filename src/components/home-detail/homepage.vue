@@ -29,7 +29,7 @@
       <gotop-button />
     </div>
     <!-- 首屏加载 -->
-    <loading-index v-show="isLoadingPage" />
+    <loading-index v-if="isLoadingPage" />
   </div>
 </template>
 

@@ -1,18 +1,23 @@
 <template>
   <div class="search-result">
-    <div class="category">
+    <div class="category" ref="category">
       <button
         v-for="(item, index) in categories"
         :key="item"
         :class="{'active-category': currentCategoryIndex === index }"
         @click="selectCategory(index)"
       >
-        {{ _categoryText(index) }}
+        {{ item }} <span>{{_categoryCountText(index)}}</span>
       </button>
     </div>
-    <div class="search-content-wrapper" v-if="showSearchContent">
+    <div class="search-content-wrapper">
       <!-- 综合 -->
-      <div class="total-wrapper">
+      <div
+        class="total-wrapper"
+        ref="totalWrapper"
+        v-if="currentCategoryIndex === 0"
+      >
+        <!-- 排序方式 -->
         <div class="order-box">
           <button
             v-for="(item, index) in orders"
@@ -23,7 +28,8 @@
             {{ item }}
           </button>
         </div>
-        <div class="bangumi-list-wrapper" v-show="showBangumiList">
+        <!-- mini番剧列表 -->
+        <div class="bangumi-list-wrapper" v-if="showBangumiList && currentOrderIndex === 0">
           <bangumi-list :bangumis="totalInfo.result.bangumi" />
           <div class="more-bangumi-wrapper">
             <div class="more-line"></div>
@@ -33,24 +39,54 @@
             <div class="more-line"></div>
           </div>
         </div>
+        <!-- 推荐视频 -->
+        <div class="search-video-list" v-if="showSearchContent">
+          <video-list
+            :rank="false"
+            :duration="true"
+            :videos="videoList"
+            @select="selectVideo"
+          />
+          <p class="no-more-videos" v-show="currentPage === 5">已经刷到底部了哦ﾉ)ﾟДﾟ(</p>
+        </div>
       </div>
       <!-- 番剧 -->
-      <div class="bangumi-wrapper"></div>
+      <div class="bangumi-wrapper" v-if="currentCategoryIndex === 1">
+        <bangumi-list :bangumis="totalInfo.result.bangumi" />
+      </div>
       <!-- UP主 -->
-      <div class="upuser-wrapper"></div>
+      <div class="upuser-wrapper" v-if="currentCategoryIndex === 2"></div>
       <!-- 影视 -->
-      <div class="pgc-wrapper"></div>
+      <div class="pgc-wrapper" v-if="currentCategoryIndex === 3"></div>
+
+    </div>
+
+    <!-- 返回顶部 -->
+    <div class="gotop" v-show="showGoTopButton">
+      <gotop-button />
     </div>
   </div>
 </template>
 
 <script>
+import throttle from 'lodash/throttle';
 import BangumiList from 'base/bangumi-list/bangumi-list';
+import GotopButton from 'base/gotop-button/gotop-button';
+import MFooter from 'base/m-footer/m-footer';
 import { searchTotal } from 'api/search';
+import VideoList from 'base/video-list/video-list';
+
+const MAX_PAGE_LENGTH = 5;
+const SCROLLING_THRESHOLD = 0.25;
+const GO_TOP_THRESHOLD = 0.2;
+const ORDERS = ['totalrank', 'click', 'pubdate', 'dm'];
 
 export default {
   components: {
-    BangumiList
+    BangumiList,
+    VideoList,
+    GotopButton,
+    MFooter
   },
   props: {
     categories: { type: Array, default: () => ['综合', '番剧', 'UP主', '影视'] },
@@ -61,10 +97,15 @@ export default {
       currentCategoryIndex: 0,
       currentOrderIndex: 0,
       totalInfo: null,
+      currentPage: 1,
+      isLoadingPage: false,
+      videoList: [],
       bangumis: [],
       upusers: [],
       pgcs: [],
       keyword: '',
+      // UI
+      showGoTopButton: false,
     };
   },
   computed: {
@@ -72,28 +113,50 @@ export default {
       return this.totalInfo !== null;
     },
     showBangumiList() {
+      if (this.totalInfo === null) {
+        return false;
+      }
       if (this.totalInfo.result.bangumi.length === 0) {
         return false;
       }
       return true;
+    },
+  },
+  watch: {
+    totalInfo(newInfo) {
+      if (newInfo !== null) {
+        this.videoList = newInfo.result.video;
+      }
     }
   },
   created() {
     this.keyword = this.$route.params.keyword;
+    this.throttleFunc = throttle(this._handleScroll, 200);
     this._loadTotalInfo();
   },
+  mounted() {
+    // "无限"滚动加载
+    window.addEventListener('scroll', this.throttleFunc, false);
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.throttleFunc, false);
+  },
   methods: {
-    // UI相关
-    _categoryText(index) {
+    // UI
+    _categoryCountText(index) {
+      // console.log(this.totalInfo);
+      if (this.totalInfo === null) {
+        return '';
+      }
       switch (index) {
         case 1:
-          return `${this.categories[index]}(${this.bangumis.length})`;
+          return `(${this.totalInfo.top_tlist.bangumi})`;
         case 2:
-          return `${this.categories[index]}(${this.upusers.length})`;
+          return `(${this.totalInfo.top_tlist.upuser})`;
         case 3:
-          return `${this.categories[index]}(${this.pgcs.length})`;
+          return `(${this.totalInfo.top_tlist.pgc})`;
         default:
-          return '综合';
+          return '';
       }
     },
     // 切换大类
@@ -109,18 +172,64 @@ export default {
         return;
       }
       this.currentOrderIndex = index;
+      this.totalInfo = null;
+      searchTotal(this.keyword, 1, ORDERS[this.currentOrderIndex])
+        .then(res => {
+          // console.log(res.data);
+          if (res.data.code === 0) {
+            this.currentPage = 1;
+            this.totalInfo = res.data;
+          }
+        });
     },
     viewAllBangumis() {
       this.selectCategory(1);
+    },
+    // 点击视频
+    selectVideo(item) {
+      this.$router.push(`/video/av${item.aid}`);
     },
     // 数据相关
     _loadTotalInfo() {
       searchTotal(this.keyword).then(res => {
         if (res.data.code === 0) {
-          console.log(res.data);
+          // console.log(res.data);
           this.totalInfo = res.data;
+          this.totalrankVideos = this.totalInfo.result.video;
         }
       });
+    },
+    _handleScroll() {
+      // 只对综合下拉加载
+      if (this.currentCategoryIndex !== 0) {
+        return;
+      }
+      const rect = this.$refs.totalWrapper.getBoundingClientRect();
+      const categoryRect = this.$refs.category.getBoundingClientRect();
+      const scrollTop = categoryRect.bottom - rect.top;
+      const windowHeight = window.innerHeight - categoryRect.bottom;
+      const documentHeight = document.documentElement.scrollHeight;
+      const bodyHeight = documentHeight - windowHeight + categoryRect.bottom;
+      const scrollPercentage = scrollTop / bodyHeight;
+      // console.log('scrollPercentage', scrollPercentage);
+      if (scrollPercentage > SCROLLING_THRESHOLD) {
+        if (this.currentPage < MAX_PAGE_LENGTH && !this.isLoadingPage) {
+          this.isLoadingPage = true;
+          searchTotal(this.keyword, this.currentPage + 1, ORDERS[this.currentOrderIndex])
+            .then(res => {
+              this.videoList = [...this.videoList, ...res.data.result.video];
+              this.isLoadingPage = false;
+              this.currentPage += 1;
+            });
+        }
+      }
+
+      // goTop theshold
+      if (scrollPercentage > GO_TOP_THRESHOLD) {
+        this.showGoTopButton = true;
+      } else {
+        this.showGoTopButton = false;
+      }
     }
   }
 };
@@ -128,6 +237,13 @@ export default {
 
 <style lang="scss" scoped>
 @import 'common/scss/const.scss';
+
+.gotop {
+  position: fixed;
+  right: 1rem;
+  bottom: 2rem;
+  z-index: 100;
+}
 
 .search-result {
   position: absolute;
@@ -163,16 +279,16 @@ export default {
 
 .search-content-wrapper {
   position: relative;
-  padding-top: 2rem;
+  padding: 2rem 0;
   width: 100%;
-  height: 100%;
-  // background-color: lavender;
+  min-height: 100%;
+  background-color: $color-background-d;
 }
 
 .total-wrapper {
   width: 100%;
   height: 100%;
-  // background-color: lightcyan;
+  // padding-bottom: 1rem;
   .order-box {
     display: flex;
     align-items: center;
@@ -196,6 +312,10 @@ export default {
   padding: 0 0.5rem;
 }
 
+.search-video-list {
+  padding: 0 0.5rem;
+}
+
 .more-bangumi-wrapper {
   // background-color: lightcyan;
   display: flex;
@@ -213,7 +333,24 @@ export default {
     font-size: $font-size-small;
     color: $color-text-gray;
   }
+}
 
+.no-more-videos {
+  text-align: center;
+  font-size: $font-size-small;
+  color: $color-text-gray;
+  margin-top: 2rem;
+}
+
+.bangumi-wrapper {
+  padding: 0 0.5rem;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
 
 </style>

@@ -129,6 +129,7 @@ import Danmu from 'bilidanmaku-parser';
 // import 'comment-core-library/build/style.css';
 import ProgressBar from 'base/progress-bar/progress-bar';
 import { getFinishedRecommend, getVideoDanmu } from 'api/video';
+import { paddingZero } from 'common/js/format';
 
 // const CommentManager = require('exports-loader?CommentManager!./CommentCoreLibrary.js');
 
@@ -169,12 +170,12 @@ export default {
     },
     formatedCurrentTime() {
       const dr = moment.duration(this.currentPlayingTime, 'seconds');
-      return `${this._paddingZero(Math.floor(dr.asMinutes()))}:${this._paddingZero(dr.seconds())}`;
+      return `${paddingZero(Math.floor(dr.asMinutes()))}:${paddingZero(dr.seconds())}`;
     },
     timeLen() {
       if (this.playUrlInfo !== null && this.playUrlInfo.timelength > 0) {
         const dr = moment.duration(this.playUrlInfo.timelength);
-        return `${this._paddingZero(Math.floor(dr.asMinutes()))}:${this._paddingZero(dr.seconds())}`;
+        return `${paddingZero(Math.floor(dr.asMinutes()))}:${paddingZero(dr.seconds())}`;
       }
       return '00:00:00';
     },
@@ -259,13 +260,13 @@ export default {
       this.$refs.video.currentTime = 0;
       this.$refs.video.load();
     },
-    _paddingZero(src, digits = 2) {
-      let str = src.toString(); // 转成str
-      if (str.length < digits) {
-        return this._paddingZero(`0${str}`, digits);
-      }
-      return str;
-    },
+    // _paddingZero(src, digits = 2) {
+    //   let str = src.toString(); // 转成str
+    //   if (str.length < digits) {
+    //     return this._paddingZero(`0${str}`, digits);
+    //   }
+    //   return str;
+    // },
     toggleControlLayer() {
       // console.log('click');
       this.showControlLayer = !this.showControlLayer;
