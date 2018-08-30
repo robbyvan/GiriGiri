@@ -10,11 +10,10 @@
         {{ item }} <span>{{_categoryCountText(index)}}</span>
       </button>
     </div>
-    <div class="search-content-wrapper">
+    <div class="search-content-wrapper" ref="contentWrapper">
       <!-- 综合 -->
       <div
         class="total-wrapper"
-        ref="totalWrapper"
         v-if="currentCategoryIndex === 0"
       >
         <!-- 排序方式 -->
@@ -47,17 +46,29 @@
             :videos="videoList"
             @select="selectVideo"
           />
-          <p class="no-more-videos" v-show="currentPage === 5">已经刷到底部了哦ﾉ)ﾟДﾟ(</p>
+          <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
+          <p class="no-more" v-show="showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
         </div>
       </div>
+
       <!-- 番剧 -->
-      <div class="bangumi-wrapper" v-if="currentCategoryIndex === 1">
-        <bangumi-list :bangumis="totalInfo.result.bangumi" />
+      <div class="bangumi-wrapper" v-if="showSearchContent && currentCategoryIndex === 1">
+        <bangumi-list :bangumis="bangumis" />
+        <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
+        <p class="no-more" v-show="showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
       </div>
+
       <!-- UP主 -->
-      <div class="upuser-wrapper" v-if="currentCategoryIndex === 2"></div>
+      <div class="upuser-wrapper" v-if="showSearchContent && currentCategoryIndex === 2">
+        <user-list :users="upusers" />
+        <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
+        <p class="no-more" v-show="showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
+      </div>
+
       <!-- 影视 -->
-      <div class="pgc-wrapper" v-if="currentCategoryIndex === 3"></div>
+      <div class="pgc-wrapper" v-if="currentCategoryIndex === 3">
+        <p class="no-more">什么都没找到呀ヽ(。ﾟдﾟ)ｐ</p>
+      </div>
 
     </div>
 
@@ -71,20 +82,23 @@
 <script>
 import throttle from 'lodash/throttle';
 import BangumiList from 'base/bangumi-list/bangumi-list';
+import VideoList from 'base/video-list/video-list';
+import UserList from 'base/user-list/user-list';
 import GotopButton from 'base/gotop-button/gotop-button';
 import MFooter from 'base/m-footer/m-footer';
-import { searchTotal } from 'api/search';
-import VideoList from 'base/video-list/video-list';
+import { searchTotal, searchCertainType } from 'api/search';
 
 const MAX_PAGE_LENGTH = 5;
 const SCROLLING_THRESHOLD = 0.25;
 const GO_TOP_THRESHOLD = 0.2;
 const ORDERS = ['totalrank', 'click', 'pubdate', 'dm'];
+const CATEGORIES = ['all', 'bangumi', 'upuser', 'pgc'];
 
 export default {
   components: {
     BangumiList,
     VideoList,
+    UserList,
     GotopButton,
     MFooter
   },
@@ -97,6 +111,7 @@ export default {
       currentCategoryIndex: 0,
       currentOrderIndex: 0,
       totalInfo: null,
+      typeInfo: null,
       currentPage: 1,
       isLoadingPage: false,
       videoList: [],
@@ -116,11 +131,32 @@ export default {
       if (this.totalInfo === null) {
         return false;
       }
+      if (this.totalInfo.result.bangumi === undefined) {
+        return false;
+      }
       if (this.totalInfo.result.bangumi.length === 0) {
         return false;
       }
       return true;
     },
+    showNoMore() {
+      let info = null;
+      if (this.isLoadingPage) {
+        return false;
+      }
+      if (this.currentCategoryIndex === 0) {
+        info = this.totalInfo;
+      } else {
+        info = this.typeInfo;
+      }
+      if (info === null) {
+        return false;
+      }
+      if (info.numPages === undefined) {
+        return false;
+      }
+      return this.currentPage >= Math.min(MAX_PAGE_LENGTH, info.numPages);
+    }
   },
   watch: {
     totalInfo(newInfo) {
@@ -143,6 +179,12 @@ export default {
   },
   methods: {
     // UI
+    _formatNumber(num) {
+      if (Number(num) > 99) {
+        return '99+';
+      }
+      return `${num}`;
+    },
     _categoryCountText(index) {
       // console.log(this.totalInfo);
       if (this.totalInfo === null) {
@@ -150,11 +192,11 @@ export default {
       }
       switch (index) {
         case 1:
-          return `(${this.totalInfo.top_tlist.bangumi})`;
+          return `(${this._formatNumber(this.totalInfo.top_tlist.bangumi)})`;
         case 2:
-          return `(${this.totalInfo.top_tlist.upuser})`;
+          return `(${this._formatNumber(this.totalInfo.top_tlist.upuser)})`;
         case 3:
-          return `(${this.totalInfo.top_tlist.pgc})`;
+          return `(${this._formatNumber(this.totalInfo.top_tlist.pgc)})`;
         default:
           return '';
       }
@@ -164,7 +206,31 @@ export default {
       if (index === this.currentCategoryIndex) {
         return;
       }
+      this.isLoadingPage = true;
       this.currentCategoryIndex = index;
+      this.typeInfo = null;
+      searchCertainType(this.keyword, 1, CATEGORIES[this.currentCategoryIndex])
+        .then(res => {
+          if (res.data.code === 0) {
+            console.log(res.data);
+            this.typeInfo = res.data;
+            switch (this.currentCategoryIndex) {
+              case 1:
+                this.bangumis = res.data.result;
+                break;
+              case 2:
+                this.upusers = res.data.result;
+                break;
+              case 3:
+                this.pgcs = [];
+                break;
+              default:
+                this.videoList = this.typeInfo.result.video;
+            }
+            this.currentPage = 1;
+            this.isLoadingPage = false;
+          }
+        });
     },
     // 切换综合页排序规则
     selectOrder(index) {
@@ -191,20 +257,20 @@ export default {
     },
     // 数据相关
     _loadTotalInfo() {
+      this.isLoadingPage = true;
       searchTotal(this.keyword).then(res => {
         if (res.data.code === 0) {
-          // console.log(res.data);
           this.totalInfo = res.data;
           this.totalrankVideos = this.totalInfo.result.video;
+          this.isLoadingPage = false;
         }
       });
     },
     _handleScroll() {
-      // 只对综合下拉加载
-      if (this.currentCategoryIndex !== 0) {
+      if (this.isLoadingPage || this.showNoMore) {
         return;
       }
-      const rect = this.$refs.totalWrapper.getBoundingClientRect();
+      const rect = this.$refs.contentWrapper.getBoundingClientRect();
       const categoryRect = this.$refs.category.getBoundingClientRect();
       const scrollTop = categoryRect.bottom - rect.top;
       const windowHeight = window.innerHeight - categoryRect.bottom;
@@ -213,17 +279,33 @@ export default {
       const scrollPercentage = scrollTop / bodyHeight;
       // console.log('scrollPercentage', scrollPercentage);
       if (scrollPercentage > SCROLLING_THRESHOLD) {
-        if (this.currentPage < MAX_PAGE_LENGTH && !this.isLoadingPage) {
-          this.isLoadingPage = true;
+        this.isLoadingPage = true;
+        if (this.currentCategoryIndex === 0) {
           searchTotal(this.keyword, this.currentPage + 1, ORDERS[this.currentOrderIndex])
             .then(res => {
               this.videoList = [...this.videoList, ...res.data.result.video];
               this.isLoadingPage = false;
               this.currentPage += 1;
             });
+        } else {
+          searchCertainType(this.keyword, this.currentPage + 1, CATEGORIES[this.currentCategoryIndex])
+            .then(res => {
+              if (res.data.code === 0) {
+                this.typeInfo = res.data;
+                this.currentPage += 1;
+                this.isLoadingPage = false;
+                switch (this.currentCategoryIndex) {
+                  case 1:
+                    this.bangumis = [...this.bangumis, ...res.data.result];
+                    break;
+                  case 2:
+                    this.upusers = [...this.upusers, ...res.data.result];
+                    break;
+                }
+              }
+            });
         }
       }
-
       // goTop theshold
       if (scrollPercentage > GO_TOP_THRESHOLD) {
         this.showGoTopButton = true;
@@ -279,7 +361,7 @@ export default {
 
 .search-content-wrapper {
   position: relative;
-  padding: 2rem 0;
+  padding-top: 2rem;
   width: 100%;
   min-height: 100%;
   background-color: $color-background-d;
@@ -335,15 +417,14 @@ export default {
   }
 }
 
-.no-more-videos {
-  text-align: center;
-  font-size: $font-size-small;
-  color: $color-text-gray;
-  margin-top: 2rem;
+.bangumi-wrapper {
+  width: 100%;
+  padding: 0 0.5rem;
 }
 
-.bangumi-wrapper {
-  padding: 0 0.5rem;
+.upuser-wrapper {
+  padding: 0.5rem;
+  width: 100%;
 }
 
 .footer {
@@ -351,6 +432,22 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
+}
+
+.is-loading-page {
+  margin-top: 1rem;
+  font-size: $font-size-small;
+  color: $color-text-gray;
+  text-align: center;
+  height: 1.2rem;
+  line-height: 1.2rem;
+}
+
+.no-more {
+  padding: 1rem 0;
+  text-align: center;
+  font-size: $font-size-small;
+  color: $color-text-gray;
 }
 
 </style>
