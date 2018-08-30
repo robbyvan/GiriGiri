@@ -14,6 +14,7 @@
         <p class="latest-episode">TV更新至{{ item.total_count }}话</p>
       </div>
     </div>
+    <p class="no-more" v-show="!bangumis.length">什么都没找到呀ヽ(。ﾟдﾟ)ｐ</p>
   </div>
 </template>
 
@@ -76,6 +77,13 @@ export default {
     font-size: $font-size-small-s;
     color: $color-text-gray;
   }
+}
+
+.no-more {
+  padding: 1rem 0;
+  text-align: center;
+  font-size: $font-size-small;
+  color: $color-text-gray;
 }
 
 </style>

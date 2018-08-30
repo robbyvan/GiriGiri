@@ -13,6 +13,7 @@
         <p class="usign">{{ item.usign }}</p>
       </div>
     </div>
+    <p class="no-more" v-show="!users.length">什么都没找到呀ヽ(。ﾟдﾟ)ｐ</p>
   </div>
 </template>
 
@@ -81,6 +82,13 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
+
+.no-more {
+  padding: 1rem 0;
+  text-align: center;
+  font-size: $font-size-small;
+  color: $color-text-gray;
 }
 
 </style>

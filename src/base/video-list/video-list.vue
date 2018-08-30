@@ -39,6 +39,7 @@
         </div>
       </div>
     </li>
+    <p class="no-more" v-show="!videos.length">什么都没找到呀ヽ(。ﾟдﾟ)ｐ</p>
   </ul>
 </template>
 
@@ -203,6 +204,13 @@ export default {
       }
     }
   }
+}
+
+.no-more {
+  padding: 1rem 0;
+  text-align: center;
+  font-size: $font-size-small;
+  color: $color-text-gray;
 }
 
 </style>

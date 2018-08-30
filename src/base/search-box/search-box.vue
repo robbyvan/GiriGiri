@@ -1,7 +1,9 @@
 <template>
   <div class="search-box">
     <i class="icon-search" />
-    <input type="text" class="box" ref="query" :placeholder="placeholder" v-model="query" />
+    <form action="" @submit.prevent="handleSubmit">
+      <input type="text" class="box" ref="query" :placeholder="placeholder" v-model="query" />
+    </form>
     <i class="icon-x-circle" v-show="showClear" @click="clear" />
   </div>
 </template>
@@ -32,12 +34,16 @@ export default {
   methods: {
     clear() {
       this.query = '';
+      this.$emit('clear');
     },
     setQuery(q) {
       this.query = q;
     },
     blur() {
       this.$refs.query.blur();
+    },
+    handleSubmit() {
+      this.$emit('search');
     }
   }
 };
@@ -54,6 +60,10 @@ export default {
   background-color: $color-background-d;
   padding: 0 0.5rem;
   border-radius: 0.1rem;
+  form {
+    width: 100%;
+    height: 100%;
+  }
   i.icon-search {
     color: $color-border;
     font-weight: lighter;

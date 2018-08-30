@@ -27,48 +27,57 @@
             {{ item }}
           </button>
         </div>
-        <!-- mini番剧列表 -->
-        <div class="bangumi-list-wrapper" v-if="showBangumiList && currentOrderIndex === 0">
-          <bangumi-list :bangumis="totalInfo.result.bangumi" />
-          <div class="more-bangumi-wrapper">
-            <div class="more-line"></div>
-            <button class="more-bangumi-btn" @click="viewAllBangumis">
-              查看更多番剧<i class="icon-eye" />
-            </button>
-            <div class="more-line"></div>
+        <div class="total-box">
+          <!-- mini番剧列表 -->
+          <div class="bangumi-list-wrapper" v-if="showBangumiList && currentOrderIndex === 0">
+            <bangumi-list :bangumis="totalInfo.result.bangumi" />
+            <div class="more-bangumi-wrapper">
+              <div class="more-line"></div>
+              <button class="more-bangumi-btn" @click="viewAllBangumis">
+                查看更多番剧<i class="icon-eye" />
+              </button>
+              <div class="more-line"></div>
+            </div>
           </div>
-        </div>
-        <!-- 推荐视频 -->
-        <div class="search-video-list" v-if="showSearchContent">
-          <video-list
-            :rank="false"
-            :duration="true"
-            :videos="videoList"
-            @select="selectVideo"
-          />
-          <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
-          <p class="no-more" v-show="showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
+          <!-- 推荐视频 -->
+          <div class="search-video-list" v-if="showSearchContent">
+            <video-list
+              :rank="false"
+              :duration="true"
+              :videos="videoList"
+              @select="selectVideo"
+            />
+            <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
+            <p class="no-more" v-show="videoList.length > 0 && showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
+          </div>
         </div>
       </div>
 
       <!-- 番剧 -->
-      <div class="bangumi-wrapper" v-if="showSearchContent && currentCategoryIndex === 1">
-        <bangumi-list :bangumis="bangumis" />
-        <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
-        <p class="no-more" v-show="showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
+      <div class="bangumi-box">
+        <div class="bangumi-wrapper" v-if="showSearchContent && currentCategoryIndex === 1">
+          <bangumi-list :bangumis="bangumis" />
+          <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
+          <p class="no-more" v-show="bangumis.length > 0 && showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
+        </div>
       </div>
 
       <!-- UP主 -->
-      <div class="upuser-wrapper" v-if="showSearchContent && currentCategoryIndex === 2">
-        <user-list :users="upusers" />
-        <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
-        <p class="no-more" v-show="showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
+      <div class="upuser-box">
+        <div class="upuser-wrapper" v-if="showSearchContent && currentCategoryIndex === 2">
+          <user-list :users="upusers" />
+          <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
+          <p class="no-more" v-show="upusers.length > 0 && showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
+        </div>
       </div>
 
       <!-- 影视 -->
       <div class="pgc-wrapper" v-if="currentCategoryIndex === 3">
-        <p class="no-more">什么都没找到呀ヽ(。ﾟдﾟ)ｐ</p>
+        <bangumi-list :bangumis="[]" />
       </div>
+
+      <!-- 提示 -->
+      <p class="no-more" v-if="!showSearchContent">{{ hintText }}</p>
 
     </div>
 
@@ -80,7 +89,8 @@
 </template>
 
 <script>
-import throttle from 'lodash/throttle';
+// import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 import BangumiList from 'base/bangumi-list/bangumi-list';
 import VideoList from 'base/video-list/video-list';
 import UserList from 'base/user-list/user-list';
@@ -113,6 +123,7 @@ export default {
       totalInfo: null,
       typeInfo: null,
       currentPage: 1,
+      isLoadingScreen: false,
       isLoadingPage: false,
       videoList: [],
       bangumis: [],
@@ -124,6 +135,12 @@ export default {
     };
   },
   computed: {
+    hintText() {
+      if (this.isLoadingScreen) {
+        return '正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄';
+      }
+      return '什么都没找到呀ヽ(。ﾟдﾟ)ｐ';
+    },
     showSearchContent() {
       return this.totalInfo !== null;
     },
@@ -159,6 +176,13 @@ export default {
     }
   },
   watch: {
+    keyword(newKeyword, prevKeyword) {
+      if (newKeyword === prevKeyword) {
+        return;
+      }
+      this.keyword = newKeyword;
+      this._loadTotalInfo();
+    },
     totalInfo(newInfo) {
       if (newInfo !== null) {
         this.videoList = newInfo.result.video;
@@ -167,8 +191,12 @@ export default {
   },
   created() {
     this.keyword = this.$route.params.keyword;
-    this.throttleFunc = throttle(this._handleScroll, 200);
+    this.throttleFunc = debounce(this._handleScroll, 200);
     this._loadTotalInfo();
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.keyword = to.params.keyword;
+    next();
   },
   mounted() {
     // "无限"滚动加载
@@ -186,7 +214,6 @@ export default {
       return `${num}`;
     },
     _categoryCountText(index) {
-      // console.log(this.totalInfo);
       if (this.totalInfo === null) {
         return '';
       }
@@ -206,13 +233,14 @@ export default {
       if (index === this.currentCategoryIndex) {
         return;
       }
-      this.isLoadingPage = true;
+      this.isLoadingScreen = true;
+      // this.isLoadingPage = true;
       this.currentCategoryIndex = index;
       this.typeInfo = null;
       searchCertainType(this.keyword, 1, CATEGORIES[this.currentCategoryIndex])
         .then(res => {
+          console.log(res);
           if (res.data.code === 0) {
-            console.log(res.data);
             this.typeInfo = res.data;
             switch (this.currentCategoryIndex) {
               case 1:
@@ -228,8 +256,9 @@ export default {
                 this.videoList = this.typeInfo.result.video;
             }
             this.currentPage = 1;
-            this.isLoadingPage = false;
+            // this.isLoadingPage = false;
           }
+          this.isLoadingScreen = false;
         });
     },
     // 切换综合页排序规则
@@ -239,6 +268,7 @@ export default {
       }
       this.currentOrderIndex = index;
       this.totalInfo = null;
+      this.isLoadingScreen = true;
       searchTotal(this.keyword, 1, ORDERS[this.currentOrderIndex])
         .then(res => {
           // console.log(res.data);
@@ -246,6 +276,7 @@ export default {
             this.currentPage = 1;
             this.totalInfo = res.data;
           }
+          this.isLoadingScreen = false;
         });
     },
     viewAllBangumis() {
@@ -257,13 +288,13 @@ export default {
     },
     // 数据相关
     _loadTotalInfo() {
-      this.isLoadingPage = true;
+      this.isLoadingScreen = true;
       searchTotal(this.keyword).then(res => {
         if (res.data.code === 0) {
           this.totalInfo = res.data;
           this.totalrankVideos = this.totalInfo.result.video;
-          this.isLoadingPage = false;
         }
+        this.isLoadingScreen = false;
       });
     },
     _handleScroll() {
@@ -280,12 +311,15 @@ export default {
       // console.log('scrollPercentage', scrollPercentage);
       if (scrollPercentage > SCROLLING_THRESHOLD) {
         this.isLoadingPage = true;
+        console.log('loading page!');
         if (this.currentCategoryIndex === 0) {
           searchTotal(this.keyword, this.currentPage + 1, ORDERS[this.currentOrderIndex])
             .then(res => {
-              this.videoList = [...this.videoList, ...res.data.result.video];
+              if (res.data.code === 0) {
+                this.videoList = [...this.videoList, ...res.data.result.video];
+                this.currentPage += 1;
+              }
               this.isLoadingPage = false;
-              this.currentPage += 1;
             });
         } else {
           searchCertainType(this.keyword, this.currentPage + 1, CATEGORIES[this.currentCategoryIndex])
@@ -293,7 +327,6 @@ export default {
               if (res.data.code === 0) {
                 this.typeInfo = res.data;
                 this.currentPage += 1;
-                this.isLoadingPage = false;
                 switch (this.currentCategoryIndex) {
                   case 1:
                     this.bangumis = [...this.bangumis, ...res.data.result];
@@ -303,6 +336,7 @@ export default {
                     break;
                 }
               }
+              this.isLoadingPage = false;
             });
         }
       }
@@ -339,7 +373,7 @@ export default {
 
 .category {
   position: fixed;
-  z-index: 3;
+  z-index: 2;
   height: 2rem;
   background-color: $color-background;
   width: 100%;
