@@ -18,9 +18,7 @@ apiRoutes.get('/homepageList', (req, res) => {
     },
     params: req.query
   })
-    .then(response => {
-      res.json(response.data)
-    })
+    .then(response => res.json(response.data))
     .catch(e => console.log(e));
 });
 
