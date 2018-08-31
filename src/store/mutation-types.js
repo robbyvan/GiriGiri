@@ -4,3 +4,5 @@ export const SET_SUB_TAB_RID = 'SET_SUB_TAB_RID';
 export const SET_VIDEO_AID = 'SET_VIDEO_AID';
 export const SET_CURRENT_VIDEO_PAGE = 'SET_CURRENT_VIDEO_PAGE';
 export const SET_PLAY_URL_INFO = 'SET_PLAY_URL_INFO';
+
+export const SET_SPACE_INFO = 'SET_SPACE_INFO';

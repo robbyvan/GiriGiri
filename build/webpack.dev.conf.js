@@ -326,7 +326,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
       // 搜索
       apiRoutes.get('/api/searchengine', (req, res) => {
-        console.log(req.query);
+        // console.log(req.query);
         const url = 'https://m.bilibili.com/search/searchengine';
         const options = {
           url: url,
@@ -336,6 +336,20 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           },
         };
         request(options, (err, response, body) => res.json(body));
+      });
+
+      // 投稿视频
+      apiRoutes.get('/api/submitVideos', (req, res) => {
+        const url = 'https://space.bilibili.com/ajax/member/getSubmitVideos';
+        axios.get(url, {
+          headers: {
+            'referer': 'https://m.bilibili.com/space',
+            'host': 'space.bilibili.com',
+          },
+          params: req.query,
+        })
+        .then(response => res.json(response.data))
+        .catch(e => console.log(e));
       });
 
     },

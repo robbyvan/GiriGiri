@@ -6,3 +6,6 @@ export const subTabRid = state => state.subTabRid;
 export const videoAid = state => state.videoAid;
 export const currentVideoPage = state => state.currentVideoPage;
 export const playUrlInfo = state => state.playUrlInfo;
+
+// 用户
+export const spaceInfo = state => state.spaceInfo;

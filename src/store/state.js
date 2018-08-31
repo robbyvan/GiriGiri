@@ -4,6 +4,7 @@ const state = {
   videoAid: '', // 29845764
   currentVideoPage: 1,
   playUrlInfo: null,
+  spaceInfo: null,
 };
 
 export default state;

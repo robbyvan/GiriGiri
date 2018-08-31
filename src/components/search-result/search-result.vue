@@ -65,7 +65,7 @@
       <!-- UP主 -->
       <div class="upuser-box">
         <div class="upuser-wrapper" v-if="showSearchContent && currentCategoryIndex === 2">
-          <user-list :users="upusers" />
+          <user-list :users="upusers" @selectUser="handleUserSelect" />
           <p class="is-loading-page" v-show="isLoadingPage">正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</p>
           <p class="no-more" v-show="upusers.length > 0 && showNoMore">没有更多了呀ﾉ)ﾟДﾟ(</p>
         </div>
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-// import throttle from 'lodash/throttle';
+import { mapGetters, mapMutations } from 'vuex';
 import debounce from 'lodash/debounce';
 import BangumiList from 'base/bangumi-list/bangumi-list';
 import VideoList from 'base/video-list/video-list';
@@ -135,6 +135,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['userInfo']),
     hintText() {
       if (this.isLoadingScreen) {
         return '正在获取...⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄';
@@ -206,6 +207,9 @@ export default {
     window.removeEventListener('scroll', this.throttleFunc, false);
   },
   methods: {
+    ...mapMutations({
+      setSpaceInfo: 'SET_SPACE_INFO'
+    }),
     // UI
     _formatNumber(num) {
       if (Number(num) > 99) {
@@ -285,6 +289,12 @@ export default {
     // 点击视频
     selectVideo(item) {
       this.$router.push(`/video/av${item.aid}`);
+    },
+    // 点击用户
+    handleUserSelect(user) {
+      console.log('dianji', user);
+      this.setSpaceInfo(user);
+      this.$router.push(`/user/${user.mid}`);
     },
     // 数据相关
     _loadTotalInfo() {

@@ -29,6 +29,6 @@ export default new Router({
         { path: ':keyword', component: SearchResult }
       ]
     },
-    { path: '/user', component: User },
+    { path: '/user/:mid', component: User },
   ]
 });

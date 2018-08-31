@@ -1,6 +1,11 @@
 <template>
   <div class="user-list">
-    <div class="user-item" v-for="item in users" :key="item.mid" @click="selectUser(item)">
+    <div
+      class="user-item"
+      v-for="item in users"
+      :key="item.mid"
+      @click="selectUser(item)"
+    >
       <div class="avatar-wrapper">
         <img :src="item.upic" alt="avatar" />
       </div>
