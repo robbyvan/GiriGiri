@@ -1,3 +1,12 @@
+export const MAIN_TABS = [0, 1, 13, 167, 3, 129, 36, 4, 5, 119, 23, 11, 177, 181, 155, 160, 165];
+
+export const RANK_TABS = [0, 1, 33, 168, 3, 129, 36, 4, 5, 119, 23, 11, 177, 181, 155, 160];
+
+export function formatUrl(path) {
+  const debug = process.env.NODE_ENV !== 'production';
+  return debug ? path : `http://localhost:9001${path}`;
+}
+
 export const TABS = {
   0: {
     name: '首页',
@@ -528,7 +537,3 @@ export const TABS = {
     parent: 11
   }
 };
-
-export const MAIN_TABS = [0, 1, 13, 167, 3, 129, 36, 4, 5, 119, 23, 11, 177, 181, 155, 160, 165];
-
-export const RANK_TABS = [0, 1, 33, 168, 3, 129, 36, 4, 5, 119, 23, 11, 177, 181, 155, 160];

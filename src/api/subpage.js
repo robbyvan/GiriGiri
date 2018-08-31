@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { TABS } from 'api/config';
+import { formatUrl } from './config';
 
 // 一级标签
 export function getMainTab7dRecommend(mainTagRid) {
-  const url = '/api/mainTab7dRecommend';
+  const url = formatUrl('/api/mainTab7dRecommend');
 
   const q = {
     rid: mainTagRid,
@@ -15,7 +16,7 @@ export function getMainTab7dRecommend(mainTagRid) {
 }
 
 export function getSubTab3dRecommend(subTagRid) {
-  const url = '/api/subTab3dRecommend';
+  const url = formatUrl('/api/subTab3dRecommend');
 
   const q = {
     rid: subTagRid,
@@ -47,7 +48,7 @@ export function getInitSubAll(mainTagRid) {
 
 // 二级标签
 export function getSubTab7dRecommend(subTagRid) {
-  const url = '/api/subTab7dRecommend';
+  const url = formatUrl('/api/subTab7dRecommend');
 
   const q = {
     rid: subTagRid,
@@ -59,7 +60,7 @@ export function getSubTab7dRecommend(subTagRid) {
 }
 
 export function getSubTabLatestByPage(subTagRid, pageNum) {
-  const url = '/api/subTabLatestByPage';
+  const url = formatUrl('/api/subTabLatestByPage');
 
   const q = {
     tid: subTagRid,

@@ -332,6 +332,9 @@ export default {
       this.clearAutoHideTimer();
       // 暂停视频播放
       const video = this.$refs.video;
+      if (!video) {
+        return;
+      }
       video.pause();
       this.shouldVideoPlay = false;
       this.isBuffering = false;
