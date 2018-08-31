@@ -1,5 +1,6 @@
 import axios from 'axios';
 import convert from 'xml-js';
+import { formatUrl } from './config';
 
 export function loadVideoScreenData(aid, pn = 1) {
   const playUrlP = getVideoUrl(aid, pn); // 盗链限制, mock data
@@ -39,7 +40,7 @@ export function loadVideoScreenData(aid, pn = 1) {
 
 // 获取视频相关信息: 播放相关地址(mock)
 export function getVideoUrl(aid, page = 1) {
-  const url = '/api/video_url';
+  const url = formatUrl('/api/video_url');
   const options = {
     cid: aid,
     page,
@@ -51,7 +52,7 @@ export function getVideoUrl(aid, page = 1) {
 
 // 获取view信息: 分集 描述
 export function getVideoView(aid) {
-  const url = 'api/video_view';
+  const url = formatUrl('/api/video_view');
   const options = {
     aid
   };
@@ -60,7 +61,7 @@ export function getVideoView(aid) {
 
 // 获取视频tags
 export function getVideoTags(aid) {
-  const url = 'api/video_tags';
+  const url = formatUrl('/api/video_tags');
   const options = {
     aid,
   };
@@ -69,14 +70,14 @@ export function getVideoTags(aid) {
 
 // 获取首页推荐
 export function getVideoRecommend(aid) {
-  const url = '/api/video_recommendnew';
+  const url = formatUrl('/api/video_recommendnew');
   const options = { aid };
   return axios.get(url, { params: options });
 }
 
 // 获取结束推荐
 export function getFinishedRecommend(tid) {
-  const url = '/api/finished_recommend';
+  const url = formatUrl('/api/finished_recommend');
   const options = {
     rid: tid,
     day: 7,
@@ -86,7 +87,7 @@ export function getFinishedRecommend(tid) {
 
 // 获取评论
 export function getVideoReplies(aid, pageNum = 1) {
-  const url = '/api/video_reply';
+  const url = formatUrl('/api/video_reply');
   const options = {
     oid: aid,
     pn: pageNum,
@@ -99,7 +100,7 @@ export function getVideoReplies(aid, pageNum = 1) {
 
 // 获取弹幕
 export function getVideoDanmu(cid) {
-  const url = '/api/video_danmu';
+  const url = formatUrl('/api/video_danmu');
   // console.log(cid);
   const options = {
     cid

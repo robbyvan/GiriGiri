@@ -1,13 +1,14 @@
 import axios from 'axios';
+import { formatUrl } from './config';
 
 export function getHotWords() {
-  const url = '/api/hotword';
+  const url = formatUrl('/api/hotword');
 
   return axios.get(url);
 }
 
 export function getSuggestions(q) {
-  const url = 'api/suggest';
+  const url = formatUrl('/api/suggest');
 
   const options = {
     func: 'suggest',
@@ -25,7 +26,7 @@ export function getSuggestions(q) {
 }
 
 export function searchTotal(keyword, page = 1, order = 'totalrank') {
-  const url = '/api/searchengine';
+  const url = formatUrl('/api/searchengine');
   const options = {
     keyword: encodeURIComponent(keyword),
     page,
@@ -41,7 +42,7 @@ export function searchTotal(keyword, page = 1, order = 'totalrank') {
 }
 
 export function searchCertainType(keyword, page = 1, type = 'bangumi') {
-  const url = '/api/searchengine';
+  const url = formatUrl('/api/searchengine');
   const options = {
     keyword: encodeURIComponent(keyword),
     page,

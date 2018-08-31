@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { formatUrl } from './config';
 
 export function getHomepageVideos() {
-  const url = '/api/homepageList';
+  const url = formatUrl('/api/homepageList');
 
   const q = {
     rid: 1,

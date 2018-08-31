@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { formatUrl } from './config';
 
 export function getSubmitVideos(mid) {
-  const url = '/api/submitVideos';
+  const url = formatUrl('/api/submitVideos');
   const options = {
     mid,
     page: 1,
@@ -13,7 +14,7 @@ export function getSubmitVideos(mid) {
 }
 
 export function getUserStat(mid) {
-  const url = '/api/userstat';
+  const url = formatUrl('/api/userstat');
   const options = {
     vmid: mid,
     jsonp: 'jsonp'
