@@ -11,3 +11,23 @@ export function getSubmitVideos(mid) {
   };
   return axios.get(url, { params: options });
 }
+
+export function getUserStat(mid) {
+  const url = '/api/userstat';
+  const options = {
+    vmid: mid,
+    jsonp: 'jsonp'
+  };
+  return axios.get(url, { params: options });
+}
+
+export function loadSpaceData(mid) {
+  const svP = getSubmitVideos(mid);
+  const usP = getUserStat(mid);
+  return Promise.all([svP, usP])
+    .then(res => {
+      const sv = res[0].data.data;
+      const us = res[1].data.data;
+      return { submitVideos: sv, userStat: us };
+    });
+}

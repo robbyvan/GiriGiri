@@ -352,6 +352,19 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         .catch(e => console.log(e));
       });
 
+      // 关注&粉丝
+      apiRoutes.get('/api/userstat', (req, res) => {
+        const url = 'https://api.bilibili.com/x/relation/stat';
+        axios.get(url, {
+          headers: {
+            'referer': 'https://m.bilibili.com/space',
+          },
+          params: req.query,
+        })
+        .then(response => res.json(response.data))
+        .catch(e => console.log(e));
+      });
+
     },
     clientLogLevel: 'warning',
     historyApiFallback: {

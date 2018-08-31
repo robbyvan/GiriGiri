@@ -45,6 +45,7 @@
 
 <script>
 import moment from 'moment';
+import { mapActions } from 'vuex';
 import { formatNumber, paddingZero } from 'common/js/format';
 
 export default {
@@ -54,6 +55,7 @@ export default {
     duration: { type: Boolean, default: false } // 视频时长
   },
   methods: {
+    ...mapActions(['saveWatchHistory']),
     _formatNumber(num) {
       return formatNumber(num);
     },
@@ -85,6 +87,8 @@ export default {
       }
     },
     selectItem(item) {
+      console.log('选择了', item);
+      this.saveWatchHistory(item);
       this.$emit('select', item);
     }
   }
