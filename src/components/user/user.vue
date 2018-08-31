@@ -138,7 +138,7 @@ export default {
         return;
       }
       loadSpaceData(this.spaceInfo.mid).then(res => {
-        console.log(res);
+        // console.log(res);
         this.submitVideos = res.submitVideos.vlist.map(v => ({...v, duration: v.length}));
         this.maxPage = res.submitVideos.pages;
         this.userStat = res.userStat;

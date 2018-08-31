@@ -8,7 +8,7 @@ export function loadVideoScreenData(aid, pn = 1) {
   const recommendsP = getVideoRecommend(aid);
   return Promise.all([playUrlP, viewP, tagsP, recommendsP])
     .then(res => {
-      console.log(res);
+      // console.log(res);
       const playUrlInfo = {
         // 盗链限制, mock data
         timelength: res[0].data.timelength,
@@ -100,7 +100,7 @@ export function getVideoReplies(aid, pageNum = 1) {
 // 获取弹幕
 export function getVideoDanmu(cid) {
   const url = '/api/video_danmu';
-  console.log(cid);
+  // console.log(cid);
   const options = {
     cid
   };

@@ -39,7 +39,7 @@ export default {
         const rid = Number(this.$route.params.rid);
         const keys = Object.keys(TABS);
         if (keys.indexOf(rid.toString()) === -1) {
-          console.log('nomatch');
+          // console.log('nomatch');
           this.$router.push('/home');
         } else {
           const tab = TABS[rid];

@@ -204,10 +204,6 @@ export default {
         }, 20);
       }
     },
-    $route(to, from) {
-      console.log(to);
-      console.log(from);
-    },
   },
   created() {
     this.loopRecommendTimer = null;
@@ -287,7 +283,6 @@ export default {
       clearTimeout(this.autoHideTimer);
     },
     toggleDanmuLayer() {
-      console.log('点击了');
       this.showDanmuLayer = !this.showDanmuLayer;
     },
     toggleFullsScreen() {
@@ -299,7 +294,7 @@ export default {
       // 开始获取弹幕
       getVideoDanmu(this.playUrlInfo.cid).then(res => {
         const rawJson = JSON.parse(res);
-        console.log(rawJson);
+        // console.log(rawJson);
         const danmaku = new Danmu(rawJson, this.handleDanmaku, this.playUrlInfo.timelength);
         console.log('loaded', danmaku);
         // const danmakuList = danmaku.danmu.map(d => ({

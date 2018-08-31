@@ -243,7 +243,7 @@ export default {
       this.typeInfo = null;
       searchCertainType(this.keyword, 1, CATEGORIES[this.currentCategoryIndex])
         .then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.data.code === 0) {
             this.typeInfo = res.data;
             switch (this.currentCategoryIndex) {
@@ -292,7 +292,6 @@ export default {
     },
     // 点击用户
     handleUserSelect(user) {
-      console.log('dianji', user);
       this.setSpaceInfo(user);
       this.$router.push(`/user/${user.mid}`);
     },
@@ -321,7 +320,6 @@ export default {
       // console.log('scrollPercentage', scrollPercentage);
       if (scrollPercentage > SCROLLING_THRESHOLD) {
         this.isLoadingPage = true;
-        console.log('loading page!');
         if (this.currentCategoryIndex === 0) {
           searchTotal(this.keyword, this.currentPage + 1, ORDERS[this.currentOrderIndex])
             .then(res => {

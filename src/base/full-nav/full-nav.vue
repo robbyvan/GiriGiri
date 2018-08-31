@@ -58,7 +58,6 @@ export default {
       } else {
         this.collapse();
       }
-      console.log('expanding?', this.showFullNav);
     },
   }
 };

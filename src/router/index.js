@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
-import Home from 'components/home/home';
-import HomeDetail from 'components/home-detail/home-detail';
-import Rank from 'components/rank/rank';
-import Video from 'components/video/video';
-import Search from 'components/search/search';
-import SearchResult from 'components/search-result/search-result';
-import User from 'components/user/user';
-import Recent from 'components/user/recent';
+const Home = () => import(/* webpackChunkName: "home" */ 'components/home/home');
+const HomeDetail = () => import(/* webpackChunkName: "home-detail" */ 'components/home-detail/home-detail');
+const Rank = () => import(/* webpackChunkName: "rank" */ 'components/rank/rank');
+const Video = () => import(/* webpackChunkName: "video" */ 'components/video/video');
+const Search = () => import(/* webpackChunkName: "search" */ 'components/search/search');
+const SearchResult = () => import(/* webpackChunkName: "search-result" */ 'components/search-result/search-result');
+const User = () => import(/* webpackChunkName: "user" */ 'components/user/user');
+const Recent = () => import(/* webpackChunkName: "recent" */ 'components/user/recent');
 
 Vue.use(Router);
 
@@ -33,9 +33,6 @@ export default new Router({
     {
       path: '/user',
       component: Recent,
-      // children: [
-
-      // ]
     },
     { path: '/user/:mid', component: User }
   ]

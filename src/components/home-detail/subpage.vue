@@ -213,7 +213,7 @@ export default {
         })
         .catch(e => {
           this.isLoadingPage = false;
-          console.log(e);
+          // console.log(e);
         });
     },
     _getInitSubCategory() {

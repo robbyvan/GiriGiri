@@ -87,7 +87,6 @@ export default {
       }
     },
     selectItem(item) {
-      console.log('选择了', item);
       this.saveWatchHistory(item);
       this.$emit('select', item);
     }
