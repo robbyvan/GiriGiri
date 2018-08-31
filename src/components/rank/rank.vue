@@ -27,7 +27,7 @@
           @select="selectVideo"
         />
         <!-- loading -->
-        <loading-rank v-show="isLoadingRankList" />
+        <loading-rank v-if="isLoadingRankList" />
       </div>
       <!-- 返回顶部 -->
       <div class="gotop" v-show="showGoTopButton">

@@ -23,3 +23,33 @@ export function getSuggestions(q) {
   };
   return axios.get(url, { params: options });
 }
+
+export function searchTotal(keyword, page = 1, order = 'totalrank') {
+  const url = '/api/searchengine';
+  const options = {
+    keyword: encodeURIComponent(keyword),
+    page,
+    order,
+    search_type: 'all',
+    pagesize: 20,
+    bangumi_num: 3,
+    movie_num: 3,
+    platform: 'h5',
+    main_ver: 'v3',
+  };
+  return axios.get(url, { params: options });
+}
+
+export function searchCertainType(keyword, page = 1, type = 'bangumi') {
+  const url = '/api/searchengine';
+  const options = {
+    keyword: encodeURIComponent(keyword),
+    page,
+    search_type: type,
+    order: 'totalran',
+    pagesize: 20,
+    platform: 'h5',
+    main_ver: 'v3',
+  };
+  return axios.get(url, { params: options });
+}

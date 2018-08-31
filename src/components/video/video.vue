@@ -1,7 +1,7 @@
 <template>
   <div class="video" ref="video">
     <!-- loading -->
-    <loading-video v-show="!dataLoaded" />
+    <loading-video v-if="!dataLoaded" />
 
     <div class="video-box" v-show="dataLoaded">
       <!-- 顶部导航 -->
@@ -81,8 +81,8 @@
         <div class="video-recommend">
           <video-list
             :videos="recommendVideosPassToVideolist"
-            v-show="true"
             :rank="false"
+            :duration="true"
             @select="selectVideo"
           />
         </div>
@@ -162,6 +162,7 @@ export default {
         aid: item.aid,
         cid: item.cid,
         pic: item.pic,
+        duration: item.duration,
         title: item.title,
         author: item.owner.name,
         play: item.stat.view,
@@ -336,7 +337,6 @@ export default {
 
 .video {
   position: relative;
-  // background-color: lavender;
   .video-box {
     position: absolute;
     top: 0;
@@ -360,7 +360,7 @@ export default {
 }
 
 .content-start-line {
-  padding-top: 1.7rem;
+  padding-top: 2rem;
   background-color: $color-background-d;
 }
 

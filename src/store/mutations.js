@@ -15,7 +15,13 @@ const mutations = {
   },
   [types.SET_PLAY_URL_INFO](state, playUrlInfo) {
     state.playUrlInfo = playUrlInfo;
-  }
+  },
+  [types.SET_SPACE_INFO](state, spaceInfo) {
+    state.spaceInfo = spaceInfo;
+  },
+  [types.SET_WATCH_HISTORY](state, watchHistory) {
+    state.watchHistory = watchHistory;
+  },
 };
 
 export default mutations;

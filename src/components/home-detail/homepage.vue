@@ -29,7 +29,7 @@
       <gotop-button />
     </div>
     <!-- 首屏加载 -->
-    <loading-index v-show="isLoadingPage" />
+    <loading-index v-if="isLoadingPage" />
   </div>
 </template>
 
@@ -120,11 +120,7 @@ export default {
         this.currentBatchIndex += 1;
       }
       // goTop theshold
-      if (scrollPercentage > GO_TOP_THRESHOLD) {
-        this.showGoTopButton = true;
-      } else {
-        this.showGoTopButton = false;
-      }
+      this.showGoTopButton = scrollPercentage > GO_TOP_THRESHOLD;
     },
     onTouchStart() {
       this.$emit('contentTouching');

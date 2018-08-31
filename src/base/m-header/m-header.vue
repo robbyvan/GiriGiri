@@ -52,10 +52,11 @@ export default {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 1.6rem;
+  height: 2rem;
   display: flex;
   align-items: center;
-  padding: 0.4rem 0.35rem;
+  padding: 0 0.35rem;
+  // height: 2rem;
   background-color: $color-background;
   // background-color: gold;
   .logo {
@@ -99,8 +100,9 @@ export default {
       }
     }
     .download {
-      padding: 0.3rem 0.6rem;
-      border-radius: 8px;
+      padding: 0rem 0.6rem;
+      height: 1.2rem;
+      border-radius: 0.3rem;
       font-size: $font-size-small;
       background-color: $color-theme;
       color: $color-text-white;

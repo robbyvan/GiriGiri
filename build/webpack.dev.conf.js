@@ -308,8 +308,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       // 获取当前搜索推荐
       apiRoutes.get('/api/suggest', (req, res) => {
         const url = 'https://s.search.bilibili.com/main/suggest';
-        console.log(url);
-        console.log(req.query);
+        // console.log(url);
+        // console.log(req.query);
         axios.get(url, {
           headers: {
             'referer': 'https://m.bilibili.com/search.html',
@@ -324,11 +324,42 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         .catch(e => console.log(e))
       });
 
-      apiRoutes.post('/api/searchengine', (req, res) => {
-        console.log(req.body);
+      // 搜索
+      apiRoutes.get('/api/searchengine', (req, res) => {
+        // console.log(req.query);
         const url = 'https://m.bilibili.com/search/searchengine';
-        axios.post(url, {
-          ...req.body
+        const options = {
+          url: url,
+          method: 'POST',
+          json: {
+            ...req.query,
+          },
+        };
+        request(options, (err, response, body) => res.json(body));
+      });
+
+      // 投稿视频
+      apiRoutes.get('/api/submitVideos', (req, res) => {
+        const url = 'https://space.bilibili.com/ajax/member/getSubmitVideos';
+        axios.get(url, {
+          headers: {
+            'referer': 'https://m.bilibili.com/space',
+            'host': 'space.bilibili.com',
+          },
+          params: req.query,
+        })
+        .then(response => res.json(response.data))
+        .catch(e => console.log(e));
+      });
+
+      // 关注&粉丝
+      apiRoutes.get('/api/userstat', (req, res) => {
+        const url = 'https://api.bilibili.com/x/relation/stat';
+        axios.get(url, {
+          headers: {
+            'referer': 'https://m.bilibili.com/space',
+          },
+          params: req.query,
         })
         .then(response => res.json(response.data))
         .catch(e => console.log(e));

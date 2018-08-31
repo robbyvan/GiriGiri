@@ -8,6 +8,7 @@ import Video from 'components/video/video';
 import Search from 'components/search/search';
 import SearchResult from 'components/search-result/search-result';
 import User from 'components/user/user';
+import Recent from 'components/user/recent';
 
 Vue.use(Router);
 
@@ -29,6 +30,13 @@ export default new Router({
         { path: ':keyword', component: SearchResult }
       ]
     },
-    { path: '/user', component: User },
+    {
+      path: '/user',
+      component: Recent,
+      // children: [
+
+      // ]
+    },
+    { path: '/user/:mid', component: User }
   ]
 });

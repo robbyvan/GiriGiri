@@ -3,9 +3,14 @@
     <!-- 搜索框 -->
     <div class="search-top-wrapper">
       <div class="search-box-wrapper">
-        <search-box @query="handleQueryChange" ref="searchBox" />
+        <search-box
+          ref="searchBox"
+          @query="handleQueryChange"
+          @clear="clearQuery"
+          @search="search"
+        />
       </div>
-      <button class="cancel-btn">取消</button>
+      <button class="cancel-btn" @click="backToHome">取消</button>
     </div>
 
     <!-- 热搜 -->
@@ -50,6 +55,7 @@
         v-html="item.name"
         @click="selectSuggestItem(item)"
       ></p>
+      <p class="no-suggest" v-show="showNoSuggestHint">没有相关的搜索推荐哦 ﾍ(;´Д｀ﾍ)</p>
     </div>
 
     <router-view></router-view>
@@ -69,10 +75,16 @@ export default {
   data() {
     return {
       showSuggest: false,
+      directJump: false,
       hotWords: [],
       suggests: [],
       searchHistory: loadSearches(),
     };
+  },
+  computed: {
+    showNoSuggestHint() {
+      return this.suggests.length === 0;
+    }
   },
   created() {
     this._getHotWords();
@@ -89,6 +101,10 @@ export default {
     // UI操作
     handleQueryChange(query) {
       // console.log(query);
+      if (this.directJump) {
+        this.directJump = false;
+        return;
+      }
       if (query.trim() === '') {
         this.showSuggest = false;
         return;
@@ -96,28 +112,56 @@ export default {
       this.showSuggest = true;
       getSuggestions(query).then(res => {
         if (res.data.code === 0) {
-          this.suggests = res.data.result.tag;
+          if (Object.prototype.toString.apply(res.data.result) === '[object Array]') {
+            this.suggests = res.data.result;
+          } else {
+            this.suggests = res.data.result.tag;
+          }
         } else {
           this.suggests = [];
         }
       });
     },
+    search() {
+      const q = this.$refs.searchBox.query;
+      // 保存记录
+      this.searchHistory = saveSearch(q);
+      // 跳转
+      this.$router.push(`/search/${q}`);
+      // 关闭搜索建议
+      this.showSuggest = false;
+    },
     selectHotwordTag(tag) {
-      // 直接搜tag
-      this.$refs.searchBox.setQuery(tag);
+      this._jumpToSearchDetail(tag);
     },
     selectHistoryItem(s) {
-      // 直接搜s
-      this.$refs.searchBox.setQuery(s);
+      this._jumpToSearchDetail(s);
+    },
+    clearQuery() {
+      this.$router.push(`/search`);
     },
     clearSearchHistory() {
       this.searchHistory = clearSearch();
     },
     selectSuggestItem(item) {
-      console.log('select', item.value);
-      this.searchHistory = saveSearch(item.value);
+      this._jumpToSearchDetail(item.value);
+      // 关闭搜索建议
+      this.showSuggest = false;
     },
-
+    backToHome() {
+      this.$router.push('/home');
+    },
+    //
+    _jumpToSearchDetail(kw) {
+      // 直接搜s
+      this.directJump = true;
+      // 同步query
+      this.$refs.searchBox.setQuery(kw);
+      // 保存记录
+      this.searchHistory = saveSearch(kw);
+      // 跳转
+      this.$router.push(`/search/${kw}`);
+    },
   }
 };
 </script>
@@ -136,7 +180,7 @@ export default {
 
 .search-top-wrapper {
   position: fixed;
-  z-index: 3;
+  z-index: 4;
   width: 100%;
   height: 2rem;
   background-color: $color-background;
@@ -209,6 +253,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 3;
   background-color: $color-background;
   .suggest-list-start-line {
     padding-top: 2rem;
@@ -221,6 +266,13 @@ export default {
     font-size: $font-size-small;
     color: $color-text;
   }
+}
+
+.no-suggest {
+  text-align: center;;
+  color: $color-text-gray;
+  font-size: $font-size-small;
+  padding: 1rem 0;
 }
 
 .search-history {

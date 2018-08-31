@@ -135,7 +135,7 @@
       </div>
     </div>
     <!-- 首屏加载 -->
-    <loading-home v-show="isLoadingPage" />
+    <loading-home v-if="isLoadingPage" />
   </div>
 </template>
 
@@ -294,12 +294,12 @@ export default {
   flex-direction: column;
   // overflow: hidden;
   .page-content-start-line {
-    padding-top: 4.9rem;
+    padding-top: 4.8rem;
     background-color: $color-border;
   }
   .page-content-detail {
     width: 100%;
-    padding-top: 0.3rem;
+    padding-top: 0.2rem;
   }
 }
 
