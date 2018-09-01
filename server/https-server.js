@@ -4,6 +4,12 @@ const bodyParser = require('body-parser');
 const request = require('./request');
 const config = require('../config/index');
 
+const http = require('http');
+const https = require('https');
+const privateKey = fs.readFileSync('/etc/nginx/cert/2_robbyvan.cn.key', 'utf-8');
+const certificate = fs.readFileSync('/etc/nginx/cert/1_robbyvan.cn_bundle.crt', 'utf-8');
+const credentials = { key: privateKey, cert: certificate };
+
 const app = express();
 const apiRoutes = express.Router();
 apiRoutes.use(bodyParser.urlencoded({ extended: true }));
@@ -343,7 +349,9 @@ app.use('/api', apiRoutes);
 
 const port = process.env.PORT || config.build.port;
 
-module.exports = app.listen(port, function(err) {
+const httpsServer = https.createServer(credentials, app);
+
+module.exports = httpsServer.listen(port, function(err) {
   if (err) {
     console.log(err);
     return;
