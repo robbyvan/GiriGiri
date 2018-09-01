@@ -4,7 +4,7 @@ export const RANK_TABS = [0, 1, 33, 168, 3, 129, 36, 4, 5, 119, 23, 11, 177, 181
 
 export function formatUrl(path) {
   const debug = process.env.NODE_ENV !== 'production';
-  return debug ? path : `https://robbyvan.cn${path}`;
+  return debug ? path : `https://robbyvan.cn/giri${path}`;
 }
 
 export const TABS = {
