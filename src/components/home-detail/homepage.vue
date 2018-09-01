@@ -104,7 +104,7 @@ export default {
       return `${(num / 10000).toFixed(1)}万观看`;
     },
     _handleScroll() {
-      console.log('scroll fires');
+      // console.log('scroll fires');
       const rect = this.$refs.homepage.getBoundingClientRect();
       const scrollTop = 0 - rect.top;
       const windowHeight = window.innerHeight;
