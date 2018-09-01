@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const request = require('./request');
 const config = require('../config/index');
 
-const http = require('http');
+const fs = require('fs');
 const https = require('https');
 const privateKey = fs.readFileSync('/etc/nginx/cert/2_robbyvan.cn.key', 'utf-8');
 const certificate = fs.readFileSync('/etc/nginx/cert/1_robbyvan.cn_bundle.crt', 'utf-8');
