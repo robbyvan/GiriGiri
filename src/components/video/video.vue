@@ -104,7 +104,7 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex';
 import moment from 'moment';
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import MHeader from 'base/m-header/m-header';
 import Player from 'components/player/player';
 import VideoList from 'base/video-list/video-list';
@@ -185,15 +185,15 @@ export default {
   created() {
     // fetch视频info & view & recommends, 评论滚动再加载
     this._loadVideoScreenData();
-    this.debounceFunc = debounce(this._handleScroll, 200);
+    this.throttleFunc = throttle(this._handleScroll, 200);
   },
   mounted() {
     // 滚动加载评论
-    window.addEventListener('scroll', this.debounceFunc, false);
+    window.addEventListener('scroll', this.throttleFunc, false);
   },
   beforeDestroy() {
     this.$refs.player.beforeDestroyPlayer();
-    window.removeEventListener('scroll', this.debounceFunc, false);
+    window.removeEventListener('scroll', this.throttleFunc, false);
   },
   methods: {
     ...mapMutations({
@@ -245,7 +245,7 @@ export default {
       const rect = this.$refs.video.getBoundingClientRect();
       const scrollTop = 0 - rect.top;
       const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
+      const documentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
       const bodyHeight = documentHeight - windowHeight;
       const scrollPercentage = scrollTop / bodyHeight;
       // console.log('scrollPercentage', scrollPercentage);

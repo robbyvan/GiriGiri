@@ -26,9 +26,9 @@ export function prefixStyle(style) {
 }
 
 export function scrollToTopSmoothly() {
-  let currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+  let currentScroll = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
   if (currentScroll > 0) {
     window.requestAnimationFrame(scrollToTopSmoothly);
-    window.scrollTo(0, currentScroll - (currentScroll / 8));
+    window.scrollTo(0, currentScroll - (currentScroll / 5));
   }
 }

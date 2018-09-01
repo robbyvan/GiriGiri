@@ -90,7 +90,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import BangumiList from 'base/bangumi-list/bangumi-list';
 import VideoList from 'base/video-list/video-list';
 import UserList from 'base/user-list/user-list';
@@ -192,7 +192,7 @@ export default {
   },
   created() {
     this.keyword = this.$route.params.keyword;
-    this.throttleFunc = debounce(this._handleScroll, 200);
+    this.throttleFunc = throttle(this._handleScroll, 200);
     this._loadTotalInfo();
   },
   beforeRouteUpdate(to, from, next) {
@@ -314,7 +314,7 @@ export default {
       const categoryRect = this.$refs.category.getBoundingClientRect();
       const scrollTop = categoryRect.bottom - rect.top;
       const windowHeight = window.innerHeight - categoryRect.bottom;
-      const documentHeight = document.documentElement.scrollHeight;
+      const documentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
       const bodyHeight = documentHeight - windowHeight + categoryRect.bottom;
       const scrollPercentage = scrollTop / bodyHeight;
       // console.log('scrollPercentage', scrollPercentage);

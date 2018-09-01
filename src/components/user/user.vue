@@ -56,7 +56,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import MHeader from 'base/m-header/m-header';
 import VideoList from 'base/video-list/video-list';
 import GotopButton from 'base/gotop-button/gotop-button';
@@ -119,14 +119,14 @@ export default {
       this.$router.push(`/home`);
     }
     this._getSubmitVideos();
-    this.debounceFunc = debounce(this._handleScroll, 200);
+    this.throttleFunc = throttle(this._handleScroll, 200);
   },
   mounted() {
     // "无限"滚动加载
-    window.addEventListener('scroll', this.debounceFunc, false);
+    window.addEventListener('scroll', this.throttleFunc, false);
   },
   beforeDestroy() {
-    window.removeEventListener('scroll', this.debounceFunc, false);
+    window.removeEventListener('scroll', this.throttleFunc, false);
   },
   methods: {
     ...mapMutations({
@@ -168,7 +168,7 @@ export default {
       const rect = this.$refs.space.getBoundingClientRect();
       const scrollTop = 0 - rect.top;
       const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
+      const documentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
       const bodyHeight = documentHeight - windowHeight;
       const scrollPercentage = scrollTop / bodyHeight;
       // console.log('scrollPercentage', scrollPercentage);

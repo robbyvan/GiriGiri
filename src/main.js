@@ -4,10 +4,13 @@ import fastclick from 'fastclick';
 import App from './App';
 import router from './router';
 import store from './store';
+// import VConsole from 'vconsole';
 
 import 'common/scss/index.scss';
 
 Vue.config.productionTip = false;
+/* eslint-disable no-unused-vars */
+// const vConsole = new VConsole();
 
 fastclick.attach(document.body);
 

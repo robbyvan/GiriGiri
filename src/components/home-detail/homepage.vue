@@ -35,7 +35,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import LoadingIndex from 'base/loading/loading-index';
 import GotopButton from 'base/gotop-button/gotop-button';
 import { getHomepageVideos } from 'api/homepage';
@@ -67,14 +67,16 @@ export default {
   },
   created() {
     this._getVideos();
-    this.debounceFunc = debounce(this._handleScroll, 200);
+    this.throttleFunc = throttle(this._handleScroll, 200);
   },
   mounted() {
     // "无限"滚动加载
-    window.addEventListener('scroll', this.debounceFunc, false);
+    // window.addEventListener('touchmove', this.throttleFunc, false);
+    window.addEventListener('scroll', this.throttleFunc, false);
   },
   beforeDestroy() {
-    window.removeEventListener('scroll', this.debounceFunc, false);
+    // window.addEventListener('touchmove', this.throttleFunc, false);
+    window.removeEventListener('scroll', this.throttleFunc, false);
   },
   methods: {
     ...mapActions(['selectVideoPlay']),
@@ -102,13 +104,13 @@ export default {
       return `${(num / 10000).toFixed(1)}万观看`;
     },
     _handleScroll() {
+      console.log('scroll fires');
       const rect = this.$refs.homepage.getBoundingClientRect();
       const scrollTop = 0 - rect.top;
       const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
+      const documentHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
       const bodyHeight = documentHeight - windowHeight;
-      const scrollPercentage = scrollTop / bodyHeight;
-      // console.log('scrollPercentage', scrollPercentage);
+      const scrollPercentage = Math.abs(scrollTop / bodyHeight);
       if (scrollPercentage > SCROLLING_THRESHOLD && this.currentBatchIndex < MAX_BATCH_INDEX) {
         this.viewVideos = [
           ...this.viewVideos,
@@ -120,6 +122,7 @@ export default {
         this.currentBatchIndex += 1;
       }
       // goTop theshold
+      console.log(this.showGoTopButton, scrollPercentage, GO_TOP_THRESHOLD);
       this.showGoTopButton = scrollPercentage > GO_TOP_THRESHOLD;
     },
     onTouchStart() {
