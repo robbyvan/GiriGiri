@@ -2,9 +2,12 @@ export const MAIN_TABS = [0, 1, 13, 167, 3, 129, 36, 4, 5, 119, 23, 11, 177, 181
 
 export const RANK_TABS = [0, 1, 33, 168, 3, 129, 36, 4, 5, 119, 23, 11, 177, 181, 155, 160];
 
+// const SERVER_BASE = 'https://robbyvan.cn/giri';
+const SERVER_BASE = 'https://localhost:9002';
+
 export function formatUrl(path) {
   const debug = process.env.NODE_ENV !== 'production';
-  return debug ? path : `https://robbyvan.cn/giri${path}`;
+  return debug ? path : `${SERVER_BASE}${path}`;
 }
 
 export const TABS = {

@@ -10,7 +10,7 @@
       >
         <div class="video-cover-wrapper">
           <!-- 封面 -->
-          <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+          <img class="video-cover"  v-lazy="_httpsSrc(item.pic)" alt="cover" />
           <!-- 信息 -->
           <div class="video-dec">
             <span class="video-duration">{{ item.duration }}</span>
@@ -103,6 +103,12 @@ export default {
 
       return `${(num / 10000).toFixed(1)}万观看`;
     },
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
+    },
     _handleScroll() {
       // console.log('scroll fires');
       const rect = this.$refs.homepage.getBoundingClientRect();
@@ -122,7 +128,7 @@ export default {
         this.currentBatchIndex += 1;
       }
       // goTop theshold
-      console.log(this.showGoTopButton, scrollPercentage, GO_TOP_THRESHOLD);
+      // console.log(this.showGoTopButton, scrollPercentage, GO_TOP_THRESHOLD);
       this.showGoTopButton = scrollPercentage > GO_TOP_THRESHOLD;
     },
     onTouchStart() {

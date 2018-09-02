@@ -15,7 +15,7 @@
       </div>
       <!-- 封面 -->
       <div class="cover-wrapper">
-        <img v-lazy="video.pic" alt="cover" />
+        <img v-lazy="_httpsSrc(video.pic)" alt="cover" />
         <div class="duration" v-if="duration">
           <p>{{_formatDuration(video.duration)}}</p>
         </div>
@@ -58,6 +58,12 @@ export default {
     ...mapActions(['saveWatchHistory']),
     _formatNumber(num) {
       return formatNumber(num);
+    },
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
     },
     _formatDuration(time) {
       let d;

@@ -1,4 +1,4 @@
-const SW_VERSION = 2;
+const SW_VERSION = 8;
 
 const CURRENT_CACHES = {
   prefetch: `giri_dynamic_v${SW_VERSION}`,
@@ -12,22 +12,22 @@ self.addEventListener('install', event => {
 
   // 更新缓存. 需要缓存的文件在install阶段prefetch
   const urlsToPrefetch = [
-    'static/img/icomoon.44ddd8e.svg', // iconmoon
-    'static/img/loading.0fae498.png', // loading
-    'static/img/bannerTop.d651f31.png', // bannertop
-    'static/img/lazy2.fe9e0f7.gif', // lazy loading gif
-    '/static/css/app.cbfb7f8307cb7ca6651bfaf605c2e459.css', // css
-    'static/js/vendor.ff3a8a61d438b72ec64e.js', // vendor
-    'static/js/0.e9eb5c31cbd6d0fefe9c.js', // vendor-async
-    'static/js/1.7efe0514ee3c0d66446b.js', // video
-    'static/js/2.33b0d9ebe339e9d84c68.js', // user
-    'static/js/3.ecc827137a1fcf54dfce.js', // home
-    'static/js/4.f96337721576af48d494.js', // rank
-    'static/js/5.cff1974051c582c11667.js', // home-detail
-    'static/js/6.87d293d6498a092e99dc.js', // search-result
-    'static/js/7.aeffb2828b8f651de814.js', // search
-    'static/js/8.a501ce65daad2eb4b07e.js', // recent
-    'static/js/app.8f6dec73d1684cc6391b.js', // app
+    '/static/css/app.1e803995d143e3f88dde9aeb10f62220.css', // css
+    '/static/img/icomoon.44ddd8e.svg', // iconmoon
+    '/static/img/bannerTop.d651f31.png', // bannertop
+    '/static/img/loading.0fae498.png', // loading
+    '/static/img/lazy2.fe9e0f7.gif', // lazy loading gif
+    '/static/js/0.801a49ea4f22512dbf8e.js', // vendor-async
+    '/static/js/1.5f3eefc3ae46d8e233f9.js', // video
+    '/static/js/2.fc5053702b173ccdf1e9.js', // user
+    '/static/js/3.ecc827137a1fcf54dfce.js', // home
+    '/static/js/4.f96337721576af48d494.js', // rank
+    '/static/js/5.336bcbfe3f2b74ee49a8.js', // home-detail
+    '/static/js/6.64942031e3ad9a7d0c23.js', // search-result
+    '/static/js/7.aeffb2828b8f651de814.js', // search
+    '/static/js/8.a501ce65daad2eb4b07e.js', // recent
+    '/static/js/vendor.ff3a8a61d438b72ec64e.js', // vendor
+    '/static/js/app.65bda4cd7d3606c419d6.js', // app
   ];
 
   // 缓存
@@ -58,7 +58,7 @@ self.addEventListener('install', event => {
           .then(() => console.log('Prefetching complete.'))
       })
       // cache open的error
-      .catch(err => console.log('Prefetching failed.'));
+      .catch(err => console.log('Prefetching failed.'))
   );
 });
 
@@ -67,7 +67,7 @@ const EXT_LISTS = ['js', 'css', 'svg', 'png', 'gif'];
 
 function shouldCache(url) {
   for (let ext of EXT_LISTS) {
-    if (url.endsWith(ext)) {
+    if (url.endsWith(ext) && url.startsWith('https')) {
       return true;
     }
   }
@@ -82,19 +82,22 @@ self.addEventListener('fetch', event => {
         if (resp) {
           return resp;
         }
-        return fetch(event.request)
+        const fetchRequest = event.request.clone();
+        return fetch(fetchRequest)
           .then(response => {
-            const url = event.request.url;
+            const url = fetchRequest.url;
             if (!shouldCache(url)) {
               // 如果不需要缓存, 直接返回response
               return response;
             }
             // 否则缓存response
+            console.log('Gonna cache', event.request);
             return caches.open(CURRENT_CACHES.prefetch)
               .then(cache => {
-                cache.put(event.request, response.clone());
+                cache.put(fetchRequest, response.clone());
                 return response;
-              });
+              })
+              .catch(err => console.log(`Caching ${event.request} failed due to: ${err}`))
           });
       })
   );

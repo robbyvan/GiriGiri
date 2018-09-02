@@ -4,7 +4,7 @@
     <ul class="comment-wrapper">
       <li v-for="item in comments" :key="item.rpid" class="comment-item">
         <div class="avatar-wrapper">
-          <img :src="item.member.avatar" alt="avatar" />
+          <img :src="_httpsSrc(item.member.avatar)" alt="avatar" />
         </div>
         <div class="comment-content-box">
           <h3 class="comment-info">
@@ -32,6 +32,12 @@ export default {
       const pubDate = moment.unix(ts);
       const moreThanOneYear = pubDate.isBefore(moment(), 'year');
       return moreThanOneYear ? pubDate.format('YYYY-M-D') : pubDate.format('M-D');
+    },
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
     },
   }
 };

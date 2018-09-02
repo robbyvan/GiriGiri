@@ -25,7 +25,7 @@
             >
               <div class="video-cover-wrapper">
                 <!-- 封面 -->
-                <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+                <img class="video-cover"  v-lazy="_httpsSrc(item.pic)" alt="cover" />
                 <!-- 信息 -->
                 <div class="video-dec">
                   <span class="desc-tab">
@@ -71,7 +71,7 @@
             >
               <div class="video-cover-wrapper">
                 <!-- 封面 -->
-                <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+                <img class="video-cover"  v-lazy="_httpsSrc(item.pic)" alt="cover" />
                 <!-- 信息 -->
                 <div class="video-dec">
                   <span class="desc-tab">
@@ -109,7 +109,7 @@
             >
               <div class="video-cover-wrapper">
                 <!-- 封面 -->
-                <img class="video-cover"  v-lazy="item.pic" alt="cover" />
+                <img class="video-cover"  v-lazy="_httpsSrc(item.pic)" alt="cover" />
                 <!-- 信息 -->
                 <div class="video-dec">
                   <span class="desc-tab">
@@ -199,6 +199,12 @@ export default {
         return `${num}`;
       }
       return `${(num / 10000).toFixed(1)}万`;
+    },
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
     },
     _getGroupVideos(group) {
       return this.sectionVideos[group];
