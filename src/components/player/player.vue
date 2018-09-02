@@ -75,7 +75,7 @@
         class="video-cover"
         @click="startPlaying"
       >
-        <img :src="playUrlInfo.img" alt="cover image" />
+        <img :src="_httpsSrc(playUrlInfo.img)" alt="cover image" />
         <div class="video-aid-wrapper">
           <p class="video-title-aid">av{{ playUrlInfo.aid }}</p>
         </div>
@@ -106,7 +106,7 @@
         <div class="finished-item">
           <!-- 封面 -->
           <div class="finished-cover-wrapper">
-            <img :src="finishedRecommendItem.pic" atl="image cover"/>
+            <img :src="_httpsSrc(finishedRecommendItem.pic)" atl="image cover"/>
             <div class="count-down-progress"></div>
           </div>
           <!-- 内容 -->
@@ -225,6 +225,12 @@ export default {
   methods: {
     loadDanmakuToCCL() {
       console.log(this.danmakuList);
+    },
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
     },
     // UI相关
     resetPlayer(src) {

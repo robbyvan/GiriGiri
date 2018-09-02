@@ -13,7 +13,7 @@
     <div class="basic-info" v-if="showInfo">
       <!-- 头像 -->
       <div class="avatar">
-        <img :src="spaceInfo.upic" />
+        <img :src="_httpsSrc(spaceInfo.upic)" />
       </div>
       <!-- 资料 -->
       <div class="desc">
@@ -178,6 +178,12 @@ export default {
     loadMore() {
       this._loadVideosByPage();
     },
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
+    }
   }
 };
 </script>

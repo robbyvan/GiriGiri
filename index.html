@@ -13,15 +13,19 @@
   <script type="text/javascript">
     if ('serviceWorker' in navigator) {
       // DOMContentLoaded时注册sw
+      const SW = navigator.serviceWorker;
       window.addEventListener('DOMContentLoaded', () => {
-        navigator.serviceWorker.register('/sw.js')
+        SW.register('/sw.js')
           // 注册成功
           .then(registration => {
-            console.log('Hooray! SW Registered. Scope is: ' registration.scope);
+            console.log('Hooray! SW Registered. Scope is: ', registration.scope);
           })
           // 注册失败
-          .catch(err => console.log('Whoops, service worker registration failed.'))
+          .catch(err => console.log('Whoops, service worker registration failed due to: ', err))
       });
+      if (SW.controller) {
+        SW.controller.postMessage(location.href);
+      }
     }
   </script>
 </html>

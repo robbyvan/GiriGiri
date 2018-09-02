@@ -3,11 +3,14 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 const request = require('./request');
 const config = require('../config/index');
+const path = require('path');
 
 const fs = require('fs');
 const https = require('https');
-const privateKey = fs.readFileSync('/etc/nginx/cert/2_robbyvan.cn.key', 'utf-8');
-const certificate = fs.readFileSync('/etc/nginx/cert/1_robbyvan.cn_bundle.crt', 'utf-8');
+// const privateKey = fs.readFileSync('/etc/nginx/cert/2_robbyvan.cn.key', 'utf-8');
+// const certificate = fs.readFileSync('/etc/nginx/cert/1_robbyvan.cn_bundle.crt', 'utf-8');
+const privateKey = fs.readFileSync(path.resolve(__dirname, './localhost-key.pem'), 'utf-8');
+const certificate = fs.readFileSync(path.resolve(__dirname, './localhost.pem'), 'utf-8');
 const credentials = { key: privateKey, cert: certificate };
 
 const app = express();

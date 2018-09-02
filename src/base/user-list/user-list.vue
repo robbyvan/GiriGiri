@@ -7,7 +7,7 @@
       @click="selectUser(item)"
     >
       <div class="avatar-wrapper">
-        <img :src="item.upic" alt="avatar" />
+        <img :src="_httpsSrc(item.upic)" alt="avatar" />
       </div>
       <div class="user-desc">
         <h2 class="uname">{{ item.uname }}</h2>
@@ -30,6 +30,12 @@ export default {
   methods: {
     selectUser(item) {
       this.$emit('selectUser', item);
+    },
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
     }
   }
 };

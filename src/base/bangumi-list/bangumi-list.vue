@@ -6,7 +6,7 @@
       :key="item.newest_ep_id"
     >
       <div class="cover-wrapper">
-        <img :src="item.cover" alt="bangumi cover" />
+        <img :src="_httpsSrc(item.cover)" alt="bangumi cover" />
       </div>
       <div class="bangumi-desc">
         <h2><i class="icon-tv" />番剧</h2>
@@ -23,6 +23,14 @@ export default {
   props: {
     bangumis: { type: Array, default: () => [] },
   },
+  methods: {
+    _httpsSrc(url) {
+      if (url.startsWith('http://')) {
+        return `https://${url.substr(7)}`;
+      }
+      return `https://${url}`;
+    },
+  }
 };
 </script>
 
