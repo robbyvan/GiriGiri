@@ -10,4 +10,18 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <script type="text/javascript">
+    if ('serviceWorker' in navigator) {
+      // DOMContentLoaded时注册sw
+      window.addEventListener('DOMContentLoaded', () => {
+        navigator.serviceWorker.register('/sw.js')
+          // 注册成功
+          .then(registration => {
+            console.log('Hooray! SW Registered. Scope is: ' registration.scope);
+          })
+          // 注册失败
+          .catch(err => console.log('Whoops, service worker registration failed.'))
+      });
+    }
+  </script>
 </html>

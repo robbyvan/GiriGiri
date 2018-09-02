@@ -91,5 +91,14 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
     child_process: 'empty'
-  }
+  },
+  plugins: [
+    // 把sw拷贝到dist.
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../src/sw.js'),
+        to: path.resolve(__dirname, config.build.assetsRoot)
+      }
+    ])
+  ]
 }
