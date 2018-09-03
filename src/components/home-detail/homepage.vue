@@ -79,7 +79,10 @@ export default {
     window.removeEventListener('scroll', this.throttleFunc, false);
   },
   methods: {
-    ...mapActions(['selectVideoPlay']),
+    ...mapActions([
+      'selectVideoPlay',
+      'saveWatchHistory'
+    ]),
     _getVideos() {
       this.isLoadingPage = true;
       getHomepageVideos()
@@ -142,6 +145,7 @@ export default {
           aid: item.aid,
           pageNum: 1,
         });
+        this.saveWatchHistory(item);
         this.$router.push(`/video/av${item.aid}`);
       }
     }

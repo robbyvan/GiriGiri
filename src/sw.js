@@ -1,4 +1,4 @@
-const SW_VERSION = 8;
+const SW_VERSION = 1;
 
 const CURRENT_CACHES = {
   prefetch: `giri_dynamic_v${SW_VERSION}`,
@@ -12,7 +12,7 @@ self.addEventListener('install', event => {
 
   // 更新缓存. 需要缓存的文件在install阶段prefetch
   const urlsToPrefetch = [
-    '/static/css/app.1e803995d143e3f88dde9aeb10f62220.css', // css
+    '/static/css/app.94ea602adb7efe6a84d91655a6a285b9.css', // css
     '/static/img/icomoon.44ddd8e.svg', // iconmoon
     '/static/img/bannerTop.d651f31.png', // bannertop
     '/static/img/loading.0fae498.png', // loading
@@ -22,7 +22,7 @@ self.addEventListener('install', event => {
     '/static/js/2.fc5053702b173ccdf1e9.js', // user
     '/static/js/3.ecc827137a1fcf54dfce.js', // home
     '/static/js/4.f96337721576af48d494.js', // rank
-    '/static/js/5.336bcbfe3f2b74ee49a8.js', // home-detail
+    '/static/js/5.6ce0a40a12adfaacf5aa.js', // home-detail
     '/static/js/6.64942031e3ad9a7d0c23.js', // search-result
     '/static/js/7.aeffb2828b8f651de814.js', // search
     '/static/js/8.a501ce65daad2eb4b07e.js', // recent

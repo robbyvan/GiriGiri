@@ -192,7 +192,10 @@ export default {
       setMainTabRid: 'SET_MAIN_TAB_RID',
       setSubTabRid: 'SET_SUB_TAB_RID',
     }),
-    ...mapActions(['selectVideoPlay']),
+    ...mapActions([
+      'selectVideoPlay',
+      'saveWatchHistory'
+    ]),
     _formatNumber(num) {
       num = Number(num);
       if (num < 10000) {
@@ -279,6 +282,7 @@ export default {
           aid: item.aid,
           pageNum: 1,
         });
+        this.saveWatchHistory(item);
         this.$router.push(`/video/av${item.aid}`);
       }
     },
