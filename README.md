@@ -5,7 +5,8 @@
 
 ## Demo
 + 📺 [在线预览: 移动端GiriGiri](http://robbyvan.cn/giri)
-+ 📱 使用手机浏览器打开获得更佳体验~
++ 📱 使用手机浏览器打开获得更佳体验~      
+
 ![](./demo-gifs/cli_300px.png)
 
 ### 推荐
